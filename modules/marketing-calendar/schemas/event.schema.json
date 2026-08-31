@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MarketingCalendarEvent",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "date",
+    "type",
+    "scope",
+    "source"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "type": {
+      "enum": [
+        "national",
+        "professional",
+        "niche",
+        "local",
+        "company",
+        "team",
+        "personal",
+        "seasonal",
+        "commercial",
+        "historical",
+        "religious",
+        "other"
+      ]
+    },
+    "scope": {
+      "enum": [
+        "national",
+        "state",
+        "city",
+        "niche",
+        "company",
+        "personal",
+        "global"
+      ]
+    },
+    "source": {
+      "type": "string"
+    },
+    "sourceUrl": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fixed": {
+      "type": "boolean"
+    },
+    "movableRule": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "city": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "state": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "niches": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "verifiedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CalendarCreativeOutput",
+  "type": "object",
+  "required": [
+    "relevance",
+    "reason",
+    "approach",
+    "ideas"
+  ],
+  "properties": {
+    "relevance": {
+      "enum": [
+        "high",
+        "indirect",
+        "low"
+      ]
+    },
+    "reason": {
+      "type": "string"
+    },
+    "approach": {
+      "type": "string"
+    },
+    "ideas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "objective": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "idea": {
+            "type": "string"
+          },
+          "cta": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

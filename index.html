@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MIV Ecosystem — Vitrine Inteligente V3</title>
+<meta name="description" content="Protótipo de ecossistema empresarial adaptável por nicho.">
+<link rel="stylesheet" href="styles.css?v=13.1">
+</head>
+<body data-theme="clean">
+<header class="floating-header">
+  <div class="pill-menu">
+    <button class="brand" data-route="home"><span class="brand-mark">M</span><span class="brand-name">MIV <small>ECOSYSTEM</small></span></button>
+    <nav>
+      <button data-route="home">Início</button>
+      <button data-scroll="marketing">Estratégias</button>
+      <button data-scroll="analises">Análises</button>
+      <button data-scroll="ferramentas">Ferramentas</button>
+      <button data-scroll="aprender">Aprender</button>
+      <button data-scroll="planos">Planos</button>
+    </nav>
+    <button class="auth-header-btn" data-open-auth="login">Entrar</button><button class="central-btn" data-route="central">Minha Central</button>
+    <button class="mobile-menu" id="mobileMenu">☰</button>
+  </div>
+</header>
+
+<main>
+<section id="view-home" class="view active">
+  <section class="hero-commerce" id="heroCommerce">
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      <span class="eyebrow hero-eyebrow">UM ECOSSISTEMA PARA QUEM QUER FAZER O NEGÓCIO EVOLUIR</span>
+      <h1 id="heroTitle">Tudo para profissionalizar, divulgar, vender e fazer seu negócio crescer.</h1>
+      <p id="heroText">Estratégias, ferramentas, análises, conteúdos e inteligência reunidos em um só lugar — e organizados de acordo com o seu nicho.</p>
+      <div class="hero-actions"><button class="primary" id="focusNiche">Encontrar soluções para meu nicho</button><button class="glass" data-scroll="recomendados">Explorar vitrine</button></div>
+      <div class="hero-tags"><span>✦ Estratégias aplicáveis</span><span>◎ Análises profundas</span><span>◈ MARK em todas as páginas</span></div>
+    </div>
+  </section>
+
+  <section class="wrap niche-zone" id="nicho">
+    <div class="niche-heading">
+      <span class="eyebrow">UMA EXPERIÊNCIA QUE MUDA COM VOCÊ</span>
+      <h2>Qual é o seu nicho?</h2>
+      <p>Pesquise sua atividade ou escolha uma das áreas abaixo. A vitrine, as recomendações, as ferramentas e até o visual do ecossistema se adaptam.</p>
+    </div>
+    <div class="niche-search-wrap">
+      <span>⌕</span>
+      <input id="nicheSearch" list="nicheList" placeholder="Digite: cardiologista, academia, loja de roupas, advogado, restaurante...">
+      <datalist id="nicheList"></datalist>
+      <button id="applyNiche">Aplicar</button>
+    </div>
+    <div id="nicheGroups" class="niche-groups"></div>
+    <div class="current-niche" id="currentNiche"><span>Experiência atual</span><strong>Visão geral para negócios</strong><small>Tema clean neutro</small></div>
+  </section>
+
+  <section class="wrap shelfSec" id="recomendados">
+    <div class="titleRow"><div><span class="eyebrow">RECOMENDADO PARA VOCÊ</span><h2 id="recTitle">Uma seleção para começar sem se perder.</h2><p>Itens com maior aderência ao nicho e ao objetivo selecionados.</p></div><div class="arrows"><button data-prev="recTrack">‹</button><button data-next="recTrack">›</button></div></div>
+    <div class="shelf" id="recTrack"></div>
+    <div class="need-box">
+      <div class="need-copy"><span class="eyebrow">NÃO ENCONTROU O QUE PRECISA?</span><h3>Conte para o MARK o que você gostaria de resolver agora.</h3><p>Escreva sua dúvida, dor ou objetivo com suas próprias palavras. A vitrine reorganiza as sugestões e mostra os conteúdos, ferramentas e análises mais próximos da sua necessidade.</p></div>
+      <div class="need-action"><textarea id="needInput" rows="3" placeholder="Ex.: estou divulgando bastante, mas poucas pessoas chamam no WhatsApp... ou: preciso vender mais sem baixar meus preços."></textarea><button class="primary" id="needSuggest">Encontrar soluções para mim</button><small id="needStatus">Você não precisa saber qual ferramenta procurar.</small></div>
+    </div>
+  </section>
+
+  <section class="wrap shelfSec" id="marketing">
+    <div class="titleRow"><div><span class="eyebrow">ESTRATÉGIAS DE MARKETING</span><h2>Divulgação por objetivo, canal e momento.</h2><p>Da visibilidade à recompra: ideias para digital, físico, relacionamento e mídia.</p></div><div class="arrows"><button data-prev="marketingTrack">‹</button><button data-next="marketingTrack">›</button></div></div>
+    <div class="shelf" id="marketingTrack"></div>
+  </section>
+
+  <section class="wrap shelfSec" id="marca">
+    <div class="titleRow"><div><span class="eyebrow">POSICIONAMENTO & MARCA</span><h2>Faça a empresa parecer tão profissional quanto ela merece ser.</h2><p>Branding físico e digital, identidade, diferenciação, autoridade e experiência.</p></div><div class="arrows"><button data-prev="brandTrack">‹</button><button data-next="brandTrack">›</button></div></div>
+    <div class="shelf" id="brandTrack"></div>
+  </section>
+
+  <section class="wrap shelfSec" id="vendas">
+    <div class="titleRow"><div><span class="eyebrow">VENDAS & CRESCIMENTO</span><h2>Mais conversão, ticket, recompra e indicação.</h2><p>Ferramentas e estratégias para o comercial funcionar melhor antes de colocar mais dinheiro em divulgação.</p></div><div class="arrows"><button data-prev="salesTrack">‹</button><button data-next="salesTrack">›</button></div></div>
+    <div class="shelf" id="salesTrack"></div>
+  </section>
+
+  <section class="wrap shelfSec tools-section" id="ferramentas">
+    <div class="titleRow"><div><span class="eyebrow">FERRAMENTAS ÚTEIS PARA SEU NICHO</span><h2 id="toolsTitle">Atalhos práticos para transformar intenção em ação.</h2></div><div class="arrows"><button data-prev="toolsTrack">‹</button><button data-next="toolsTrack">›</button></div></div>
+    <div class="filterbar" id="toolFilters">
+      <button class="active" data-tool-filter="Todos">Todos</button><button data-tool-filter="Marketing">Marketing</button><button data-tool-filter="Vendas">Vendas</button><button data-tool-filter="Conteúdo">Conteúdo</button><button data-tool-filter="Planejamento">Planejamento</button><i></i><button data-tool-filter="Grátis">Grátis</button><button data-tool-filter="Pago">Pagos</button>
+    </div>
+    <div class="shelf" id="toolsTrack"></div>
+  </section>
+
+
+  <section class="wrap shelfSec" id="consultoria">
+    <div class="titleRow"><div><span class="eyebrow">CONSULTORIA & MENTORIA</span><h2>Escolha o nível de ajuda que faz sentido agora.</h2><p>Da orientação automática com IA à consultoria empresarial completa com acompanhamento.</p></div><div class="arrows"><button data-prev="consultTrack">‹</button><button data-next="consultTrack">›</button></div></div>
+    <div class="shelf" id="consultTrack"></div>
+  </section>
+
+  <section class="wrap shelfSec" id="mivcast">
+    <div class="titleRow"><div><span class="eyebrow">A MIVCAST EXECUTA PARA VOCÊ</span><h2>Prefere não fazer sozinho? Nossa agência pode executar.</h2><p>Criação, estrutura digital, presença online, materiais e conteúdo profissional em serviços avulsos.</p></div><div class="arrows"><button data-prev="mivcastTrack">‹</button><button data-next="mivcastTrack">›</button></div></div>
+    <div class="shelf" id="mivcastTrack"></div>
+  </section>
+
+  <section class="wrap analysis" id="analises">
+    <div class="analysisTop">
+      <div><span class="eyebrow">ANÁLISES EMPRESARIAIS</span><h2>Descubra o que está funcionando, o que precisa melhorar e o que fazer primeiro.</h2><p>Escolha uma subanálise específica, favorite para fazer depois ou entre na análise completa de cada área.</p></div>
+      <div class="fullAnalysis">
+        <div class="full-top"><small>ANÁLISE COMPLETA</small><button class="heart analysis-heart" data-analysis-fav="completa">♡</button></div>
+        <strong>10 áreas principais</strong><span>Empresa · Marca · Mercado · Oferta · Presença · Marketing · Vendas · Experiência · Gestão</span><button class="primary" data-analysis="completa">Começar análise completa</button>
+      </div>
+    </div>
+    <div class="analysis-carousel-head">
+      <span>Arraste ou use as setas para ver todas as áreas</span>
+      <div class="arrows analysis-arrows"><button data-prev="analysisGrid" aria-label="Análises anteriores">‹</button><button data-next="analysisGrid" aria-label="Próximas análises">›</button></div>
+    </div>
+    <div id="analysisGrid" class="analysisGrid"></div>
+  </section>
+
+  <section class="wrap shelfSec learning" id="aprender">
+    <div class="titleRow"><div><span class="eyebrow">APRENDA & APLIQUE</span><h2>Conteúdo útil, organizado para virar aplicação.</h2><p>O carrossel mostra primeiro o que tende a ser mais relevante, mas você pode filtrar por formato e acesso.</p></div><div class="arrows"><button data-prev="learnTrack">‹</button><button data-next="learnTrack">›</button></div></div>
+    <div class="filterbar" id="learnFilters">
+      <button class="active" data-learn-filter="Todos">Todos</button><button data-learn-filter="Curso">Cursos</button><button data-learn-filter="Guia">Guias</button><button data-learn-filter="Livro">Livros</button><button data-learn-filter="Vídeo">Vídeos</button><i></i><button data-learn-filter="Grátis">Grátis</button><button data-learn-filter="Pago">Pagos</button>
+    </div>
+    <div class="shelf" id="learnTrack"></div>
+  </section>
+
+  <section class="credibility" id="credibilidade">
+    <div class="wrap">
+      <span class="eyebrow center">TRAJETÓRIA & PROVA</span>
+      <h2 class="center">Experiência transformada em metodologia, ferramentas e orientação.</h2>
+      <p class="demo-note">Dados abaixo são demonstrativos nesta versão de teste. Substitua pelos números comprováveis antes da publicação.</p>
+      <div class="number-grid">
+        <div><strong data-count="300">0</strong><span>avaliações e feedbacks</span></div>
+        <div><strong data-count="1000">0</strong><span>projetos e entregas analisadas*</span></div>
+        <div><strong data-count="20">0</strong><span>áreas de apoio ao negócio*</span></div>
+        <div><strong data-count="10">0</strong><span>frentes de diagnóstico</span></div>
+      </div>
+    </div>
+    <div class="logo-marquee"><div class="logo-track" id="logoTrack"></div></div>
+  </section>
+
+  <section class="wrap testimonials">
+    <span class="eyebrow center">RESULTADOS — DEMONSTRAÇÃO VISUAL</span>
+    <h2 class="center">Como a seção de prova poderá aparecer quando você inserir casos reais.</h2>
+    <div class="testimonial-grid">
+      <article><div class="stars">★★★★★</div><blockquote>“Organizamos a oferta antes de aumentar o tráfego e a conversão do atendimento melhorou.”</blockquote><div><strong>Exemplo · Clínica</strong><b>+31% conversão*</b></div></article>
+      <article><div class="stars">★★★★★</div><blockquote>“A vitrine passou a trabalhar ticket e combinação de produtos, não apenas promoção.”</blockquote><div><strong>Exemplo · Comércio</strong><b>+24% ticket*</b></div></article>
+      <article><div class="stars">★★★★★</div><blockquote>“O plano deixou claro o que fazer primeiro e evitou espalhar esforço em canais demais.”</blockquote><div><strong>Exemplo · Serviço</strong><b>+42% leads*</b></div></article>
+    </div>
+    <small class="prototype-warning">* Textos, nomes e percentuais são fictícios apenas para avaliar o layout desta seção. Não publicar como resultados reais.</small>
+  </section>
+
+  <section class="about-section">
+    <div class="wrap about-grid">
+      <div class="about-photo"><div class="photo-placeholder"><span>FOTO</span><strong>Matheus Nascimento</strong><small>Substitua pela sua foto profissional</small></div></div>
+      <div class="about-copy"><span class="eyebrow">QUEM ESTÁ POR TRÁS</span><h2>Tecnologia para multiplicar uma forma humana de pensar.</h2><p>O ecossistema nasce para transformar experiência prática em uma estrutura que ajuda empreendedores e profissionais a encontrar direção, aprender, executar e acompanhar decisões em um único lugar.</p><div class="quote">“Mais importante do que entregar uma lista de melhorias é encontrar o gargalo que realmente explica a dor do cliente.”</div><button class="outline">Conhecer a metodologia</button></div>
+    </div>
+  </section>
+
+  <section class="wrap plans" id="planos">
+    <span class="eyebrow center">PLANOS & ACESSO</span><h2 class="center">Use grátis, compre apenas o que precisa ou libere o ecossistema inteiro.</h2><p class="center plan-sub">Uma estrutura flexível para atrair pelo conteúdo gratuito e monetizar por item, assinatura ou apoio humano.</p>
+    <div class="plan-grid">
+      <article><span class="plan-label">COMEÇAR</span><h3>Grátis</h3><p>Acesso às iscas e conteúdos marcados como gratuitos.</p><ul><li>Ferramentas gratuitas</li><li>Guias selecionados</li><li>Mini análises</li><li>Central e favoritos</li></ul><button class="outline full">Criar conta grátis</button></article>
+      <article><span class="plan-label">SEM ASSINATURA</span><h3>Avulso</h3><p>Desbloqueie somente a ferramenta, análise ou conteúdo que desejar.</p><ul><li>Pagamento por item</li><li>Acesso permanente ao item</li><li>Resultado salvo na Central</li><li>Sem mensalidade</li></ul><button class="outline full">Explorar itens pagos</button></article>
+      <article class="featured"><span class="badge-best">🔓 LIBERA OS ITENS PRO</span><span class="plan-label">ECOSSISTEMA</span><h3>Pro</h3><p>Libere praticamente tudo e use o MARK com mais contexto.</p><ul><li>Ferramentas premium</li><li>Análises completas</li><li>Biblioteca premium</li><li>MARK contextual</li><li>Histórico e evolução</li></ul><button class="primary full">Quero acesso Pro</button></article>
+      <article><span class="plan-lock">🔒 PRO INCLUSO</span><span class="plan-label">HUMANO + IA</span><h3>Premium</h3><p>Ecossistema completo com apoio pessoal e revisão estratégica.</p><ul><li>Tudo do Pro</li><li>Consultoria pessoal</li><li>Revisões estratégicas</li><li>Acompanhamento</li></ul><button class="outline full">Conhecer Premium</button></article>
+    </div>
+  </section>
+
+  <section class="wrap faq">
+    <span class="eyebrow center">TIRE SUAS DÚVIDAS</span><h2 class="center">Você não precisa entender o ecossistema inteiro para começar.</h2>
+    <div class="faq-grid"><details><summary>Preciso assinar para usar?</summary><p>Não. A proposta prevê itens gratuitos, compras avulsas e planos de acesso amplo.</p></details><details><summary>O que muda quando escolho meu nicho?</summary><p>Visual, recomendações, ordem dos conteúdos, ferramentas sugeridas e contexto do MARK.</p></details><details><summary>Posso salvar algo para fazer depois?</summary><p>Sim. Estratégias, ferramentas, conteúdos e análises podem ser favoritados e aparecem na sua Central.</p></details><details><summary>O MARK fica disponível em todas as páginas?</summary><p>Sim. Ele acompanha o contexto da página atual e do perfil salvo.</p></details></div>
+  </section>
+</section>
+
+<section id="view-detail" class="view">
+  <div class="wrap detail"><button class="back" data-route="home">← Voltar para a vitrine</button><div class="detailHero" id="detailHero"><div class="detailVisual" id="detailVisual"></div><section><span class="eyebrow" id="detailCat">ESTRATÉGIA</span><h1 id="detailTitle"></h1><p id="detailDesc"></p><div><button class="primary" id="useBtn">Usar agora</button><button id="favBtn">♡ Salvar</button></div></section></div><div class="detailGrid"><article id="detailBody"></article><aside><span class="eyebrow">RELACIONADO AO SEU NEGÓCIO</span><div id="related"></div></aside></div></div>
+</section>
+
+<section id="view-central" class="view">
+  <div class="wrap centralHero"><div><span class="eyebrow">MINHA CENTRAL</span><h1 id="centralTitle">Seu espaço dentro do ecossistema.</h1><p>Tudo que você favoritou, usou, comprou ou analisou fica organizado aqui.</p></div><button id="editProfile" class="outline">Editar nicho</button></div>
+  <section class="wrap companyProfilePanel" id="companyProfilePanel">
+    <div class="companyProfileHead">
+      <div><span class="eyebrow">INFORMAÇÕES DA EMPRESA</span><h2>Quanto mais o sistema conhece seu negócio, melhores ficam as respostas.</h2><p>Essas informações poderão ser reutilizadas pelo MARK e pelos cards para evitar perguntas repetidas e personalizar sugestões, análises e relatórios.</p></div>
+      <div class="profileCompletion"><strong id="companyProfilePct">0%</strong><small>perfil preenchido</small></div>
+    </div>
+    <div class="companyProfileGrid">
+      <label>Nome da empresa<input id="cpBusiness" placeholder="Nome da empresa"></label>
+      <label>Responsável<input id="cpOwner" placeholder="Seu nome"></label>
+      <label>Nicho<input id="cpNiche" placeholder="Ex.: Clínica, loja, personal trainer"></label>
+      <label>Subnicho<input id="cpSubniche" placeholder="Ex.: Saúde da mulher"></label>
+      <label>Cidade / UF<input id="cpCity" placeholder="Ex.: Votuporanga / SP"></label>
+      <label>Área de atuação<input id="cpRegion" placeholder="Local, regional, nacional, online..."></label>
+      <label class="wide">Produtos / serviços<textarea id="cpOffers" placeholder="Liste os principais produtos e serviços"></textarea></label>
+      <label class="wide">Público principal<textarea id="cpAudience" placeholder="Quem são os clientes ideais?"></textarea></label>
+      <label>Ticket médio<input id="cpTicket" placeholder="Ex.: R$ 300"></label>
+      <label>Tamanho da equipe<input id="cpTeam" placeholder="Ex.: 4 pessoas"></label>
+      <label class="wide">Diferenciais<textarea id="cpDiff" placeholder="Por que o cliente escolheria sua empresa?"></textarea></label>
+      <label class="wide">Objetivos atuais<textarea id="cpGoals" placeholder="O que a empresa quer melhorar agora?"></textarea></label>
+      <label class="wide">Principais dificuldades<textarea id="cpProblems" placeholder="Quais problemas ou gargalos mais incomodam hoje?"></textarea></label>
+      <label class="wide">Canais atuais<textarea id="cpChannels" placeholder="Instagram, WhatsApp, Google, loja física, site..."></textarea></label>
+      <label class="wide">Outras informações importantes<textarea id="cpNotes" placeholder="Tudo que pode ajudar o sistema a entender melhor o contexto da empresa"></textarea></label>
+    </div>
+    <div class="companyProfileActions"><button class="primary" id="saveCompanyProfile">Salvar informações da empresa</button><span id="companyProfileStatus"></span></div>
+  </section>
+  <div class="wrap stats"><div>Favoritos<strong id="favCount">0</strong></div><div>Conteúdos usados<strong id="usedCount">0</strong></div><div>Análises<strong id="repCount">0</strong></div><div>Progresso<strong id="progCount">18%</strong></div></div>
+  <section class="wrap centralSec"><span class="eyebrow">SALVOS POR VOCÊ</span><h2>Favoritos</h2><div class="centralGrid" id="favorites"></div></section>
+  <section class="wrap centralSec"><span class="eyebrow">SEU HISTÓRICO</span><h2>O que você já usou</h2><div id="history"></div></section>
+  <section class="wrap centralSec"><span class="eyebrow">ANÁLISES</span><h2>Relatórios e diagnósticos</h2><div class="centralGrid" id="reports"></div></section>
+</section>
+</main>
+
+<button class="markFab" id="markFab"><b>◈</b><span>MARK<small>Posso ajudar nesta página</small></span></button>
+<aside class="mark" id="mark"><header><b>◈</b><div><strong>MARK</strong><small>Consultor contextual</small></div><button id="closeMark">×</button></header><div class="context"><small>CONTEXTO ATIVO</small><strong id="ctxTitle">Vitrine</strong><span id="ctxText">Posso ajudar a escolher o que faz mais sentido.</span></div><div class="messages" id="messages"><p>Estou vendo a mesma página que você. Posso explicar, adaptar ou ajudar a aplicar.</p></div><div class="chips"><button>O que você recomenda?</button><button>Por onde começo?</button><button>Isso serve para mim?</button></div><form id="markForm"><textarea id="markInput" placeholder="Pergunte ao MARK..."></textarea><button>Enviar</button></form></aside>
+
+<div class="overlay" id="overlay"></div>
+<div class="modal paywall" id="paywall"><div><button class="x" id="closePaywall">×</button><span class="lock-big">🔒</span><span class="eyebrow">CONTEÚDO PREMIUM</span><h2 id="payTitle">Desbloquear conteúdo</h2><p>Você pode liberar este item individualmente ou acessar pelo plano Pro.</p><div class="pay-options"><button class="outline" id="buySingle">Comprar este item <strong id="singlePrice">R$ 19,90</strong></button><button class="primary" data-scroll="planos" id="goPlans">Ver planos de acesso</button></div></div></div>
+<div class="toast" id="toast"></div>
+<footer class="siteFooter">
+  <div class="footerInner">
+    <div class="footerBrand">
+      <div class="footerLogo"><span>M</span><div><strong>MIV</strong><small>ECOSYSTEM</small></div></div>
+      <p>Estratégias, análises, ferramentas, conhecimento e ajuda profissional conectados ao contexto do seu negócio.</p>
+      <div class="footerTrust"><span>✓ Ferramentas práticas</span><span>✓ MARK contextual</span><span>✓ Evolução centralizada</span></div>
+    </div>
+    <div class="footerCol"><strong>Ecossistema</strong><button data-scroll="marketing">Estratégias</button><button data-scroll="analises">Análises</button><button data-scroll="ferramentas">Ferramentas</button><button data-route="central">Minha Central</button></div>
+    <div class="footerCol"><strong>Conta & ajuda</strong><button data-scroll="planos">Planos</button><button data-open-auth="login">Entrar</button><button data-open-auth="register">Criar conta</button><button onclick="document.getElementById('markFab')?.click()">Falar com MARK</button></div>
+    <div class="footerCol"><strong>MivCast</strong><span>Consultoria & Mentoria</span><span>Serviços de execução</span><span>Marketing Digital</span><span>Criação & Tecnologia</span></div>
+  </div>
+  <div class="footerBottom"><span>© 2026 MIV Ecosystem · Protótipo</span><span>Termos · Privacidade · Suporte</span></div>
+</footer>
+<div class="calendarModal" id="calendarModal">
+  <div class="calendarBox">
+    <button class="calClose" id="calClose">×</button>
+    <span class="eyebrow">CALENDÁRIO INTELIGENTE DE MARKETING</span>
+    <h2 id="calHeading">Calendário</h2>
+    <div class="calToolbar">
+      <div class="calNav">
+        <button id="calPrev">‹</button>
+        <select id="calMonth"></select>
+        <select id="calYear"></select>
+        <button id="calNext">›</button>
+        <button id="calToday" class="calToday">Hoje</button>
+      </div>
+      <div class="calLegend"><span>● Nacional</span><span>★ Relevante</span><span>◆ Personalizada</span></div>
+    </div>
+    <div class="calLayout">
+      <div>
+        <div class="calendarGrid" id="calendarGrid"></div>
+        <div id="calIdeas"></div>
+      </div>
+      <aside class="calAside">
+        <h3>Personalize para sua realidade</h3>
+        <label>Nicho / subnicho</label>
+        <input id="calNiche" placeholder="Nicho / subnicho">
+        <label>Cidade / UF <small>(opcional)</small></label>
+        <input id="calCity" placeholder="Ex.: Votuporanga / SP">
+        <label>Datas da empresa, equipe ou pessoais</label>
+        <textarea id="calCustomDates" placeholder="Ex.: 31 de agosto - aniversário da Claudia&#10;15/09 - aniversário da empresa&#10;20 de outubro - evento interno"></textarea>
+        <button class="primary full" id="calSaveImportant">Salvar datas importantes</button>
+        <div class="calSavedStatus" id="calSavedStatus">Nenhuma personalização salva neste navegador.</div>
+        <p><b>Grátis:</b> visualizar datas, relevância e oportunidades.</p>
+        <p>🔒 <b>Planos pagos:</b> ideias completas de criativos, campanhas, ofertas, mensagens e CTA para cada data.</p>
+        <small class="calPrototypeNote">No protótipo local, nicho, cidade e datas próprias ficam salvos no navegador. A busca automática de eventos da cidade/nicho será conectada ao backend.</small>
+      </aside>
+    </div>
+  </div>
+</div>
+<script src="app.js?v=13.1"></script>
+</body></html>

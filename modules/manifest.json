@@ -1,0 +1,16 @@
+{
+  "version": "10-consolidated",
+  "base": "V9_BASE",
+  "modules": [
+    {
+      "id": "marketing-calendar",
+      "status": "specification",
+      "version": "0.1.0"
+    },
+    {
+      "id": "communication-channels",
+      "status": "specification",
+      "version": "0.1.0"
+    }
+  ]
+}

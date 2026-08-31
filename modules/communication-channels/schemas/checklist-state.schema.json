@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ChannelChecklistState",
+  "type": "object",
+  "required": [
+    "userId",
+    "companyId",
+    "channelId",
+    "items"
+  ],
+  "properties": {
+    "userId": {
+      "type": "string"
+    },
+    "companyId": {
+      "type": "string"
+    },
+    "channelId": {
+      "type": "string"
+    },
+    "channelUsage": {
+      "enum": [
+        "uses",
+        "does_not_use",
+        "unknown"
+      ]
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "itemId",
+          "status"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "correct",
+              "needs_improvement",
+              "not_applicable"
+            ]
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}
