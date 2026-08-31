@@ -798,12 +798,31 @@ function fillCompanyProfileForm(){
  const pct=companyProfileCompletion(),pctEl=document.getElementById('companyProfilePct');if(pctEl)pctEl.textContent=pct+'%';
  const st=document.getElementById('companyProfileStatus');if(st)st.textContent=p.savedAt?`Última atualização: ${new Date(p.savedAt).toLocaleString('pt-BR')}`:'';
 }
-function saveCompanyProfileForm(){
+async function saveCompanyProfileForm(){
+ if(!mivUser||!mivSupabase){openAuth('login');toast('Entre na sua conta para salvar a empresa.');return}
  const p=getCompanyProfile();
  Object.entries(companyProfileFields).forEach(([id,key])=>{const el=document.getElementById(id);if(el)p[key]=el.value.trim()});
- p.savedAt=new Date().toISOString();localStorage.setItem('mivCompanyProfile',JSON.stringify(p));
- if(p.niche){state.profile.niche=p.niche;save()}
- fillCompanyProfileForm();toast('Informações da empresa salvas.');
+ if(!p.business){toast('Informe o nome da empresa.');document.getElementById('cpBusiness')?.focus();return}
+ const btn=document.getElementById('saveCompanyProfile');if(btn){btn.disabled=true;btn.textContent='Salvando...'}
+ const status=document.getElementById('companyProfileStatus');if(status)status.textContent='Salvando no Supabase...';
+ try{
+  const cs=splitCityState(p.city);
+  if(!mivActiveCompanyId){
+   const {data:id,error}=await mivSupabase.rpc('create_company',{p_name:p.business,p_niche:p.niche||null,p_subniche:p.subniche||null,p_city:cs.city,p_state:cs.state});
+   if(error)throw error;mivActiveCompanyId=id;
+  }else{
+   const {error}=await mivSupabase.from('companies').update({name:p.business,niche:p.niche||null,subniche:p.subniche||null,city:cs.city,state:cs.state,updated_at:new Date().toISOString()}).eq('id',mivActiveCompanyId);
+   if(error)throw error;
+  }
+  const detail={company_id:mivActiveCompanyId,owner_name:p.owner||null,business_type:null,service_area:p.region||null,products_services:p.offers||null,target_audience:p.audience||null,average_ticket:numericFromBR(p.ticket),team_size:integerFromText(p.team),differentials:p.differentials||null,current_goals:p.goals||null,main_difficulties:p.problems||null,current_channels:p.channels||null,other_info:p.notes||null,updated_at:new Date().toISOString()};
+  const {error:profileError}=await mivSupabase.from('company_profiles').upsert(detail,{onConflict:'company_id'});
+  if(profileError)throw profileError;
+  p.savedAt=new Date().toISOString();mirrorCompanyProfile(p);
+  if(p.niche){state.profile.niche=p.niche;save()}
+  fillCompanyProfileForm();toast('Informações da empresa salvas no Supabase.');
+  if(status)status.textContent='Salvo na sua conta · disponível em qualquer navegador';
+ }catch(err){console.error('[MIV company save]',err);toast('Erro ao salvar a empresa.');if(status)status.textContent='Não foi possível salvar. Tente novamente.'}
+ finally{if(btn){btn.disabled=false;btn.textContent='Salvar informações da empresa'}}
 }
 document.getElementById('saveCompanyProfile')?.addEventListener('click',saveCompanyProfileForm);
 
@@ -870,6 +889,8 @@ bindCalendar();
 const authModal=document.getElementById('authModal');
 let mivSupabase=null;
 let mivUser=null;
+let mivActiveCompanyId=null;
+let mivCompanySyncing=false;
 function authStatus(id,msg,type=''){const el=document.getElementById(id);if(!el)return;el.textContent=msg||'';el.className='authStatus '+type}
 function friendlyAuthError(err){const m=(err?.message||'').toLowerCase();if(m.includes('invalid login'))return 'E-mail ou senha incorretos.';if(m.includes('already registered'))return 'Este e-mail já possui uma conta.';if(m.includes('password'))return 'A senha precisa atender aos requisitos de segurança.';if(m.includes('email'))return 'Verifique o endereço de e-mail informado.';return err?.message||'Não foi possível concluir. Tente novamente.'}
 async function initSupabase(){
@@ -882,6 +903,65 @@ async function initSupabase(){
   mivSupabase.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>applyAuthSession(session),0)});
  }catch(err){console.error('[MIV Supabase]',err);authStatus('loginStatus','Conexão com a conta indisponível. Recarregue a página.','error')}
 }
+
+function splitCityState(value=''){
+ const raw=String(value||'').trim();
+ if(!raw)return {city:null,state:null};
+ const parts=raw.split('/').map(x=>x.trim()).filter(Boolean);
+ if(parts.length>=2)return {city:parts.slice(0,-1).join(' / '),state:parts.at(-1).toUpperCase().slice(0,2)};
+ return {city:raw,state:null};
+}
+function numericFromBR(value){
+ let s=String(value||'').trim();if(!s)return null;
+ s=s.replace(/[^0-9,.-]/g,'');
+ if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');
+ const n=Number(s);return Number.isFinite(n)?n:null;
+}
+function integerFromText(value){const m=String(value||'').match(/-?\d+/);return m?Number(m[0]):null}
+function mirrorCompanyProfile(p){
+ if(p&&Object.keys(p).length)localStorage.setItem('mivCompanyProfile',JSON.stringify(p));
+ else localStorage.removeItem('mivCompanyProfile');
+}
+async function getFirstCompanyLink(){
+ const {data,error}=await mivSupabase.from('company_users').select('company_id,member_role,created_at').eq('user_id',mivUser.id).order('created_at',{ascending:true}).limit(1);
+ if(error)throw error;return data?.[0]||null;
+}
+async function loadCompanyFromSupabase(){
+ if(!mivSupabase||!mivUser)return null;
+ mivCompanySyncing=true;
+ try{
+  let link=await getFirstCompanyLink();
+  if(!link){
+   const meta=mivUser.user_metadata||{};
+   if(String(meta.business||'').trim()){
+    const cs=splitCityState(meta.city||'');
+    const {error:createError}=await mivSupabase.rpc('create_company',{p_name:String(meta.business).trim(),p_niche:String(meta.niche||'').trim()||null,p_subniche:null,p_city:cs.city,p_state:cs.state});
+    if(createError)throw createError;
+    link=await getFirstCompanyLink();
+   }
+  }
+  if(!link){mivActiveCompanyId=null;mirrorCompanyProfile({});return null}
+  mivActiveCompanyId=link.company_id;
+  const [{data:company,error:ce},{data:detail,error:pe}]=await Promise.all([
+   mivSupabase.from('companies').select('id,name,niche,subniche,city,state,updated_at').eq('id',mivActiveCompanyId).single(),
+   mivSupabase.from('company_profiles').select('*').eq('company_id',mivActiveCompanyId).maybeSingle()
+  ]);
+  if(ce)throw ce;if(pe)throw pe;
+  const cityUF=[company?.city,company?.state].filter(Boolean).join(' / ');
+  const p={
+   business:company?.name||'',owner:detail?.owner_name||'',niche:company?.niche||'',subniche:company?.subniche||'',city:cityUF,
+   region:detail?.service_area||'',offers:detail?.products_services||'',audience:detail?.target_audience||'',ticket:detail?.average_ticket??'',team:detail?.team_size??'',
+   differentials:detail?.differentials||'',goals:detail?.current_goals||'',problems:detail?.main_difficulties||'',channels:detail?.current_channels||'',notes:detail?.other_info||'',
+   savedAt:detail?.updated_at||company?.updated_at||new Date().toISOString()
+  };
+  mirrorCompanyProfile(p);
+  if(p.niche){state.profile.niche=p.niche;save()}
+  if(state.route==='central')renderCentral();
+  return p;
+ }catch(err){console.error('[MIV company load]',err);toast('Não foi possível carregar os dados da empresa.');return null}
+ finally{mivCompanySyncing=false}
+}
+
 async function applyAuthSession(session){
  mivUser=session?.user||null;
  const btn=document.querySelector('.auth-header-btn');
@@ -891,8 +971,12 @@ async function applyAuthSession(session){
  if(mivUser){
   try{
    const {data:p}=await mivSupabase.from('profiles').select('full_name,phone').eq('id',mivUser.id).maybeSingle();profile=p||null;
-   if(p){const cp=getCompanyProfile();if(!cp.owner&&p.full_name)cp.owner=p.full_name;if(!cp.phone&&p.phone)cp.phone=p.phone;localStorage.setItem('mivCompanyProfile',JSON.stringify(cp))}
+   if(p){const cp=getCompanyProfile();if(!cp.owner&&p.full_name)cp.owner=p.full_name;mirrorCompanyProfile(cp)}
   }catch(e){console.warn('[MIV profile]',e)}
+  await loadCompanyFromSupabase();
+ } else {
+  mivActiveCompanyId=null;
+  mirrorCompanyProfile({});
  }
  if(btn){
   const first=(profile?.full_name||mivUser?.user_metadata?.full_name||'').trim().split(/\s+/)[0];
@@ -913,7 +997,7 @@ document.getElementById('authClose')?.addEventListener('click',closeAuth);authMo
 document.getElementById('doLogin')?.addEventListener('click',async()=>{const email=document.getElementById('loginEmail').value.trim(),password=document.getElementById('loginPassword').value;if(!email||!password){authStatus('loginStatus','Informe e-mail e senha.','error');return}if(!mivSupabase){authStatus('loginStatus','A conexão ainda não está pronta. Recarregue a página.','error');return}authStatus('loginStatus','Entrando...');const {error}=await mivSupabase.auth.signInWithPassword({email,password});if(error){authStatus('loginStatus',friendlyAuthError(error),'error');return}authStatus('loginStatus','Login realizado.','ok');closeAuth();toast('Bem-vindo à sua Central.');route('central')});
 document.getElementById('doRegister')?.addEventListener('click',async()=>{const email=document.getElementById('regEmail').value.trim(),password=document.getElementById('regPass').value,p2=document.getElementById('regPass2').value;if(!email||!password){authStatus('registerStatus','Preencha pelo menos e-mail e senha.','error');return}if(password!==p2){authStatus('registerStatus','As senhas não coincidem.','error');return}if(!mivSupabase){authStatus('registerStatus','A conexão ainda não está pronta.','error');return}authStatus('registerStatus','Criando conta...');const meta={full_name:document.getElementById('regName').value.trim(),phone:document.getElementById('regPhone').value.trim(),business:document.getElementById('regBusiness').value.trim(),niche:document.getElementById('regNiche').value.trim(),city:document.getElementById('regCity').value.trim()};const {data,error}=await mivSupabase.auth.signUp({email,password,options:{data:meta}});if(error){authStatus('registerStatus',friendlyAuthError(error),'error');return}if(data.session){authStatus('registerStatus','Conta criada.','ok');closeAuth();toast('Conta criada com sucesso.');route('central')}else authStatus('registerStatus','Conta criada. Verifique seu e-mail para confirmar o acesso.','ok')});
 document.getElementById('doForgot')?.addEventListener('click',async()=>{const email=document.getElementById('forgotEmail').value.trim();if(!email){authStatus('forgotStatus','Informe seu e-mail.','error');return}if(!mivSupabase){authStatus('forgotStatus','A conexão ainda não está pronta.','error');return}const {error}=await mivSupabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin});authStatus('forgotStatus',error?friendlyAuthError(error):'Se o e-mail estiver cadastrado, você receberá as instruções.',error?'error':'ok')});
-window.mivLogout=async function(){if(mivSupabase)await mivSupabase.auth.signOut();toast('Você saiu da sua conta.');route('home')};
+window.mivLogout=async function(){if(mivSupabase)await mivSupabase.auth.signOut();mivActiveCompanyId=null;mirrorCompanyProfile({});toast('Você saiu da sua conta.');route('home')};
 document.getElementById('logoutBtn')?.addEventListener('click',()=>window.mivLogout());
 initSupabase();
 

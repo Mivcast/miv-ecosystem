@@ -1,17 +1,14 @@
-# MIV Ecosystem V8 — baseada integralmente no layout da V6
+# MIV Ecosystem V13.6 — Empresa no Supabase
 
-Esta versão preserva o layout, dimensões e experiência da V6 enviada pelo usuário.
+Base: V13.5 Auth Protegida.
 
-Alterações: cards de Marketing/Marca/Ferramentas conforme briefing; calendário inteligente em modal; Consultoria & Mentoria; catálogo de serviços MivCast.
+Nesta versão:
+- Minha Central continua protegida por autenticação real.
+- Informações da Empresa são carregadas do Supabase ao entrar.
+- Ao salvar pela primeira vez, cria a empresa via RPC `create_company`.
+- Atualizações seguintes persistem em `companies` e `company_profiles`.
+- O perfil é espelhado localmente apenas para compatibilidade dos cards atuais.
+- Logout limpa o espelho local da empresa.
+- Cadastro com dados de empresa pode criar a primeira empresa no primeiro login.
 
-
-## V10 — Consolidação dos primeiros módulos
-
-Foram adicionadas especificações oficiais em `/modules` para:
-
-1. Calendário Inteligente de Marketing.
-2. Estratégias para diversos meios de comunicação.
-
-Nesta etapa não foi reprogramada a experiência pública dos cards. O objetivo foi
-preservar a base visual aprovada e registrar, em arquivos próprios, como esses
-módulos deverão funcionar quando forem implementados com backend/Supabase/IA.
+Teste principal: salvar empresa em um navegador e abrir a mesma conta em outro navegador.
