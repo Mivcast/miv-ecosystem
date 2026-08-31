@@ -80,7 +80,6 @@ const items=[
  {id:'svc-video',cat:'MivCast',format:'Vídeo',access:'Pago',price:'R$ 50 a R$ 100',icon:'▶',tag:'REDES',title:'Vídeo simples',desc:'Edição ou criação de vídeo simples para comunicação digital.',img:imgs.content,special:'service-sale'},
  {id:'svc-institucional',cat:'MivCast',format:'Vídeo',access:'Pago',price:'R$ 100 a R$ 300',icon:'▶',tag:'REDES',title:'Vídeo institucional',desc:'Vídeo mais elaborado para apresentar empresa, serviço, produto ou campanha.',img:imgs.content,special:'service-sale'}
 ];
-const analysisImgs={empresa:imgs.team,marca:imgs.store,mercado:imgs.analytics,oferta:imgs.planning,presenca:imgs.store,marketing:imgs.marketing,vendas:imgs.sales,clientes:imgs.team,gestao:imgs.analytics,completa:imgs.analytics};
 const analyses=[
  ['empresa','⌂','Empresa & Estrutura','Como meu negócio deveria estar estruturado para funcionar bem hoje e sustentar onde quero chegar',['Estrutura Ideal do Negócio','Equipe & Organização Ideal','Processos & Produtividade','Tecnologia, IA & Automação','Modelo de Gestão','Capacidade & Gargalos']],
  ['marca','◇','Marca & Posicionamento','Como minha marca deve parecer, se posicionar e conquistar confiança',['Identidade & Apresentação da Marca','Posicionamento & Diferenciação','Autoridade, Confiança & Reputação']],
@@ -671,7 +670,7 @@ function showDetail(item){state.current=item;document.getElementById('useBtn').t
 function addHistory(item){if(!state.history.some(x=>x.id===item.id)){state.history.unshift({id:item.id,title:item.title,ts:new Date().toISOString()});save()}}
 function openPaywall(item){state.current=item;document.getElementById('payTitle').textContent=item.title;document.getElementById('singlePrice').textContent=item.price||'Plano Pro';document.getElementById('paywall').classList.add('show');document.getElementById('overlay').classList.add('show')}
 function closePaywall(){document.getElementById('paywall').classList.remove('show');if(!document.getElementById('mark').classList.contains('open'))document.getElementById('overlay').classList.remove('show')}
-function renderAnalyses(){document.getElementById('analysisGrid').innerHTML=analyses.map((a,i)=>{const saved=state.analysisFav.includes(a[0]);return `<article class="analysisCard"><div class="analysisPhoto analysisPhotoFallback"><img src="${analysisImgs[a[0]]||imgs.team}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><span>ÁREA ${i+1}</span><button class="analysisFav ${saved?'saved':''}" data-analysis-fav="${a[0]}">${saved?'♥':'♡'}</button></div><div class="analysisContent"><h3>${a[2]}</h3><h4>${a[3]}?</h4><p>O MARK investiga esta área considerando seu momento, objetivo, capacidade e contexto — sem procurar uma resposta padrão.</p><div class="subs">${a[4].map(s=>`<button data-sub="${a[0]}|${s}"><span><b>${s}</b><small>Analisar este ponto separadamente</small></span><strong>Analisar</strong></button>`).join('')}</div><div class="analysisActions"><button class="analysisFull" data-analysis="${a[0]}">Analisar área completa</button><button class="seeSubs">Ver ${a[4].length} subanálises</button></div></div></article>`}).join('');bindAnalysisFav();document.querySelectorAll('[data-analysis]').forEach(b=>b.onclick=()=>openAnalysisExperience(b.dataset.analysis));document.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>openAnalysisExperience(...b.dataset.sub.split('|')))}
+function renderAnalyses(){const analysisImgs={empresa:imgs.team,marca:imgs.store,mercado:imgs.analytics,oferta:imgs.planning,presenca:imgs.store,marketing:imgs.marketing,vendas:imgs.sales,clientes:imgs.team,gestao:imgs.analytics};document.getElementById('analysisGrid').innerHTML=analyses.map((a,i)=>{const saved=state.analysisFav.includes(a[0]);return `<article class="analysisCard"><div class="analysisPhoto analysisPhotoFallback"><img src="${analysisImgs[a[0]]||imgs.team}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><span>ÁREA ${i+1}</span><button class="analysisFav ${saved?'saved':''}" data-analysis-fav="${a[0]}">${saved?'♥':'♡'}</button></div><div class="analysisContent"><h3>${a[2]}</h3><h4>${a[3]}?</h4><p>O MARK investiga esta área considerando seu momento, objetivo, capacidade e contexto — sem procurar uma resposta padrão.</p><div class="subs">${a[4].map(s=>`<button data-sub="${a[0]}|${s}"><span><b>${s}</b><small>Analisar este ponto separadamente</small></span><strong>Analisar</strong></button>`).join('')}</div><div class="analysisActions"><button class="analysisFull" data-analysis="${a[0]}">Analisar área completa</button><button class="seeSubs">Ver ${a[4].length} subanálises</button></div></div></article>`}).join('');bindAnalysisFav();document.querySelectorAll('[data-analysis]').forEach(b=>b.onclick=()=>startAnalysis(b.dataset.analysis));document.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>startAnalysis(...b.dataset.sub.split('|')))}
 function bindAnalysisFav(){document.querySelectorAll('[data-analysis-fav]').forEach(b=>b.onclick=()=>{const id=b.dataset.analysisFav;state.analysisFav=state.analysisFav.includes(id)?state.analysisFav.filter(x=>x!==id):[...state.analysisFav,id];save();renderAnalyses();toast(state.analysisFav.includes(id)?'Análise salva para fazer depois':'Análise removida dos favoritos')})}
 
 function analysisProfileNotice(){
@@ -684,9 +683,9 @@ function specialistOpinion(areaTitle,score){
 }
 
 
-function analysisSpecificQuestions(id,sub=''){
+function analysisQuestions(id,sub=''){
  const common=[
-  'Qual é hoje sua principal dificuldade nesta área?',
+  'Qual é hoje a principal dificuldade que você percebe nesta área?',
   'O que você já tentou fazer para melhorar isso?',
   'Qual resultado você gostaria de alcançar?',
   'Existe alguma limitação de equipe, tempo, orçamento ou capacidade que devemos considerar?'
@@ -694,69 +693,85 @@ function analysisSpecificQuestions(id,sub=''){
  const map={
   empresa:['Como sua empresa está organizada hoje?','Quais atividades mais geram retrabalho ou atraso?','As responsabilidades da equipe estão bem definidas?','Qual é hoje o maior gargalo operacional?'],
   marca:['Como você acredita que o público percebe sua marca hoje?','Quais diferenciais gostaria que fossem mais reconhecidos?','Sua comunicação é consistente nos principais pontos de contato?','Existe algum concorrente cuja percepção de marca você considera mais forte?'],
-  mercado:['Quem é seu principal público atualmente?','Quais concorrentes você acompanha?','Que mudanças no mercado mais afetam seu negócio?','Existe alguma oportunidade que você acredita estar deixando passar?'],
+  mercado:['Quem é seu principal público atualmente?','Quais concorrentes você acompanha?','Que mudanças no mercado mais afetam seu negócio?','Existe alguma oportunidade que acredita estar deixando passar?'],
   oferta:['Quais produtos ou serviços mais vendem?','Quais têm melhor margem ou potencial?','Existe algo que você oferece mas quase não vende?','Como você define preços e condições atualmente?'],
   presenca:['Quais canais físicos e digitais você usa hoje?','Onde os clientes normalmente conhecem sua empresa?','Qual canal está mais desorganizado ou incompleto?','Seu físico e digital funcionam de forma integrada?'],
   marketing:['Quais ações de marketing você faz atualmente?','Quais canais mais geram resultado?','Você acompanha métricas e origem dos clientes?','Qual é sua maior dificuldade para gerar demanda?'],
   vendas:['Como funciona hoje o processo do primeiro contato até a venda?','Onde você mais perde oportunidades?','Existe follow-up e controle de leads?','Sua equipe usa algum padrão de atendimento ou argumentação?'],
   clientes:['Como você acompanha a experiência do cliente após a compra?','Existe processo de pós-venda?','Você estimula recompra, fidelização ou indicação?','Quais reclamações ou elogios aparecem com mais frequência?'],
-  gestao:['Quais indicadores você acompanha hoje?','Existe planejamento de metas e prioridades?','Quais áreas mais consomem tempo ou dinheiro sem retorno claro?','O que mais dificulta a evolução da empresa atualmente?'],
-  completa:['Qual é hoje o maior problema da empresa?','Qual objetivo mais importante quer alcançar nos próximos meses?','Quais áreas acredita que estão mais desorganizadas?','O que já tentou fazer e não trouxe o resultado esperado?']
+  gestao:['Quais indicadores você acompanha hoje?','Existe planejamento de metas e prioridades?','Quais áreas mais consomem tempo ou dinheiro sem retorno claro?','O que mais dificulta a evolução da empresa atualmente?']
  };
- const arr=map[id]||common;
- return sub?[`Sobre "${sub}", qual é sua principal dificuldade hoje?`,`O que já tentou fazer especificamente nesse ponto?`,`Como gostaria que esse ponto funcionasse?`,common[3]]:arr;
+ if(sub)return [`Sobre "${sub}", qual é a principal dificuldade hoje?`,`O que você já tentou fazer especificamente nesse ponto?`,`Como gostaria que esse ponto funcionasse?`,common[3]];
+ return map[id]||common;
 }
-function analysisStoreKey(id,sub=''){return 'mivAnalysisExperience:'+id+':'+sub}
-function readAnalysisExperience(id,sub=''){try{return JSON.parse(localStorage.getItem(analysisStoreKey(id,sub))||'{}')}catch(e){return{}}}
-function writeAnalysisExperience(id,sub,data){localStorage.setItem(analysisStoreKey(id,sub),JSON.stringify(data))}
-function specialistOpinion(areaTitle,score,priorities=[]){
- const intro=score>=75?'A base desta área está relativamente organizada. O melhor retorno agora tende a vir de poucos ajustes de alto impacto.':score>=45?'Há pontos funcionando, mas alguns gargalos podem estar limitando o resultado. Vale priorizar estrutura antes de ampliar esforço ou investimento.':'Esta área pede organização básica antes de buscar otimizações mais avançadas.';
- return `<div class="specialistView"><span class="eyebrow">VISÃO DOS ESPECIALISTAS</span><h3>O que priorizar agora</h3><p>${intro}</p>${priorities.slice(0,3).map((x,i)=>`<div class="specialistPriority"><strong>${i+1}</strong><span>${x}</span></div>`).join('')||'<div class="specialistPriority"><strong>1</strong><span>Consolide os pontos já avaliados antes de abrir novas frentes.</span></div>'}<p class="specialistHuman">Esta orientação representa a metodologia da MivCast aplicada ao seu diagnóstico. Em etapas futuras, poderá ser refinada por acompanhamento humano quando contratado.</p></div>`;
+function analysisKey(id,sub=''){return 'mivAnalysis:'+id+':'+sub}
+function getAnalysisData(id,sub=''){try{return JSON.parse(localStorage.getItem(analysisKey(id,sub))||'{}')}catch(e){return{}}}
+function saveAnalysisData(id,sub,data){localStorage.setItem(analysisKey(id,sub),JSON.stringify(data))}
+function analysisSpecialistView(score,priorities){
+ let intro=score>=75
+  ?'A base desta área está relativamente organizada. Agora vale concentrar energia nos poucos pontos que ainda limitam o resultado.'
+  :score>=45
+   ?'Existem pontos funcionando, mas alguns gargalos ainda podem estar dispersando resultado. Corrija primeiro o que afeta mais de uma etapa.'
+   :'Neste momento, a prioridade deve ser organizar os fundamentos desta área antes de avançar para otimizações mais complexas.';
+ return `<div class="specialistView"><span class="eyebrow">VISÃO DOS ESPECIALISTAS</span><h3>O que priorizar agora</h3><p>${intro}</p>${priorities.length?priorities.map((x,i)=>`<div class="specialistPriority"><strong>${i+1}</strong><span>${x}</span></div>`).join(''):'<div class="specialistPriority"><strong>1</strong><span>Consolide os pontos avaliados e avance para otimizações de maior impacto.</span></div>'}<p class="specialistHuman">Esta orientação representa a metodologia da MivCast aplicada às informações fornecidas. Ela não significa que houve revisão humana individual nesta etapa.</p></div>`;
 }
-function openAnalysisExperience(id,sub=''){
- const a=id==='completa'?['completa','','Análise Empresarial Completa','Todas as áreas',analyses.flatMap(x=>x[4]).slice(0,10)]:analyses.find(x=>x[0]===id);
+function toggleAnalysisFavorite(id){
+ state.analysisFav=state.analysisFav.includes(id)?state.analysisFav.filter(x=>x!==id):[...state.analysisFav,id];
+ save();
+ if(state.route==='home')renderAnalyses();
+ if(state.route==='detail')document.getElementById('favBtn').textContent=state.analysisFav.includes(id)?'♥ Salvo':'♡ Salvar';
+ toast(state.analysisFav.includes(id)?'Análise salva na Minha Central':'Análise removida dos favoritos');
+}
+function renderAnalysisDetail(id,sub=''){
+ const a=analyses.find(x=>x[0]===id);
  if(!a)return;
- state.currentAnalysis={id,sub,title:a[2]};
- document.getElementById('detailVisual').style.backgroundImage=`url('${analysisImgs?.[id]||imgs.analytics}')`;
- document.getElementById('detailCat').textContent='ANÁLISES EMPRESARIAIS';
- document.getElementById('detailTitle').textContent=sub?`${a[2]} · ${sub}`:a[2];
- document.getElementById('detailDesc').textContent='O sistema cruza seu Perfil da Empresa com respostas específicas desta análise para entregar um diagnóstico mais preciso, prioridades e recomendações.';
- document.getElementById('favBtn').textContent=state.analysisFav.includes(id)?'♥ Salvo':'♡ Salvar';
- document.getElementById('favBtn').onclick=()=>toggleAnalysisFav(id);
- document.getElementById('useBtn').textContent='Gerar análise';
- document.getElementById('useBtn').onclick=()=>document.getElementById('analysisGenerateResult')?.click();
- renderAnalysisExperience(id,sub);
- document.getElementById('related').innerHTML=`<div class="relatedItem"><strong>Perfil da Empresa</strong><span>Use informações já salvas para evitar repetir contexto.</span></div><div class="relatedItem"><strong>Perguntas específicas</strong><span>Esta análise pede somente dados adicionais que realmente ajudam neste diagnóstico.</span></div>`;
- route('detail');
-}
-function renderAnalysisExperience(id,sub=''){
- const a=id==='completa'?['completa','','Análise Empresarial Completa','Todas as áreas',analyses.flatMap(x=>x[4]).slice(0,10)]:analyses.find(x=>x[0]===id);
- if(!a)return;
- const body=document.getElementById('detailBody'),profilePct=companyProfileCompletion(),qs=analysisSpecificQuestions(id,sub),saved=readAnalysisExperience(id,sub);
- const points=sub?[sub]:a[4].slice(0,8);
- body.innerHTML=`<div class="profileNotice"><div><span class="eyebrow">PARA UMA ANÁLISE MAIS PRECISA</span><strong>Seu Perfil da Empresa está ${profilePct}% preenchido.</strong><p>Esses dados serão usados automaticamente. Se faltar contexto importante, complete o perfil antes de finalizar.</p></div><button class="outline" data-analysis-company-profile>Completar informações →</button></div>
- <span class="eyebrow">ANÁLISE EMPRESARIAL</span><h2>${sub?sub:a[2]}</h2>
- <p>Responda apenas as informações específicas desta análise. O sistema combina essas respostas com tudo que já sabe sobre sua empresa.</p>
- <div class="analysisBrief">${qs.map((q,i)=>`<label>${q}<textarea data-analysis-exp-answer="${i}" placeholder="Digite sua resposta...">${saved['q'+i]||''}</textarea></label>`).join('')}</div>
- <h3>Checklist da análise</h3>
- <div class="analysisChecklist">${points.map((p,i)=>{const v=saved['s'+i]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-analysis-exp-row="${i}"><div class="channelCheckText"><strong>${p}</strong><p>Avalie como este ponto está hoje na sua empresa.</p></div><div class="channelStates"><button class="${v==='correct'?'active ok':''}" data-analysis-exp-value="correct">✓ Está certo</button><button class="${v==='improve'?'active improve':''}" data-analysis-exp-value="improve">○ Preciso fazer isso</button><button class="${v==='na'?'active na':''}" data-analysis-exp-value="na">× Não se aplica</button></div><div class="pointActions"><button class="paidAction" data-analysis-exp-suggest>🔒 Sugestão para este ponto</button><button class="paidAction" data-analysis-exp-mark>🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div>
- <div class="channelReportActions"><button class="primary" id="analysisGenerateResult">Gerar análise</button><button class="outline" id="analysisPrintCurrent">Imprimir</button></div><div id="analysisExperienceResult"></div>`;
- document.querySelectorAll('[data-analysis-company-profile]').forEach(b=>b.onclick=goCompanyProfile);
- document.querySelectorAll('[data-analysis-exp-answer]').forEach(el=>el.onchange=()=>{const d=readAnalysisExperience(id,sub);d['q'+el.dataset.analysisExpAnswer]=el.value;writeAnalysisExperience(id,sub,d)});
- document.querySelectorAll('[data-analysis-exp-value]').forEach(b=>b.onclick=()=>{const row=b.closest('[data-analysis-exp-row]'),d=readAnalysisExperience(id,sub);d['s'+row.dataset.analysisExpRow]=b.dataset.analysisExpValue;writeAnalysisExperience(id,sub,d);renderAnalysisExperience(id,sub)});
- document.querySelectorAll('[data-analysis-exp-suggest]').forEach((b,i)=>b.onclick=()=>{const row=b.closest('.channelCheckItem');row.querySelector('.pointOutput').innerHTML=prototypeSuggestion(points[i]||'Ponto da análise','Considere este ponto com base no contexto, objetivo e realidade atual da empresa.')});
- document.querySelectorAll('[data-analysis-exp-mark]').forEach((b,i)=>b.onclick=()=>askMarkAboutPoint(points[i]||'Ponto da análise','Quero entender melhor este ponto dentro desta análise.'));
- document.getElementById('analysisGenerateResult')?.addEventListener('click',()=>{
-   const d=readAnalysisExperience(id,sub),vals=points.map((_,i)=>d['s'+i]).filter(Boolean),app=vals.filter(v=>v!=='na').length||1,ok=vals.filter(v=>v==='correct').length,score=Math.round(ok/app*100);
+ const data=getAnalysisData(id,sub),points=sub?[sub]:a[4],qs=analysisQuestions(id,sub),pct=companyProfileCompletion(),body=document.getElementById('detailBody');
+ body.innerHTML=`<div class="profileNotice"><div><span class="eyebrow">PARA UMA ANÁLISE MAIS PRECISA</span><strong>Seu Perfil da Empresa está ${pct}% preenchido.</strong><p>O sistema usa esses dados automaticamente. Complete apenas se quiser aumentar ainda mais a precisão.</p></div><button class="outline" data-analysis-profile>Completar informações →</button></div>
+ <span class="eyebrow">ANÁLISE EMPRESARIAL</span><h2>${sub||a[2]}</h2><p>Responda as perguntas específicas desta análise. Elas serão combinadas com as informações já salvas sobre sua empresa.</p>
+ <div class="analysisBrief">${qs.map((q,i)=>`<label>${q}<textarea data-analysis-answer="${i}" placeholder="Digite sua resposta...">${data['q'+i]||''}</textarea></label>`).join('')}</div>
+ <h3>Checklist da análise</h3><div class="analysisChecklist">${points.map((p,i)=>{const v=data['s'+i]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-analysis-row="${i}"><div class="channelCheckText"><strong>${p}</strong><p>Avalie como este ponto está hoje na sua empresa.</p></div><div class="channelStates"><button class="${v==='correct'?'active ok':''}" data-analysis-status="correct">✓ Está certo</button><button class="${v==='improve'?'active improve':''}" data-analysis-status="improve">○ Preciso fazer isso</button><button class="${v==='na'?'active na':''}" data-analysis-status="na">× Não se aplica</button></div><div class="pointActions"><button class="paidAction" data-analysis-suggest>🔒 Sugestão para este ponto</button><button class="paidAction" data-analysis-mark>🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div>
+ <div class="channelReportActions"><button class="primary" id="analysisGenerate">Gerar análise</button><button class="outline" id="analysisPrint">Imprimir</button></div><div id="analysisResult"></div>`;
+
+ document.querySelector('[data-analysis-profile]')?.addEventListener('click',goCompanyProfile);
+ document.querySelectorAll('[data-analysis-answer]').forEach(el=>el.addEventListener('change',()=>{const d=getAnalysisData(id,sub);d['q'+el.dataset.analysisAnswer]=el.value;saveAnalysisData(id,sub,d)}));
+ document.querySelectorAll('[data-analysis-status]').forEach(btn=>btn.addEventListener('click',()=>{const row=btn.closest('[data-analysis-row]'),d=getAnalysisData(id,sub);d['s'+row.dataset.analysisRow]=btn.dataset.analysisStatus;saveAnalysisData(id,sub,d);renderAnalysisDetail(id,sub)}));
+ document.querySelectorAll('[data-analysis-suggest]').forEach((btn,i)=>btn.addEventListener('click',()=>{const row=btn.closest('.channelCheckItem');row.querySelector('.pointOutput').innerHTML=prototypeSuggestion(points[i],'Considere este ponto com base na realidade, objetivo e contexto atual da empresa.')}));
+ document.querySelectorAll('[data-analysis-mark]').forEach((btn,i)=>btn.addEventListener('click',()=>askMarkAboutPoint(points[i],'Quero entender melhor este ponto dentro desta análise.')));
+ document.getElementById('analysisGenerate')?.addEventListener('click',()=>{
+   const d=getAnalysisData(id,sub),vals=points.map((_,i)=>d['s'+i]).filter(Boolean),app=vals.filter(v=>v!=='na').length||1,ok=vals.filter(v=>v==='correct').length,score=Math.round(ok/app*100);
    const priorities=points.filter((_,i)=>d['s'+i]==='improve').slice(0,3);
-   document.getElementById('analysisExperienceResult').innerHTML=`<div class="analysisResultCard"><span class="eyebrow">RESULTADO DA ANÁLISE</span><h3>${score}% de adequação inicial</h3><p>Este diagnóstico combina o Perfil da Empresa, suas respostas específicas e o checklist desta análise.</p>${priorities.length?`<div class="analysisPriorities">${priorities.map((x,i)=>`<div><strong>${i+1}</strong><span>${x}</span></div>`).join('')}</div>`:'<p>Nenhum ponto foi marcado como “Preciso fazer isso” nesta etapa.</p>'}${specialistOpinion(sub||a[2],score,priorities)}<button class="outline" onclick="window.print()">Imprimir relatório</button></div>`;
+   document.getElementById('analysisResult').innerHTML=`<div class="analysisResultCard"><span class="eyebrow">RESULTADO DA ANÁLISE</span><h3>${score}% de adequação inicial</h3><p>Este resultado combina suas respostas específicas com o Perfil da Empresa.</p>${priorities.length?`<div class="analysisPriorities">${priorities.map((x,i)=>`<div><strong>${i+1}</strong><span>${x}</span></div>`).join('')}</div>`:'<p>Nenhum ponto foi marcado como “Preciso fazer isso” nesta etapa.</p>'}${analysisSpecialistView(score,priorities)}<button class="outline" onclick="window.print()">Imprimir relatório</button></div>`;
    state.reports.unshift({name:`Relatório · ${sub?`${a[2]} · ${sub}`:a[2]}`,date:new Date().toLocaleDateString('pt-BR'),status:'Concluído',meta:{score}});save();
  });
- document.getElementById('analysisPrintCurrent')?.addEventListener('click',()=>window.print());
+ document.getElementById('analysisPrint')?.addEventListener('click',()=>window.print());
+}
+function openAnalysisDetail(id,sub=''){
+ const a=analyses.find(x=>x[0]===id);if(!a)return;
+ state.current=null;
+ document.getElementById('detailVisual').style.backgroundImage=`url('${imgs.analytics}')`;
+ document.getElementById('detailCat').textContent='ANÁLISES EMPRESARIAIS';
+ document.getElementById('detailTitle').textContent=sub?`${a[2]} · ${sub}`:a[2];
+ document.getElementById('detailDesc').textContent='Faça uma análise guiada, combine o Perfil da Empresa com perguntas específicas e receba prioridades e recomendações.';
+ document.getElementById('favBtn').textContent=state.analysisFav.includes(id)?'♥ Salvo':'♡ Salvar';
+ document.getElementById('favBtn').onclick=()=>toggleAnalysisFavorite(id);
+ document.getElementById('useBtn').textContent='Gerar análise';
+ document.getElementById('useBtn').onclick=()=>document.getElementById('analysisGenerate')?.click();
+ renderAnalysisDetail(id,sub);
+ document.getElementById('related').innerHTML=`<div class="relatedItem"><strong>Perfil da Empresa</strong><span>Complete apenas se quiser aumentar ainda mais a precisão.</span></div><div class="relatedItem"><strong>Perguntas específicas</strong><span>Cada área pede informações próprias antes de gerar o resultado.</span></div>`;
+ route('detail');
 }
 
-function startAnalysis(id,sub=''){openAnalysisExperience(id,sub)}
-function renderCentral(){fillCompanyProfileForm();document.getElementById('centralTitle').textContent=`Sua Central · ${state.profile.niche}`;document.getElementById('favCount').textContent=state.favorites.length+state.analysisFav.length;document.getElementById('usedCount').textContent=state.history.length;document.getElementById('repCount').textContent=state.reports.length;document.getElementById('progCount').textContent=Math.min(100,18+(state.favorites.length+state.analysisFav.length)*3+state.history.length*2+state.reports.length*5)+'%';const fs=state.favorites.map(getItem).filter(Boolean);const af=state.analysisFav.map(id=>id==='completa'?['completa','','Análise Empresarial Completa']:analyses.find(a=>a[0]===id)).filter(Boolean);document.getElementById('favorites').innerHTML=(fs.length||af.length)?fs.map(card).join('')+af.map(a=>`<article class="card centralAnalysisCard"><div class="cardBody"><div class="meta"><span>ANÁLISE FAVORITA</span><small>ANÁLISE</small></div><h3>${a[2]}</h3><p>Salva para você fazer depois.</p><button class="open" data-analysis-central="${a[0]}">Usar agora →</button></div></article>`).join(''):`<div class="empty">Use o ♡ em estratégias, ferramentas, conteúdos ou análises para montar sua biblioteca.</div>`;bindCards();document.querySelectorAll('[data-analysis-central]').forEach(x=>x.onclick=()=>openAnalysisExperience(x.dataset.analysisCentral));const histItems=state.history.map(h=>getItem(h.id)).filter(Boolean);document.getElementById('history').innerHTML=histItems.length?`<div class="centralGrid">${histItems.map(card).join('')}</div>`:`<div class="empty">Seu histórico aparecerá conforme você explorar.</div>`;bindCards();document.getElementById('reports').innerHTML=state.reports.length?state.reports.map(r=>`<div class="centralItem reportCard"><small>${r.status.toUpperCase()}</small><h3>${r.name}</h3><p>Iniciada em ${r.date}. O relatório ficará salvo aqui.</p><button class="outline centralUse">Ver relatório</button></div>`).join(''):`<div class="empty">Nenhuma análise iniciada.</div>`}
+function startAnalysis(id,sub=''){openAnalysisDetail(id,sub)}
+
+function renderLogos(){
+  const track=document.getElementById('logoTrack');
+  if(!track)return;
+  // Demonstração leve/local: não depende de imagens ou rede.
+  const names=['MIVCAST','MARK','NEGÓCIOS','MARKETING','VENDAS','GESTÃO','MARCA','CLIENTES'];
+  track.innerHTML=[...names,...names].map(n=>`<div class="logo-chip">${n}</div>`).join('');
+}
+function route(name){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('view-'+name).classList.add('active');state.route=name;window.scrollTo({top:0,behavior:'smooth'});if(name==='central')renderCentral();updateMark()}
+function renderCentral(){fillCompanyProfileForm();document.getElementById('centralTitle').textContent=`Sua Central · ${state.profile.niche}`;document.getElementById('favCount').textContent=state.favorites.length+state.analysisFav.length;document.getElementById('usedCount').textContent=state.history.length;document.getElementById('repCount').textContent=state.reports.length;document.getElementById('progCount').textContent=Math.min(100,18+(state.favorites.length+state.analysisFav.length)*3+state.history.length*2+state.reports.length*5)+'%';const fs=state.favorites.map(getItem).filter(Boolean);const af=state.analysisFav.map(id=>id==='completa'?['completa','','Análise Empresarial Completa']:analyses.find(a=>a[0]===id)).filter(Boolean);document.getElementById('favorites').innerHTML=(fs.length||af.length)?fs.map(card).join('')+af.map(a=>`<article class="card centralAnalysisCard"><div class="cardBody"><div class="meta"><span>ANÁLISE FAVORITA</span><small>ANÁLISE</small></div><h3>${a[2]}</h3><p>Salva para você fazer depois.</p><button class="open" data-analysis-central="${a[0]}">Usar agora →</button></div></article>`).join(''):`<div class="empty">Use o ♡ em estratégias, ferramentas, conteúdos ou análises para montar sua biblioteca.</div>`;bindCards();document.querySelectorAll('[data-analysis-central]').forEach(x=>x.onclick=()=>startAnalysis(x.dataset.analysisCentral));const histItems=state.history.map(h=>getItem(h.id)).filter(Boolean);document.getElementById('history').innerHTML=histItems.length?`<div class="centralGrid">${histItems.map(card).join('')}</div>`:`<div class="empty">Seu histórico aparecerá conforme você explorar.</div>`;bindCards();document.getElementById('reports').innerHTML=state.reports.length?state.reports.map(r=>`<div class="centralItem reportCard"><small>${r.status.toUpperCase()}</small><h3>${r.name}</h3><p>Iniciada em ${r.date}. O relatório ficará salvo aqui.</p><button class="outline centralUse">Ver relatório</button></div>`).join(''):`<div class="empty">Nenhuma análise iniciada.</div>`}
 function updateMark(){const title=document.getElementById('ctxTitle'),text=document.getElementById('ctxText');if(state.route==='detail'&&state.current){title.textContent=state.current.title;text.textContent=`Página atual + nicho ${state.profile.niche}. Posso adaptar esta solução.`}else if(state.route==='central'){title.textContent='Minha Central';text.textContent='Posso revisar seus favoritos e sugerir o próximo passo.'}else{title.textContent=state.profile.niche;text.textContent='Posso indicar estratégias, análises, ferramentas e conteúdos para este nicho.'}}
 function markReply(q){if(state.route==='detail'&&state.current)return `Para ${state.profile.niche}, eu adaptaria “${state.current.title}” para uma ação simples, específica e mensurável. Posso transformar esta página em checklist ou plano.`;if(/começo|começar|primeiro/i.test(q))return `Eu começaria por uma análise curta da área mais ligada ao seu objetivo e depois abriria uma ferramenta prática. Para ${state.profile.niche}, a vitrine “Recomendado para você” já está ordenada nessa lógica.`;return `Considerando ${state.profile.niche}, eu posso filtrar a vitrine, explicar um card, comparar opções ou transformar uma ideia em próximos passos.`}
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2100)}
@@ -852,3 +867,68 @@ authModal?.addEventListener('click',e=>{if(e.target===authModal)closeAuth()});
 document.getElementById('doRegister')?.addEventListener('click',()=>{const p=document.getElementById('regPass').value,p2=document.getElementById('regPass2').value;if(!document.getElementById('regEmail').value||!p){toast('Preencha pelo menos e-mail e senha.');return}if(p!==p2){toast('As senhas não coincidem.');return}localStorage.setItem('mivPrototypeUser',JSON.stringify({name:document.getElementById('regName').value,email:document.getElementById('regEmail').value,phone:document.getElementById('regPhone').value,business:document.getElementById('regBusiness').value,niche:document.getElementById('regNiche').value,city:document.getElementById('regCity').value}));toast('Conta criada no protótipo.');closeAuth()});
 document.getElementById('doLogin')?.addEventListener('click',()=>{if(document.getElementById('loginEmail').value&&document.getElementById('loginPassword').value){localStorage.setItem('mivPrototypeLogged','1');toast('Login realizado no protótipo.');closeAuth()}else toast('Informe e-mail e senha.')});
 document.getElementById('doForgot')?.addEventListener('click',()=>{toast('Na versão real, um link seguro será enviado por e-mail.');closeAuth()});
+
+
+/* V13.3 ONLINE — camada resiliente de navegação.
+   Usa delegação de eventos para que cards e rotas continuem funcionando
+   mesmo após re-renderizações dinâmicas da vitrine. */
+(function(){
+  function safeRun(fn,label){
+    try{ fn(); }
+    catch(err){
+      console.error('[MIV '+label+']',err);
+      if(typeof toast==='function') toast('Não foi possível abrir esta área. Recarregue a página e tente novamente.');
+    }
+  }
+  document.addEventListener('click',function(e){
+    const routeBtn=e.target.closest('[data-route]');
+    if(routeBtn){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      safeRun(()=>route(routeBtn.dataset.route),'route');
+      return;
+    }
+
+    const analysisBtn=e.target.closest('[data-analysis]');
+    if(analysisBtn){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      safeRun(()=>startAnalysis(analysisBtn.dataset.analysis),'analysis');
+      return;
+    }
+
+    const subBtn=e.target.closest('[data-sub]');
+    if(subBtn){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      safeRun(()=>startAnalysis(...subBtn.dataset.sub.split('|')),'subanalysis');
+      return;
+    }
+
+    const centralAnalysis=e.target.closest('[data-analysis-central]');
+    if(centralAnalysis){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      safeRun(()=>startAnalysis(centralAnalysis.dataset.analysisCentral),'central-analysis');
+      return;
+    }
+
+    const openBtn=e.target.closest('[data-open]');
+    if(openBtn){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      safeRun(()=>openItem(openBtn.dataset.open),'card');
+      return;
+    }
+
+    const scrollBtn=e.target.closest('[data-scroll]');
+    if(scrollBtn){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      safeRun(()=>{
+        route('home');
+        setTimeout(()=>document.getElementById(scrollBtn.dataset.scroll)?.scrollIntoView({behavior:'smooth'}),60);
+      },'scroll');
+    }
+  },true);
+})();
