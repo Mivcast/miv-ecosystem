@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MIV Ecosystem — Vitrine Inteligente V3</title>
 <meta name="description" content="Protótipo de ecossistema empresarial adaptável por nicho.">
-<link rel="stylesheet" href="styles.css?v=13.3">
+<link rel="stylesheet" href="styles.css?v=13.4">
 </head>
 <body data-theme="clean">
 <header class="floating-header">
@@ -208,6 +208,15 @@
 <button class="markFab" id="markFab"><b>◈</b><span>MARK<small>Posso ajudar nesta página</small></span></button>
 <aside class="mark" id="mark"><header><b>◈</b><div><strong>MARK</strong><small>Consultor contextual</small></div><button id="closeMark">×</button></header><div class="context"><small>CONTEXTO ATIVO</small><strong id="ctxTitle">Vitrine</strong><span id="ctxText">Posso ajudar a escolher o que faz mais sentido.</span></div><div class="messages" id="messages"><p>Estou vendo a mesma página que você. Posso explicar, adaptar ou ajudar a aplicar.</p></div><div class="chips"><button>O que você recomenda?</button><button>Por onde começo?</button><button>Isso serve para mim?</button></div><form id="markForm"><textarea id="markInput" placeholder="Pergunte ao MARK..."></textarea><button>Enviar</button></form></aside>
 
+
+<div class="authModal" id="authModal">
+  <div class="authBox">
+    <button class="authClose" id="authClose" aria-label="Fechar">×</button>
+    <section class="authPane active" id="authLogin"><span class="eyebrow">SUA CONTA</span><h2>Entrar no MIV Ecosystem</h2><p>Acesse sua Central e seus dados salvos.</p><label>E-mail</label><input id="loginEmail" type="email" autocomplete="email"><label>Senha</label><input id="loginPassword" type="password" autocomplete="current-password"><div class="authActions"><button class="primary" id="doLogin">Entrar</button></div><div class="authStatus" id="loginStatus"></div><button class="authLink" data-auth-switch="forgot">Esqueci minha senha</button><button class="authLink" data-auth-switch="register">Criar conta</button></section>
+    <section class="authPane" id="authRegister"><span class="eyebrow">NOVA CONTA</span><h2>Criar sua conta</h2><p>Comece sua Central com os dados básicos do negócio.</p><label>Seu nome</label><input id="regName"><label>E-mail</label><input id="regEmail" type="email" autocomplete="email"><label>Telefone</label><input id="regPhone"><label>Empresa</label><input id="regBusiness"><label>Nicho</label><input id="regNiche"><label>Cidade / UF</label><input id="regCity"><label>Senha</label><input id="regPass" type="password" autocomplete="new-password"><label>Repita a senha</label><input id="regPass2" type="password" autocomplete="new-password"><div class="authActions"><button class="primary" id="doRegister">Criar conta</button></div><div class="authStatus" id="registerStatus"></div><button class="authLink" data-auth-switch="login">Já tenho conta</button></section>
+    <section class="authPane" id="authForgot"><span class="eyebrow">RECUPERAR ACESSO</span><h2>Redefinir senha</h2><p>Enviaremos o processo de recuperação para seu e-mail.</p><label>E-mail</label><input id="forgotEmail" type="email" autocomplete="email"><div class="authActions"><button class="primary" id="doForgot">Enviar recuperação</button></div><div class="authStatus" id="forgotStatus"></div><button class="authLink" data-auth-switch="login">Voltar para entrar</button></section>
+  </div>
+</div>
 <div class="overlay" id="overlay"></div>
 <div class="modal paywall" id="paywall"><div><button class="x" id="closePaywall">×</button><span class="lock-big">🔒</span><span class="eyebrow">CONTEÚDO PREMIUM</span><h2 id="payTitle">Desbloquear conteúdo</h2><p>Você pode liberar este item individualmente ou acessar pelo plano Pro.</p><div class="pay-options"><button class="outline" id="buySingle">Comprar este item <strong id="singlePrice">R$ 19,90</strong></button><button class="primary" data-scroll="planos" id="goPlans">Ver planos de acesso</button></div></div></div>
 <div class="toast" id="toast"></div>
@@ -261,5 +270,6 @@
     </div>
   </div>
 </div>
-<script src="app.js?v=13.3"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js?v=13.4"></script>
 </body></html>
