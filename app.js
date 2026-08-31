@@ -770,7 +770,17 @@ function renderLogos(){
   const names=['MIVCAST','MARK','NEGÓCIOS','MARKETING','VENDAS','GESTÃO','MARCA','CLIENTES'];
   track.innerHTML=[...names,...names].map(n=>`<div class="logo-chip">${n}</div>`).join('');
 }
-function route(name){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('view-'+name).classList.add('active');state.route=name;window.scrollTo({top:0,behavior:'smooth'});if(name==='central')renderCentral();updateMark()}
+function route(name){
+ if(name==='central' && !mivUser){
+  openAuth('login');
+  authStatus('loginStatus','Entre ou crie uma conta para acessar sua Central.','');
+  return;
+ }
+ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+ const target=document.getElementById('view-'+name);if(!target)return;
+ target.classList.add('active');state.route=name;window.scrollTo({top:0,behavior:'smooth'});
+ if(name==='central')renderCentral();updateMark();
+}
 function renderCentral(){fillCompanyProfileForm();document.getElementById('centralTitle').textContent=`Sua Central · ${state.profile.niche}`;document.getElementById('favCount').textContent=state.favorites.length+state.analysisFav.length;document.getElementById('usedCount').textContent=state.history.length;document.getElementById('repCount').textContent=state.reports.length;document.getElementById('progCount').textContent=Math.min(100,18+(state.favorites.length+state.analysisFav.length)*3+state.history.length*2+state.reports.length*5)+'%';const fs=state.favorites.map(getItem).filter(Boolean);const af=state.analysisFav.map(id=>id==='completa'?['completa','','Análise Empresarial Completa']:analyses.find(a=>a[0]===id)).filter(Boolean);document.getElementById('favorites').innerHTML=(fs.length||af.length)?fs.map(card).join('')+af.map(a=>`<article class="card centralAnalysisCard"><div class="cardBody"><div class="meta"><span>ANÁLISE FAVORITA</span><small>ANÁLISE</small></div><h3>${a[2]}</h3><p>Salva para você fazer depois.</p><button class="open" data-analysis-central="${a[0]}">Usar agora →</button></div></article>`).join(''):`<div class="empty">Use o ♡ em estratégias, ferramentas, conteúdos ou análises para montar sua biblioteca.</div>`;bindCards();document.querySelectorAll('[data-analysis-central]').forEach(x=>x.onclick=()=>startAnalysis(x.dataset.analysisCentral));const histItems=state.history.map(h=>getItem(h.id)).filter(Boolean);document.getElementById('history').innerHTML=histItems.length?`<div class="centralGrid">${histItems.map(card).join('')}</div>`:`<div class="empty">Seu histórico aparecerá conforme você explorar.</div>`;bindCards();document.getElementById('reports').innerHTML=state.reports.length?state.reports.map(r=>`<div class="centralItem reportCard"><small>${r.status.toUpperCase()}</small><h3>${r.name}</h3><p>Iniciada em ${r.date}. O relatório ficará salvo aqui.</p><button class="outline centralUse">Ver relatório</button></div>`).join(''):`<div class="empty">Nenhuma análise iniciada.</div>`}
 function updateMark(){const title=document.getElementById('ctxTitle'),text=document.getElementById('ctxText');if(state.route==='detail'&&state.current){title.textContent=state.current.title;text.textContent=`Página atual + nicho ${state.profile.niche}. Posso adaptar esta solução.`}else if(state.route==='central'){title.textContent='Minha Central';text.textContent='Posso revisar seus favoritos e sugerir o próximo passo.'}else{title.textContent=state.profile.niche;text.textContent='Posso indicar estratégias, análises, ferramentas e conteúdos para este nicho.'}}
 function markReply(q){if(state.route==='detail'&&state.current)return `Para ${state.profile.niche}, eu adaptaria “${state.current.title}” para uma ação simples, específica e mensurável. Posso transformar esta página em checklist ou plano.`;if(/começo|começar|primeiro/i.test(q))return `Eu começaria por uma análise curta da área mais ligada ao seu objetivo e depois abriria uma ferramenta prática. Para ${state.profile.niche}, a vitrine “Recomendado para você” já está ordenada nessa lógica.`;return `Considerando ${state.profile.niche}, eu posso filtrar a vitrine, explicar um card, comparar opções ou transformar uma ideia em próximos passos.`}
@@ -875,10 +885,24 @@ async function initSupabase(){
 async function applyAuthSession(session){
  mivUser=session?.user||null;
  const btn=document.querySelector('.auth-header-btn');
- if(btn){btn.textContent=mivUser?'Minha conta':'Entrar';btn.classList.toggle('logged',!!mivUser)}
+ const logout=document.getElementById('logoutBtn');
  document.body.dataset.auth=mivUser?'logged':'guest';
+ let profile=null;
  if(mivUser){
-  try{const {data:p}=await mivSupabase.from('profiles').select('full_name,phone').eq('id',mivUser.id).maybeSingle();if(p){const cp=getCompanyProfile();if(!cp.owner&&p.full_name)cp.owner=p.full_name;if(!cp.phone&&p.phone)cp.phone=p.phone;localStorage.setItem('mivCompanyProfile',JSON.stringify(cp))}}catch(e){console.warn('[MIV profile]',e)}
+  try{
+   const {data:p}=await mivSupabase.from('profiles').select('full_name,phone').eq('id',mivUser.id).maybeSingle();profile=p||null;
+   if(p){const cp=getCompanyProfile();if(!cp.owner&&p.full_name)cp.owner=p.full_name;if(!cp.phone&&p.phone)cp.phone=p.phone;localStorage.setItem('mivCompanyProfile',JSON.stringify(cp))}
+  }catch(e){console.warn('[MIV profile]',e)}
+ }
+ if(btn){
+  const first=(profile?.full_name||mivUser?.user_metadata?.full_name||'').trim().split(/\s+/)[0];
+  btn.textContent=mivUser?(first?`Olá, ${first}`:'Minha conta'):'Entrar';
+  btn.classList.toggle('logged',!!mivUser);
+ }
+ if(logout)logout.hidden=!mivUser;
+ if(!mivUser && state.route==='central'){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-home')?.classList.add('active');state.route='home';updateMark();
  }
 }
 function openAuth(mode='login'){if(!authModal)return;authModal.classList.add('show');document.querySelectorAll('.authPane').forEach(x=>x.classList.remove('active'));document.getElementById(mode==='register'?'authRegister':mode==='forgot'?'authForgot':'authLogin')?.classList.add('active')}
@@ -890,6 +914,7 @@ document.getElementById('doLogin')?.addEventListener('click',async()=>{const ema
 document.getElementById('doRegister')?.addEventListener('click',async()=>{const email=document.getElementById('regEmail').value.trim(),password=document.getElementById('regPass').value,p2=document.getElementById('regPass2').value;if(!email||!password){authStatus('registerStatus','Preencha pelo menos e-mail e senha.','error');return}if(password!==p2){authStatus('registerStatus','As senhas não coincidem.','error');return}if(!mivSupabase){authStatus('registerStatus','A conexão ainda não está pronta.','error');return}authStatus('registerStatus','Criando conta...');const meta={full_name:document.getElementById('regName').value.trim(),phone:document.getElementById('regPhone').value.trim(),business:document.getElementById('regBusiness').value.trim(),niche:document.getElementById('regNiche').value.trim(),city:document.getElementById('regCity').value.trim()};const {data,error}=await mivSupabase.auth.signUp({email,password,options:{data:meta}});if(error){authStatus('registerStatus',friendlyAuthError(error),'error');return}if(data.session){authStatus('registerStatus','Conta criada.','ok');closeAuth();toast('Conta criada com sucesso.');route('central')}else authStatus('registerStatus','Conta criada. Verifique seu e-mail para confirmar o acesso.','ok')});
 document.getElementById('doForgot')?.addEventListener('click',async()=>{const email=document.getElementById('forgotEmail').value.trim();if(!email){authStatus('forgotStatus','Informe seu e-mail.','error');return}if(!mivSupabase){authStatus('forgotStatus','A conexão ainda não está pronta.','error');return}const {error}=await mivSupabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin});authStatus('forgotStatus',error?friendlyAuthError(error):'Se o e-mail estiver cadastrado, você receberá as instruções.',error?'error':'ok')});
 window.mivLogout=async function(){if(mivSupabase)await mivSupabase.auth.signOut();toast('Você saiu da sua conta.');route('home')};
+document.getElementById('logoutBtn')?.addEventListener('click',()=>window.mivLogout());
 initSupabase();
 
 /* V13.3 ONLINE — camada resiliente de navegação.
