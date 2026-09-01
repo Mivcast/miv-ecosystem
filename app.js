@@ -161,7 +161,7 @@ function renderTracks(){document.getElementById('recTitle').textContent=`Mais ú
 function renderTools(){let arr=bases.tools.map(getItem).filter(Boolean);if(state.toolFilter!=='Todos'){arr=arr.filter(i=>state.toolFilter==='Grátis'?i.access==='Grátis':state.toolFilter==='Pago'?i.access!=='Grátis':i.cat===state.toolFilter)}document.getElementById('toolsTrack').innerHTML=arr.map(card).join('');bindCards()}
 function renderLearn(){let arr=bases.learn.map(getItem).filter(Boolean);if(state.learnFilter!=='Todos'){arr=arr.filter(i=>state.learnFilter==='Grátis'?i.access==='Grátis':state.learnFilter==='Pago'?i.access!=='Grátis':i.format===state.learnFilter)}document.getElementById('learnTrack').innerHTML=arr.map(card).join('');bindCards()}
 function bindCards(){document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openItem(b.dataset.open));document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=e=>{e.stopPropagation();toggleFav(b.dataset.fav)})}
-function toggleFav(id){state.favorites=state.favorites.includes(id)?state.favorites.filter(x=>x!==id):[...state.favorites,id];save();renderTracks();if(state.route==='central')renderCentral();if(state.current?.id===id)document.getElementById('favBtn').textContent=state.favorites.includes(id)?'♥ Salvo':'♡ Salvar';toast(state.favorites.includes(id)?'Salvo na Minha Central':'Removido dos favoritos')}
+async function toggleFav(id){const adding=!state.favorites.includes(id);state.favorites=adding?[...state.favorites,id]:state.favorites.filter(x=>x!==id);save();renderTracks();if(state.route==='central')renderCentral();if(state.current?.id===id)document.getElementById('favBtn').textContent=adding?'♥ Salvo':'♡ Salvar';toast(adding?'Salvo na Minha Central':'Removido dos favoritos');if(mivUser&&mivSupabase){try{await persistFavorite('item',id,adding)}catch(err){console.error('[MIV favorite]',err);toast('Favorito alterado aqui, mas não sincronizou.')}}}
 
 
 
@@ -671,7 +671,7 @@ function addHistory(item){if(!state.history.some(x=>x.id===item.id)){state.histo
 function openPaywall(item){state.current=item;document.getElementById('payTitle').textContent=item.title;document.getElementById('singlePrice').textContent=item.price||'Plano Pro';document.getElementById('paywall').classList.add('show');document.getElementById('overlay').classList.add('show')}
 function closePaywall(){document.getElementById('paywall').classList.remove('show');if(!document.getElementById('mark').classList.contains('open'))document.getElementById('overlay').classList.remove('show')}
 function renderAnalyses(){const analysisImgs={empresa:imgs.team,marca:imgs.store,mercado:imgs.analytics,oferta:imgs.planning,presenca:imgs.store,marketing:imgs.marketing,vendas:imgs.sales,clientes:imgs.team,gestao:imgs.analytics};document.getElementById('analysisGrid').innerHTML=analyses.map((a,i)=>{const saved=state.analysisFav.includes(a[0]);return `<article class="analysisCard"><div class="analysisPhoto analysisPhotoFallback"><img src="${analysisImgs[a[0]]||imgs.team}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><span>ÁREA ${i+1}</span><button class="analysisFav ${saved?'saved':''}" data-analysis-fav="${a[0]}">${saved?'♥':'♡'}</button></div><div class="analysisContent"><h3>${a[2]}</h3><h4>${a[3]}?</h4><p>O MARK investiga esta área considerando seu momento, objetivo, capacidade e contexto — sem procurar uma resposta padrão.</p><div class="subs">${a[4].map(s=>`<button data-sub="${a[0]}|${s}"><span><b>${s}</b><small>Analisar este ponto separadamente</small></span><strong>Analisar</strong></button>`).join('')}</div><div class="analysisActions"><button class="analysisFull" data-analysis="${a[0]}">Analisar área completa</button><button class="seeSubs">Ver ${a[4].length} subanálises</button></div></div></article>`}).join('');bindAnalysisFav();document.querySelectorAll('[data-analysis]').forEach(b=>b.onclick=()=>startAnalysis(b.dataset.analysis));document.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>startAnalysis(...b.dataset.sub.split('|')))}
-function bindAnalysisFav(){document.querySelectorAll('[data-analysis-fav]').forEach(b=>b.onclick=()=>{const id=b.dataset.analysisFav;state.analysisFav=state.analysisFav.includes(id)?state.analysisFav.filter(x=>x!==id):[...state.analysisFav,id];save();renderAnalyses();toast(state.analysisFav.includes(id)?'Análise salva para fazer depois':'Análise removida dos favoritos')})}
+function bindAnalysisFav(){document.querySelectorAll('[data-analysis-fav]').forEach(b=>b.onclick=async()=>{const id=b.dataset.analysisFav;const adding=!state.analysisFav.includes(id);state.analysisFav=adding?[...state.analysisFav,id]:state.analysisFav.filter(x=>x!==id);save();renderAnalyses();toast(adding?'Análise salva para fazer depois':'Análise removida dos favoritos');if(mivUser&&mivSupabase){try{await persistFavorite('analysis',id,adding)}catch(err){console.error('[MIV analysis favorite]',err);toast('Favorito alterado aqui, mas não sincronizou.')}}})}
 
 function analysisProfileNotice(){
  const pct=companyProfileCompletion();
@@ -835,7 +835,6 @@ function initEcosystem(){
     console.warn('Theme init',e);
     try{renderTracks()}catch(err){console.error('Tracks init',err)}
   }
-  try{animateNumbers()}catch(e){console.warn('Numbers init',e)}
 }
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',()=>requestAnimationFrame(initEcosystem),{once:true});
@@ -922,6 +921,24 @@ function mirrorCompanyProfile(p){
  if(p&&Object.keys(p).length)localStorage.setItem('mivCompanyProfile',JSON.stringify(p));
  else localStorage.removeItem('mivCompanyProfile');
 }
+async function persistFavorite(type,itemId,adding){
+ if(!mivUser||!mivSupabase)return;
+ if(adding){const {error}=await mivSupabase.from('user_favorites').upsert({user_id:mivUser.id,company_id:mivActiveCompanyId||null,item_type:type,item_id:itemId},{onConflict:'user_id,item_type,item_id'});if(error)throw error}
+ else{const {error}=await mivSupabase.from('user_favorites').delete().eq('user_id',mivUser.id).eq('item_type',type).eq('item_id',itemId);if(error)throw error}
+}
+async function loadFavoritesFromSupabase(){
+ if(!mivUser||!mivSupabase)return;
+ const localItems=[...state.favorites],localAnalyses=[...state.analysisFav];
+ const {data,error}=await mivSupabase.from('user_favorites').select('item_type,item_id').eq('user_id',mivUser.id);
+ if(error){console.warn('[MIV favorites load]',error);return}
+ if((data||[]).length===0 && (localItems.length||localAnalyses.length)){
+  const rows=[...localItems.map(item_id=>({user_id:mivUser.id,company_id:mivActiveCompanyId||null,item_type:'item',item_id})),...localAnalyses.map(item_id=>({user_id:mivUser.id,company_id:mivActiveCompanyId||null,item_type:'analysis',item_id}))];
+  const {error:upErr}=await mivSupabase.from('user_favorites').upsert(rows,{onConflict:'user_id,item_type,item_id'});if(upErr){console.warn('[MIV favorites migrate]',upErr);return}
+  return;
+ }
+ state.favorites=(data||[]).filter(x=>x.item_type==='item').map(x=>x.item_id);
+ state.analysisFav=(data||[]).filter(x=>x.item_type==='analysis').map(x=>x.item_id);save();renderTracks();try{renderAnalyses()}catch(e){}if(state.route==='central')renderCentral();
+}
 async function getFirstCompanyLink(){
  const {data,error}=await mivSupabase.from('company_users').select('company_id,member_role,created_at').eq('user_id',mivUser.id).order('created_at',{ascending:true}).limit(1);
  if(error)throw error;return data?.[0]||null;
@@ -965,29 +982,18 @@ async function loadCompanyFromSupabase(){
 async function applyAuthSession(session){
  mivUser=session?.user||null;
  const btn=document.querySelector('.auth-header-btn');
+ const centralBtn=document.querySelector('.central-btn');
  const logout=document.getElementById('logoutBtn');
  document.body.dataset.auth=mivUser?'logged':'guest';
- let profile=null;
- if(mivUser){
-  try{
-   const {data:p}=await mivSupabase.from('profiles').select('full_name,phone').eq('id',mivUser.id).maybeSingle();profile=p||null;
-   if(p){const cp=getCompanyProfile();if(!cp.owner&&p.full_name)cp.owner=p.full_name;mirrorCompanyProfile(cp)}
-  }catch(e){console.warn('[MIV profile]',e)}
-  await loadCompanyFromSupabase();
- } else {
-  mivActiveCompanyId=null;
-  mirrorCompanyProfile({});
- }
- if(btn){
-  const first=(profile?.full_name||mivUser?.user_metadata?.full_name||'').trim().split(/\s+/)[0];
-  btn.textContent=mivUser?(first?`Olá, ${first}`:'Minha conta'):'Entrar';
-  btn.classList.toggle('logged',!!mivUser);
- }
+ if(btn){btn.textContent=mivUser?'Minha Central':'Entrar';btn.classList.toggle('logged',!!mivUser)}
+ if(centralBtn)centralBtn.hidden=true;
  if(logout)logout.hidden=!mivUser;
- if(!mivUser && state.route==='central'){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-home')?.classList.add('active');state.route='home';updateMark();
- }
+ if(!mivUser){mivActiveCompanyId=null;mirrorCompanyProfile({});state.favorites=[];state.analysisFav=[];save();if(state.route==='central')route('home');return}
+ Promise.resolve().then(async()=>{
+  try{await loadCompanyFromSupabase()}catch(e){console.warn('[MIV company hydrate]',e)}
+  try{await loadFavoritesFromSupabase()}catch(e){console.warn('[MIV favorites hydrate]',e)}
+  if(state.route==='central')renderCentral();
+ });
 }
 function openAuth(mode='login'){if(!authModal)return;authModal.classList.add('show');document.querySelectorAll('.authPane').forEach(x=>x.classList.remove('active'));document.getElementById(mode==='register'?'authRegister':mode==='forgot'?'authForgot':'authLogin')?.classList.add('active')}
 function closeAuth(){authModal?.classList.remove('show')}
