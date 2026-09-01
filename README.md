@@ -44,3 +44,10 @@ Nenhuma chave secreta foi incluída nos arquivos. `SUPABASE_SECRET_KEY`, `MERCAD
 - Validação segura em `/api/validate-coupon`.
 - Exibe preço original, desconto e total antes de abrir Mercado Pago.
 - O checkout continua recalculando o cupom no backend; a prévia não é fonte de verdade do preço.
+
+
+## V13.20 — Correção Supabase Secret Key
+- Corrige chamadas REST do backend para usar `sb_secret_...` somente no header `apikey`.
+- Remove uso incorreto da nova Secret Key como `Authorization: Bearer`, pois ela não é JWT.
+- Corrige validação de cupons, criação de checkout com cupom e gravações do webhook.
+- Não exige novo SQL nem nova variável de ambiente.

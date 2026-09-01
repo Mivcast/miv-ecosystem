@@ -214,7 +214,7 @@ module.exports = async function handler(req, res) {
     const couponId = String(metadata.miv_coupon_id || '').trim();
     if (couponId) {
       const redemption = {coupon_id: couponId, user_id: userId, item_id: itemId, purchase_id: saveResult.data?.[0]?.id || null, discount_cents: Number(metadata.miv_discount_cents || 0), redeemed_at: new Date().toISOString()};
-      const redResp = await fetch(`${supabaseUrl}/rest/v1/coupon_redemptions`, {method:'POST',headers:{apikey:supabaseSecretKey,Authorization:`Bearer ${supabaseSecretKey}`,'Content-Type':'application/json'},body:JSON.stringify(redemption)});
+      const redResp = await fetch(`${supabaseUrl}/rest/v1/coupon_redemptions`, {method:'POST',headers:{apikey:supabaseSecretKey,'Content-Type':'application/json'},body:JSON.stringify(redemption)});
       if (!redResp.ok) console.error('[MIV webhook] Compra liberada, mas falhou registro do cupom:', await redResp.text());
     }
 

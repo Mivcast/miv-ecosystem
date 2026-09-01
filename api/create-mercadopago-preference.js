@@ -1,6 +1,6 @@
 const ITEM_CATALOG={whatsapp:{title:'Script inteligente de WhatsApp',unit_price:19.90,item_type:'card'}};
 const send=(res,s,b)=>res.status(s).json(b);const norm=v=>({'script-whatsapp':'whatsapp','whatsapp-script':'whatsapp'}[String(v||'').trim().toLowerCase()]||String(v||'').trim().toLowerCase());
-async function sbFetch(url,key,path,opt={}){return fetch(`${url}/rest/v1/${path}`,{...opt,headers:{apikey:key,Authorization:`Bearer ${key}`,'Content-Type':'application/json',...(opt.headers||{})}})}
+async function sbFetch(url,key,path,opt={}){return fetch(`${url}/rest/v1/${path}`,{...opt,headers:{apikey:key,'Content-Type':'application/json',...(opt.headers||{})}})}
 module.exports=async function(req,res){if(req.method!=='POST')return send(res,405,{error:'Método não permitido.'});try{
  const mpToken=process.env.MERCADOPAGO_ACCESS_TOKEN,su=process.env.SUPABASE_URL,pk=process.env.SUPABASE_PUBLISHABLE_KEY,sk=process.env.SUPABASE_SECRET_KEY;if(!mpToken||!su||!pk||!sk)return send(res,500,{error:'Configuração incompleta.'});
  const ah=req.headers.authorization||'',at=ah.startsWith('Bearer ')?ah.slice(7):'';if(!at)return send(res,401,{error:'Entre na sua conta para comprar.'});const ur=await fetch(`${su}/auth/v1/user`,{headers:{apikey:pk,Authorization:`Bearer ${at}`}});if(!ur.ok)return send(res,401,{error:'Sessão inválida ou expirada.'});const user=await ur.json();
