@@ -15,3 +15,10 @@ Baseada na V13.10.
 - Corrige salvamento de relatórios em checklists de canais, marketing, marca e vendas (erro `def.map is not a function`).
 - Relatório completo ganhou Imprimir, Salvar em PDF, WhatsApp e Compartilhar.
 - Salvar em PDF usa a impressão do navegador: escolha **Salvar como PDF** no destino.
+
+## V13.15 — Admin V1 real
+- admin.html agora usa Supabase Auth e exige profiles.role = admin.
+- Dashboard real: usuários, empresas, assinaturas e compras/liberações.
+- Ativar/cancelar PRO/Premium por 30 dias.
+- Liberar/revogar item avulso por ID.
+- Execute SUPABASE_V13_15_ADMIN_V1.sql antes de usar.
