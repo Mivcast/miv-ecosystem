@@ -31,3 +31,10 @@ O simulador pode usar um Data ID que não corresponde a um pagamento real. Nesse
 
 ## Segurança
 Nenhuma chave secreta foi incluída nos arquivos. `SUPABASE_SECRET_KEY`, `MERCADOPAGO_ACCESS_TOKEN` e `MERCADOPAGO_WEBHOOK_SECRET` devem existir apenas nas Environment Variables da Vercel.
+
+## V13.18 — Cupons V1
+1. Execute `SUPABASE_V13_18_CUPONS.sql` no SQL Editor do projeto MIV Ecosystem.
+2. Admin > Cupons permite criar percentual, valor fixo, limitar item/usos/validade e ativar/desativar.
+3. O paywall aceita cupom. Desconto é validado/calculado no backend.
+4. Cupom 100% libera sem Mercado Pago e registra a utilização.
+5. Pagamentos com desconto levam o valor final no metadata; o webhook confere o valor e registra a utilização.

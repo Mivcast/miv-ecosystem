@@ -1,101 +1,14 @@
-const ITEM_CATALOG = {
-  whatsapp: {
-    title: 'Script inteligente de WhatsApp',
-    unit_price: 19.90,
-    item_type: 'card'
-  }
-};
-
-function send(res, status, body) {
-  res.status(status).json(body);
-}
-
-module.exports = async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return send(res, 405, { error: 'Método não permitido.' });
-  }
-
-  try {
-    const mpToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
-    if (!mpToken || !supabaseUrl || !supabaseKey) {
-      return send(res, 500, { error: 'Configuração de pagamento incompleta no servidor.' });
-    }
-
-    const authHeader = req.headers.authorization || '';
-    const accessToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
-    if (!accessToken) return send(res, 401, { error: 'Entre na sua conta para comprar.' });
-
-    // Confirma a sessão diretamente no Supabase; não confiamos em user_id enviado pelo navegador.
-    const userResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${accessToken}`
-      }
-    });
-    if (!userResponse.ok) return send(res, 401, { error: 'Sessão inválida ou expirada.' });
-    const user = await userResponse.json();
-
-    const requestedId = String(req.body?.item_id || '').trim().toLowerCase();
-    const aliases = { 'script-whatsapp': 'whatsapp', 'whatsapp-script': 'whatsapp' };
-    const itemId = aliases[requestedId] || requestedId;
-    const item = ITEM_CATALOG[itemId];
-    if (!item) return send(res, 400, { error: 'Este item ainda não está habilitado para pagamento.' });
-
-    const siteUrl = 'https://miv-ecosystem.vercel.app';
-    const preference = {
-      items: [{
-        id: itemId,
-        title: item.title,
-        quantity: 1,
-        currency_id: 'BRL',
-        unit_price: item.unit_price
-      }],
-      payer: user.email ? { email: user.email } : undefined,
-      external_reference: `${user.id}|${item.item_type}|${itemId}`,
-      metadata: {
-        miv_user_id: user.id,
-        miv_item_id: itemId,
-        miv_item_type: item.item_type
-      },
-      back_urls: {
-        success: `${siteUrl}/?payment=success#central`,
-        pending: `${siteUrl}/?payment=pending#central`,
-        failure: `${siteUrl}/?payment=failure#central`
-      },
-      auto_return: 'approved',
-      notification_url: `${siteUrl}/api/mercadopago/webhook`,
-      statement_descriptor: 'MIV ECOSYSTEM'
-    };
-
-    const mpResponse = await fetch('https://api.mercadopago.com/checkout/preferences', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${mpToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(preference)
-    });
-    const mpData = await mpResponse.json();
-    if (!mpResponse.ok) {
-      console.error('[MIV Mercado Pago preference]', mpData);
-      return send(res, 502, { error: 'Mercado Pago não criou o checkout.', details: mpData?.message || null });
-    }
-
-    // Com credencial de teste, priorizamos sandbox_init_point.
-    const checkoutUrl = mpData.sandbox_init_point || mpData.init_point;
-    if (!checkoutUrl) return send(res, 502, { error: 'Checkout criado sem URL de pagamento.' });
-
-    return send(res, 200, {
-      preference_id: mpData.id,
-      checkout_url: checkoutUrl,
-      item_id: itemId,
-      amount: item.unit_price
-    });
-  } catch (err) {
-    console.error('[MIV Mercado Pago]', err);
-    return send(res, 500, { error: 'Não foi possível iniciar o pagamento.' });
-  }
-};
+const ITEM_CATALOG={whatsapp:{title:'Script inteligente de WhatsApp',unit_price:19.90,item_type:'card'}};
+const send=(res,s,b)=>res.status(s).json(b);const norm=v=>({'script-whatsapp':'whatsapp','whatsapp-script':'whatsapp'}[String(v||'').trim().toLowerCase()]||String(v||'').trim().toLowerCase());
+async function sbFetch(url,key,path,opt={}){return fetch(`${url}/rest/v1/${path}`,{...opt,headers:{apikey:key,Authorization:`Bearer ${key}`,'Content-Type':'application/json',...(opt.headers||{})}})}
+module.exports=async function(req,res){if(req.method!=='POST')return send(res,405,{error:'Método não permitido.'});try{
+ const mpToken=process.env.MERCADOPAGO_ACCESS_TOKEN,su=process.env.SUPABASE_URL,pk=process.env.SUPABASE_PUBLISHABLE_KEY,sk=process.env.SUPABASE_SECRET_KEY;if(!mpToken||!su||!pk||!sk)return send(res,500,{error:'Configuração incompleta.'});
+ const ah=req.headers.authorization||'',at=ah.startsWith('Bearer ')?ah.slice(7):'';if(!at)return send(res,401,{error:'Entre na sua conta para comprar.'});const ur=await fetch(`${su}/auth/v1/user`,{headers:{apikey:pk,Authorization:`Bearer ${at}`}});if(!ur.ok)return send(res,401,{error:'Sessão inválida ou expirada.'});const user=await ur.json();
+ const itemId=norm(req.body?.item_id),item=ITEM_CATALOG[itemId];if(!item)return send(res,400,{error:'Item não habilitado para pagamento.'});let finalCents=Math.round(item.unit_price*100),coupon=null,discountCents=0;const code=String(req.body?.coupon_code||'').trim().toUpperCase();
+ if(code){const cr=await sbFetch(su,sk,`coupons?code=eq.${encodeURIComponent(code)}&active=eq.true&select=*`);const rows=await cr.json();coupon=rows?.[0];if(!coupon)return send(res,400,{error:'Cupom inválido ou inativo.'});const now=Date.now();if(coupon.starts_at&&new Date(coupon.starts_at).getTime()>now)return send(res,400,{error:'Este cupom ainda não está válido.'});if(coupon.expires_at&&new Date(coupon.expires_at).getTime()<now)return send(res,400,{error:'Este cupom expirou.'});if(coupon.item_id&&norm(coupon.item_id)!==itemId)return send(res,400,{error:'Este cupom não vale para este item.'});
+  const rr=await sbFetch(su,sk,`coupon_redemptions?coupon_id=eq.${coupon.id}&select=user_id`);const reds=await rr.json();if(coupon.max_uses&&reds.length>=coupon.max_uses)return send(res,400,{error:'Este cupom atingiu o limite de usos.'});if(reds.filter(x=>x.user_id===user.id).length>=coupon.max_uses_per_user)return send(res,400,{error:'Você já utilizou este cupom.'});discountCents=coupon.discount_type==='percent'?Math.round(finalCents*Math.min(Number(coupon.discount_value),100)/100):Math.round(Number(coupon.discount_value)*100);discountCents=Math.min(discountCents,finalCents);finalCents-=discountCents;
+ }
+ const meta={miv_user_id:user.id,miv_item_id:itemId,miv_item_type:item.item_type,miv_expected_amount_cents:finalCents,miv_coupon_id:coupon?.id||'',miv_coupon_code:coupon?.code||'',miv_discount_cents:discountCents};
+ if(finalCents===0){const row={user_id:user.id,item_id:itemId,item_type:item.item_type,status:'paid',amount_cents:0,provider:'coupon_100',provider_payment_id:`coupon:${coupon.id}:${user.id}:${Date.now()}`,purchased_at:new Date().toISOString()};const pr=await sbFetch(su,sk,'user_purchases?on_conflict=user_id,item_type,item_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(row)});const pd=await pr.json();if(!pr.ok)return send(res,500,{error:'Não foi possível liberar o item.'});await sbFetch(su,sk,'coupon_redemptions',{method:'POST',body:JSON.stringify({coupon_id:coupon.id,user_id:user.id,item_id:itemId,purchase_id:pd?.[0]?.id||null,discount_cents:discountCents})});return send(res,200,{free_unlock:true,item_id:itemId,amount:0});}
+ const site='https://miv-ecosystem.vercel.app',pref={items:[{id:itemId,title:item.title,quantity:1,currency_id:'BRL',unit_price:finalCents/100}],payer:user.email?{email:user.email}:undefined,external_reference:`${user.id}|${item.item_type}|${itemId}`,metadata:meta,back_urls:{success:`${site}/?payment=success#central`,pending:`${site}/?payment=pending#central`,failure:`${site}/?payment=failure#central`},auto_return:'approved',notification_url:`${site}/api/mercadopago/webhook`,statement_descriptor:'MIV ECOSYSTEM'};const mr=await fetch('https://api.mercadopago.com/checkout/preferences',{method:'POST',headers:{Authorization:`Bearer ${mpToken}`,'Content-Type':'application/json'},body:JSON.stringify(pref)});const md=await mr.json();if(!mr.ok)return send(res,502,{error:'Mercado Pago não criou o checkout.',details:md?.message||null});return send(res,200,{preference_id:md.id,checkout_url:md.sandbox_init_point||md.init_point,item_id:itemId,amount:finalCents/100,discount:discountCents/100,coupon:coupon?.code||null});
+}catch(e){console.error(e);return send(res,500,{error:'Não foi possível iniciar o pagamento.'})}};

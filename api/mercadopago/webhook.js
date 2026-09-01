@@ -96,7 +96,7 @@ async function upsertPurchase({ supabaseUrl, secretKey, row }) {
 module.exports = async function handler(req, res) {
   // Ajuda a confirmar rapidamente que a rota foi publicada, sem processar nada.
   if (req.method === 'GET') {
-    return send(res, 200, { ok: true, service: 'miv-mercadopago-webhook', version: '13.17' });
+    return send(res, 200, { ok: true, service: 'miv-mercadopago-webhook', version: '13.18' });
   }
 
   if (req.method !== 'POST') {
@@ -181,8 +181,9 @@ module.exports = async function handler(req, res) {
     }
 
     const paidCents = Math.round(Number(payment.transaction_amount || 0) * 100);
-    if (paidCents !== catalogItem.amount_cents) {
-      console.error('[MIV webhook] Valor divergente.', { itemId, paidCents, expected: catalogItem.amount_cents });
+    const expectedCents = Number(metadata.miv_expected_amount_cents ?? catalogItem.amount_cents);
+    if (paidCents !== expectedCents) {
+      console.error('[MIV webhook] Valor divergente.', { itemId, paidCents, expected: expectedCents });
       return send(res, 200, { received: true, verified: true, processed: false, reason: 'amount_mismatch' });
     }
 
@@ -208,6 +209,13 @@ module.exports = async function handler(req, res) {
       console.error('[MIV webhook] Falha ao gravar compra no Supabase:', saveResult.status, saveResult.data);
       // 500 faz o Mercado Pago tentar novamente.
       return send(res, 500, { error: 'Falha ao registrar a compra.' });
+    }
+
+    const couponId = String(metadata.miv_coupon_id || '').trim();
+    if (couponId) {
+      const redemption = {coupon_id: couponId, user_id: userId, item_id: itemId, purchase_id: saveResult.data?.[0]?.id || null, discount_cents: Number(metadata.miv_discount_cents || 0), redeemed_at: new Date().toISOString()};
+      const redResp = await fetch(`${supabaseUrl}/rest/v1/coupon_redemptions`, {method:'POST',headers:{apikey:supabaseSecretKey,Authorization:`Bearer ${supabaseSecretKey}`,'Content-Type':'application/json'},body:JSON.stringify(redemption)});
+      if (!redResp.ok) console.error('[MIV webhook] Compra liberada, mas falhou registro do cupom:', await redResp.text());
     }
 
     console.log('[MIV webhook] Compra liberada:', { userId, itemId, providerPaymentId });
