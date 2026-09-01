@@ -587,7 +587,7 @@ function bindChannelChecklist(){
  document.querySelectorAll('[data-point-mark]').forEach(b=>b.onclick=()=>askMarkAboutPoint(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance)));
  document.getElementById('channelSaveReport')?.addEventListener('click',()=>{
    const data=getChannelState(),total=channelDefinitions.reduce((n,c)=>n+c.items.length,0),answered=Object.keys(data).length,correct=Object.values(data).filter(v=>v==='correct').length;
-   addReport({name:'Relatório · Canais de Comunicação',date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'channels',answered,correct,total,checklist:def.map((point,i)=>({point:point.title||point,status:d['s'+i]||'pending'}))}});toast('Relatório salvo na sua Central.');
+   addReport({name:'Relatório · Canais de Comunicação',date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'channels',answered,correct,total,progress:total?Math.round(correct/Math.max(1,total-Object.values(data).filter(v=>v==='na').length)*100):0,checklist:flattenChannelChecklist(data)}});toast('Relatório salvo na sua Central.');
  });
  document.getElementById('channelPrint')?.addEventListener('click',()=>window.print())
 }
@@ -608,7 +608,7 @@ function renderBusinessChecklist(item){
  document.querySelectorAll('[data-business-value]').forEach(b=>b.onclick=()=>{const row=b.closest('[data-business-key]'),d=getBusinessChecklistState(item.id);d[row.dataset.businessKey]=b.dataset.businessValue;setBusinessChecklistState(item.id,d);renderBusinessChecklist(item);toast('Progresso salvo.')});
  document.querySelectorAll('[data-point-suggest]').forEach(b=>b.onclick=()=>{const row=b.closest('.channelCheckItem');row.querySelector('.pointOutput').innerHTML=prototypeSuggestion(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance));row.querySelector('.pointOutput').scrollIntoView({behavior:'smooth',block:'nearest'})});
  document.querySelectorAll('[data-point-mark]').forEach(b=>b.onclick=()=>askMarkAboutPoint(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance)));
- document.getElementById('businessSaveReport')?.addEventListener('click',()=>{const d=getBusinessChecklistState(item.id);addReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'business',progress:businessChecklistProgress(def,d),checklist:def.map((point,i)=>({point:point.title||point,status:d['s'+i]||d[i]||'pending'}))}});toast('Relatório salvo na sua Central.')});
+ document.getElementById('businessSaveReport')?.addEventListener('click',()=>{const d=getBusinessChecklistState(item.id);addReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'business',progress:businessChecklistProgress(def,d),checklist:flattenSectionChecklist(def,d)}});toast('Relatório salvo na sua Central.')});
  document.getElementById('businessPrint')?.addEventListener('click',()=>window.print());
 }
 function showBusinessChecklist(item){
@@ -628,7 +628,7 @@ function renderMarketingChecklist(item){
  document.querySelectorAll('[data-mkt-value]').forEach(b=>b.onclick=()=>{const row=b.closest('[data-marketing-key]'),d=getMarketingChecklistState(item.id);d[row.dataset.marketingKey]=b.dataset.mktValue;setMarketingChecklistState(item.id,d);renderMarketingChecklist(item);toast('Progresso salvo.')});
  document.querySelectorAll('[data-point-suggest]').forEach(b=>b.onclick=()=>{const row=b.closest('.channelCheckItem');row.querySelector('.pointOutput').innerHTML=prototypeSuggestion(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance));row.querySelector('.pointOutput').scrollIntoView({behavior:'smooth',block:'nearest'})});
  document.querySelectorAll('[data-point-mark]').forEach(b=>b.onclick=()=>askMarkAboutPoint(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance)));
- document.getElementById('mktSaveReport')?.addEventListener('click',()=>{const d=getMarketingChecklistState(item.id);addReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'marketing',progress:marketingChecklistProgress(def,d),checklist:def.map((point,i)=>({point:point.title||point,status:d['s'+i]||d[i]||'pending'}))}});toast('Relatório salvo na sua Central.')});
+ document.getElementById('mktSaveReport')?.addEventListener('click',()=>{const d=getMarketingChecklistState(item.id);addReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'marketing',progress:marketingChecklistProgress(def,d),checklist:flattenSectionChecklist(def,d)}});toast('Relatório salvo na sua Central.')});
  document.getElementById('mktPrint')?.addEventListener('click',()=>window.print());
 }
 function showMarketingChecklist(item){
@@ -798,6 +798,33 @@ function reportMetricRows(meta={}){
  return rows;
 }
 function reportStatusLabel(v){return v==='correct'?'Está certo':v==='improve'?'Preciso fazer isso':v==='na'?'Não se aplica':'Não respondido'}
+function flattenSectionChecklist(def,data={}){
+ if(!def||!Array.isArray(def.sections))return [];
+ return def.sections.flatMap((sec,si)=>(Array.isArray(sec.items)?sec.items:[]).map(it=>({point:it?.[1]||it?.[0]||'Ponto avaliado',status:data[`${si}:${it?.[0]}`]||'pending'})));
+}
+function flattenChannelChecklist(data={}){
+ return channelDefinitions.flatMap(ch=>(Array.isArray(ch.items)?ch.items:[]).map(it=>({point:`${ch.name} · ${it?.[1]||it?.[0]||'Ponto avaliado'}`,status:data[`${ch.id}:${it?.[0]}`]||'pending'})));
+}
+function currentReportShareText(){
+ const r=state.currentReport||{};const m=r.meta||{};let parts=[r.name||'Relatório MIV Ecosystem'];
+ if(m.score!=null)parts.push(`Pontuação: ${m.score}%`);
+ else if(m.progress!=null)parts.push(`Progresso: ${m.progress}%`);
+ const priorities=Array.isArray(m.priorities)?m.priorities:(Array.isArray(m.checklist)?m.checklist.filter(x=>x.status==='improve').map(x=>x.point).slice(0,3):[]);
+ if(priorities.length)parts.push('Prioridades: '+priorities.slice(0,3).join(' • '));
+ parts.push('MIV Ecosystem');return parts.join('\n');
+}
+function printCurrentReport(){window.print()}
+function saveCurrentReportPdf(){toast('Na janela de impressão, escolha “Salvar como PDF”.');setTimeout(()=>window.print(),250)}
+function shareCurrentReportWhatsApp(){
+ const text=currentReportShareText();const url='https://wa.me/?text='+encodeURIComponent(text+'\n'+location.href);window.open(url,'_blank','noopener');
+}
+async function shareCurrentReport(){
+ const text=currentReportShareText();
+ try{
+  if(navigator.share){await navigator.share({title:state.currentReport?.name||'Relatório MIV Ecosystem',text,url:location.href});return}
+  await navigator.clipboard.writeText(text+'\n'+location.href);toast('Resumo e link copiados para compartilhar.');
+ }catch(e){if(e?.name!=='AbortError')toast('Não foi possível compartilhar agora.')}
+}
 function renderFullSavedReport(report){
  if(!report)return;
  const meta=report.meta||{}, rows=reportMetricRows(meta), body=document.getElementById('fullSavedReport');if(!body)return;
@@ -1143,5 +1170,8 @@ initSupabase();
   },true);
 })();
 
-// V13.11 saved report modal controls
-document.getElementById('printFullReport')?.addEventListener('click',()=>window.print());
+// V13.12 saved report modal controls
+document.getElementById('printFullReport')?.addEventListener('click',printCurrentReport);
+document.getElementById('pdfFullReport')?.addEventListener('click',saveCurrentReportPdf);
+document.getElementById('whatsappFullReport')?.addEventListener('click',shareCurrentReportWhatsApp);
+document.getElementById('shareFullReport')?.addEventListener('click',shareCurrentReport);
