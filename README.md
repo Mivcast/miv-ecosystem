@@ -12,3 +12,10 @@ Nesta versão:
 - Cadastro com dados de empresa pode criar a primeira empresa no primeiro login.
 
 Teste principal: salvar empresa em um navegador e abrir a mesma conta em outro navegador.
+
+
+## V13.8
+- Modal fecha imediatamente após sessão válida.
+- Navegação usa History API: Voltar/Avançar do navegador.
+- Botão Entrar destacado em azul.
+- Favoritos dependem da tabela public.user_favorites criada por SUPABASE_V13_7.sql.

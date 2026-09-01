@@ -94,3 +94,7 @@ body[data-theme="auto"]{--bg:#0f1215;--surface:#171c20;--surface2:#20272c;--text
 /* V13.5 — estado autenticado */
 .logout-header-btn{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer}.logout-header-btn[hidden]{display:none!important}.auth-header-btn.logged{max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:900px){.logout-header-btn{padding:9px 11px}.auth-header-btn.logged{max-width:95px}}
+
+/* V13.8 — CTA de login mais visível */
+.auth-header-btn:not(.logged){background:#3478d4;color:#fff!important;border:1px solid #3478d4;border-radius:999px;padding:10px 16px;box-shadow:0 6px 16px rgba(52,120,212,.16)}
+.auth-header-btn:not(.logged):hover{filter:brightness(.96);transform:translateY(-1px)}

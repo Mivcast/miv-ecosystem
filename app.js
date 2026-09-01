@@ -770,7 +770,7 @@ function renderLogos(){
   const names=['MIVCAST','MARK','NEGÓCIOS','MARKETING','VENDAS','GESTÃO','MARCA','CLIENTES'];
   track.innerHTML=[...names,...names].map(n=>`<div class="logo-chip">${n}</div>`).join('');
 }
-function route(name){
+function route(name,options={}){
  if(name==='central' && !mivUser){
   openAuth('login');
   authStatus('loginStatus','Entre ou crie uma conta para acessar sua Central.','');
@@ -778,7 +778,13 @@ function route(name){
  }
  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
  const target=document.getElementById('view-'+name);if(!target)return;
- target.classList.add('active');state.route=name;window.scrollTo({top:0,behavior:'smooth'});
+ const previous=state.route;
+ target.classList.add('active');state.route=name;
+ if(!options.fromPop && previous!==name){
+  const url=name==='home'?location.pathname:(location.pathname+'#'+name);
+  if(options.replace)history.replaceState({mivRoute:name},'',url);else history.pushState({mivRoute:name},'',url);
+ }
+ window.scrollTo({top:0,behavior:options.instant?'auto':'smooth'});
  if(name==='central')renderCentral();updateMark();
 }
 function renderCentral(){fillCompanyProfileForm();document.getElementById('centralTitle').textContent=`Sua Central · ${state.profile.niche}`;document.getElementById('favCount').textContent=state.favorites.length+state.analysisFav.length;document.getElementById('usedCount').textContent=state.history.length;document.getElementById('repCount').textContent=state.reports.length;document.getElementById('progCount').textContent=Math.min(100,18+(state.favorites.length+state.analysisFav.length)*3+state.history.length*2+state.reports.length*5)+'%';const fs=state.favorites.map(getItem).filter(Boolean);const af=state.analysisFav.map(id=>id==='completa'?['completa','','Análise Empresarial Completa']:analyses.find(a=>a[0]===id)).filter(Boolean);document.getElementById('favorites').innerHTML=(fs.length||af.length)?fs.map(card).join('')+af.map(a=>`<article class="card centralAnalysisCard"><div class="cardBody"><div class="meta"><span>ANÁLISE FAVORITA</span><small>ANÁLISE</small></div><h3>${a[2]}</h3><p>Salva para você fazer depois.</p><button class="open" data-analysis-central="${a[0]}">Usar agora →</button></div></article>`).join(''):`<div class="empty">Use o ♡ em estratégias, ferramentas, conteúdos ou análises para montar sua biblioteca.</div>`;bindCards();document.querySelectorAll('[data-analysis-central]').forEach(x=>x.onclick=()=>startAnalysis(x.dataset.analysisCentral));const histItems=state.history.map(h=>getItem(h.id)).filter(Boolean);document.getElementById('history').innerHTML=histItems.length?`<div class="centralGrid">${histItems.map(card).join('')}</div>`:`<div class="empty">Seu histórico aparecerá conforme você explorar.</div>`;bindCards();document.getElementById('reports').innerHTML=state.reports.length?state.reports.map(r=>`<div class="centralItem reportCard"><small>${r.status.toUpperCase()}</small><h3>${r.name}</h3><p>Iniciada em ${r.date}. O relatório ficará salvo aqui.</p><button class="outline centralUse">Ver relatório</button></div>`).join(''):`<div class="empty">Nenhuma análise iniciada.</div>`}
@@ -899,7 +905,7 @@ async function initSupabase(){
   if(!window.supabase?.createClient)throw new Error('Biblioteca Supabase não carregou.');
   mivSupabase=window.supabase.createClient(c.supabaseUrl,c.supabasePublishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   const {data}=await mivSupabase.auth.getSession();await applyAuthSession(data.session);
-  mivSupabase.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>applyAuthSession(session),0)});
+  mivSupabase.auth.onAuthStateChange((_event,session)=>{if(session)closeAuth();setTimeout(()=>applyAuthSession(session),0)});
  }catch(err){console.error('[MIV Supabase]',err);authStatus('loginStatus','Conexão com a conta indisponível. Recarregue a página.','error')}
 }
 
@@ -1000,11 +1006,17 @@ function closeAuth(){authModal?.classList.remove('show')}
 document.querySelectorAll('[data-open-auth]').forEach(b=>b.addEventListener('click',()=>{if(mivUser){route('central')}else openAuth(b.dataset.openAuth)}));
 document.querySelectorAll('[data-auth-switch]').forEach(b=>b.addEventListener('click',()=>openAuth(b.dataset.authSwitch)));
 document.getElementById('authClose')?.addEventListener('click',closeAuth);authModal?.addEventListener('click',e=>{if(e.target===authModal)closeAuth()});
-document.getElementById('doLogin')?.addEventListener('click',async()=>{const email=document.getElementById('loginEmail').value.trim(),password=document.getElementById('loginPassword').value;if(!email||!password){authStatus('loginStatus','Informe e-mail e senha.','error');return}if(!mivSupabase){authStatus('loginStatus','A conexão ainda não está pronta. Recarregue a página.','error');return}authStatus('loginStatus','Entrando...');const {error}=await mivSupabase.auth.signInWithPassword({email,password});if(error){authStatus('loginStatus',friendlyAuthError(error),'error');return}authStatus('loginStatus','Login realizado.','ok');closeAuth();toast('Bem-vindo à sua Central.');route('central')});
+document.getElementById('doLogin')?.addEventListener('click',async()=>{const email=document.getElementById('loginEmail').value.trim(),password=document.getElementById('loginPassword').value;if(!email||!password){authStatus('loginStatus','Informe e-mail e senha.','error');return}if(!mivSupabase){authStatus('loginStatus','A conexão ainda não está pronta. Recarregue a página.','error');return}authStatus('loginStatus','Entrando...');const {data,error}=await mivSupabase.auth.signInWithPassword({email,password});if(error){authStatus('loginStatus',friendlyAuthError(error),'error');return}if(data?.session){mivUser=data.session.user;closeAuth();applyAuthSession(data.session);authStatus('loginStatus','Login realizado.','ok');toast('Bem-vindo à sua Central.');route('central')}});
 document.getElementById('doRegister')?.addEventListener('click',async()=>{const email=document.getElementById('regEmail').value.trim(),password=document.getElementById('regPass').value,p2=document.getElementById('regPass2').value;if(!email||!password){authStatus('registerStatus','Preencha pelo menos e-mail e senha.','error');return}if(password!==p2){authStatus('registerStatus','As senhas não coincidem.','error');return}if(!mivSupabase){authStatus('registerStatus','A conexão ainda não está pronta.','error');return}authStatus('registerStatus','Criando conta...');const meta={full_name:document.getElementById('regName').value.trim(),phone:document.getElementById('regPhone').value.trim(),business:document.getElementById('regBusiness').value.trim(),niche:document.getElementById('regNiche').value.trim(),city:document.getElementById('regCity').value.trim()};const {data,error}=await mivSupabase.auth.signUp({email,password,options:{data:meta}});if(error){authStatus('registerStatus',friendlyAuthError(error),'error');return}if(data.session){authStatus('registerStatus','Conta criada.','ok');closeAuth();toast('Conta criada com sucesso.');route('central')}else authStatus('registerStatus','Conta criada. Verifique seu e-mail para confirmar o acesso.','ok')});
 document.getElementById('doForgot')?.addEventListener('click',async()=>{const email=document.getElementById('forgotEmail').value.trim();if(!email){authStatus('forgotStatus','Informe seu e-mail.','error');return}if(!mivSupabase){authStatus('forgotStatus','A conexão ainda não está pronta.','error');return}const {error}=await mivSupabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin});authStatus('forgotStatus',error?friendlyAuthError(error):'Se o e-mail estiver cadastrado, você receberá as instruções.',error?'error':'ok')});
 window.mivLogout=async function(){if(mivSupabase)await mivSupabase.auth.signOut();mivActiveCompanyId=null;mirrorCompanyProfile({});toast('Você saiu da sua conta.');route('home')};
 document.getElementById('logoutBtn')?.addEventListener('click',()=>window.mivLogout());
+// Navegação real do navegador (Voltar/Avançar)
+history.replaceState({mivRoute:state.route||'home'},'',location.hash?location.href:location.pathname);
+window.addEventListener('popstate',e=>{
+ const name=e.state?.mivRoute || (location.hash?location.hash.slice(1):'home');
+ route(name,{fromPop:true,instant:true});
+});
 initSupabase();
 
 /* V13.3 ONLINE — camada resiliente de navegação.
