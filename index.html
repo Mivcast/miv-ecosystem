@@ -155,10 +155,10 @@
   <section class="wrap plans" id="planos">
     <span class="eyebrow center">PLANOS & ACESSO</span><h2 class="center">Use grátis, compre apenas o que precisa ou libere o ecossistema inteiro.</h2><p class="center plan-sub">Uma estrutura flexível para atrair pelo conteúdo gratuito e monetizar por item, assinatura ou apoio humano.</p>
     <div class="plan-grid">
-      <article><span class="plan-label">COMEÇAR</span><h3>Grátis</h3><p>Acesso às iscas e conteúdos marcados como gratuitos.</p><ul><li>Ferramentas gratuitas</li><li>Guias selecionados</li><li>Mini análises</li><li>Central e favoritos</li></ul><button class="outline full">Criar conta grátis</button></article>
-      <article><span class="plan-label">SEM ASSINATURA</span><h3>Avulso</h3><p>Desbloqueie somente a ferramenta, análise ou conteúdo que desejar.</p><ul><li>Pagamento por item</li><li>Acesso permanente ao item</li><li>Resultado salvo na Central</li><li>Sem mensalidade</li></ul><button class="outline full">Explorar itens pagos</button></article>
-      <article class="featured"><span class="badge-best">🔓 LIBERA OS ITENS PRO</span><span class="plan-label">ECOSSISTEMA</span><h3>Pro</h3><p>Libere praticamente tudo e use o MARK com mais contexto.</p><ul><li>Ferramentas premium</li><li>Análises completas</li><li>Biblioteca premium</li><li>MARK contextual</li><li>Histórico e evolução</li></ul><button class="primary full">Quero acesso Pro</button></article>
-      <article><span class="plan-lock">🔒 PRO INCLUSO</span><span class="plan-label">HUMANO + IA</span><h3>Premium</h3><p>Ecossistema completo com apoio pessoal e revisão estratégica.</p><ul><li>Tudo do Pro</li><li>Consultoria pessoal</li><li>Revisões estratégicas</li><li>Acompanhamento</li></ul><button class="outline full">Conhecer Premium</button></article>
+      <article><span class="plan-label">COMEÇAR</span><h3>Grátis</h3><p>Acesso às iscas e conteúdos marcados como gratuitos.</p><ul><li>Ferramentas gratuitas</li><li>Guias selecionados</li><li>Mini análises</li><li>Central e favoritos</li></ul><button class="outline full" id="planFreeBtn">Criar conta grátis</button></article>
+      <article><span class="plan-label">SEM ASSINATURA</span><h3>Avulso</h3><p>Desbloqueie somente a ferramenta, análise ou conteúdo que desejar.</p><ul><li>Pagamento por item</li><li>Acesso permanente ao item</li><li>Resultado salvo na Central</li><li>Sem mensalidade</li></ul><button class="outline full" id="planAvulsoBtn">Explorar itens pagos</button></article>
+      <article class="featured"><span class="badge-best">🔓 LIBERA OS ITENS PRO</span><span class="plan-label">ECOSSISTEMA</span><h3>Pro</h3><p>Libere praticamente tudo e use o MARK com mais contexto.</p><ul><li>Ferramentas premium</li><li>Análises completas</li><li>Biblioteca premium</li><li>MARK contextual</li><li>Histórico e evolução</li></ul><button class="primary full" id="planProBtn">Quero acesso Pro</button></article>
+      <article><span class="plan-lock">🔒 PRO INCLUSO</span><span class="plan-label">HUMANO + IA</span><h3>Premium</h3><p>Ecossistema completo com apoio pessoal e revisão estratégica.</p><ul><li>Tudo do Pro</li><li>Consultoria pessoal</li><li>Revisões estratégicas</li><li>Acompanhamento</li></ul><button class="outline full" id="planPremiumBtn">Conhecer Premium</button></article>
     </div>
   </section>
 
@@ -174,6 +174,7 @@
 
 <section id="view-central" class="view">
   <div class="wrap centralHero"><div><span class="eyebrow">MINHA CENTRAL</span><h1 id="centralTitle">Seu espaço dentro do ecossistema.</h1><p>Tudo que você favoritou, usou, comprou ou analisou fica organizado aqui.</p></div><button id="editProfile" class="outline">Editar nicho</button></div>
+  <section class="wrap accessPanel" id="accessPanel"><div><span class="eyebrow">PLANO & ACESSO</span><h2>Seu acesso ao MIV Ecosystem</h2><p id="centralPlanDesc">Carregando permissões da sua conta...</p></div><div class="accessPlanRight"><span>PLANO ATUAL</span><strong id="centralPlanBadge">Grátis</strong><button class="outline" data-scroll="planos">Ver planos</button></div></section>
   <section class="wrap companyProfilePanel" id="companyProfilePanel">
     <div class="companyProfileHead">
       <div><span class="eyebrow">INFORMAÇÕES DA EMPRESA</span><h2>Quanto mais o sistema conhece seu negócio, melhores ficam as respostas.</h2><p>Essas informações poderão ser reutilizadas pelo MARK e pelos cards para evitar perguntas repetidas e personalizar sugestões, análises e relatórios.</p></div>
