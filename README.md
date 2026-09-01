@@ -1,28 +1,33 @@
-# MIV Ecosystem V13.16 — Checkout Mercado Pago (teste)
+# MIV Ecosystem V13.17 — Webhook + liberação automática
 
-Esta versão conecta o botão de compra avulsa do Script inteligente de WhatsApp ao Checkout Pro do Mercado Pago em ambiente de teste. O preço e o item são validados no backend; o Access Token permanece apenas nas variáveis de ambiente da Vercel. A liberação automática após pagamento será implementada na próxima etapa via Webhook assinado.
+Baseada na V13.16.
 
-# MIV Ecosystem — V13.11 RELATÓRIO COMPLETO
+## O que entrou nesta versão
+- Endpoint `GET/POST /api/mercadopago/webhook`.
+- Validação da assinatura `x-signature` do Mercado Pago via HMAC-SHA256.
+- Consulta server-side do pagamento em `GET /v1/payments/{id}`.
+- Só libera conteúdo quando o pagamento está `approved`.
+- Valida usuário, item e valor no servidor.
+- Grava/upserta `user_purchases` com a `SUPABASE_SECRET_KEY` somente no backend.
+- Repetições do mesmo Webhook são idempotentes graças à chave única `(user_id,item_type,item_id)`.
+- A preferência de compra agora também informa `notification_url` explicitamente.
+- `GET /api/mercadopago/webhook` funciona como health-check e não libera nada.
 
-Baseada na V13.10.
+## Variáveis Vercel necessárias
+- `SUPABASE_URL`
+- `SUPABASE_PUBLISHABLE_KEY`
+- `SUPABASE_SECRET_KEY`
+- `MERCADOPAGO_ACCESS_TOKEN`
+- `MERCADOPAGO_WEBHOOK_SECRET`
 
-## Alterações
-- “Ver relatório” abre uma página completa, não mais um popup-resumo.
-- Página de relatório integrada ao histórico do navegador (Voltar retorna à Minha Central).
-- Novos relatórios passam a salvar respostas, checklist e prioridades dentro do JSONB `meta` já existente no Supabase.
-- Relatórios antigos continuam abrindo, mas exibem somente os dados que já haviam sido persistidos.
-- Impressão do relatório completo.
-- Não exige SQL novo.
+## Teste do Webhook
+No Mercado Pago Developers > Webhooks > Modo de teste:
+1. URL: `https://miv-ecosystem.vercel.app/api/mercadopago/webhook`
+2. Evento: `Pagamentos (legacy)`
+3. Salvar e gerar a assinatura secreta.
+4. Usar `Simular notificação`.
 
+O simulador pode usar um Data ID que não corresponde a um pagamento real. Nesse caso a rota deve responder HTTP 200 após validar a assinatura, mas não libera conteúdo. Para liberar de fato, o ID consultado precisa corresponder a um pagamento `approved` criado pela preferência da MIV.
 
-## V13.12
-- Corrige salvamento de relatórios em checklists de canais, marketing, marca e vendas (erro `def.map is not a function`).
-- Relatório completo ganhou Imprimir, Salvar em PDF, WhatsApp e Compartilhar.
-- Salvar em PDF usa a impressão do navegador: escolha **Salvar como PDF** no destino.
-
-## V13.15 — Admin V1 real
-- admin.html agora usa Supabase Auth e exige profiles.role = admin.
-- Dashboard real: usuários, empresas, assinaturas e compras/liberações.
-- Ativar/cancelar PRO/Premium por 30 dias.
-- Liberar/revogar item avulso por ID.
-- Execute SUPABASE_V13_15_ADMIN_V1.sql antes de usar.
+## Segurança
+Nenhuma chave secreta foi incluída nos arquivos. `SUPABASE_SECRET_KEY`, `MERCADOPAGO_ACCESS_TOKEN` e `MERCADOPAGO_WEBHOOK_SECRET` devem existir apenas nas Environment Variables da Vercel.

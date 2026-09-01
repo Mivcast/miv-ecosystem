@@ -66,6 +66,7 @@ module.exports = async function handler(req, res) {
         failure: `${siteUrl}/?payment=failure#central`
       },
       auto_return: 'approved',
+      notification_url: `${siteUrl}/api/mercadopago/webhook`,
       statement_descriptor: 'MIV ECOSYSTEM'
     };
 
