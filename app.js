@@ -587,7 +587,7 @@ function bindChannelChecklist(){
  document.querySelectorAll('[data-point-mark]').forEach(b=>b.onclick=()=>askMarkAboutPoint(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance)));
  document.getElementById('channelSaveReport')?.addEventListener('click',()=>{
    const data=getChannelState(),total=channelDefinitions.reduce((n,c)=>n+c.items.length,0),answered=Object.keys(data).length,correct=Object.values(data).filter(v=>v==='correct').length;
-   addReport({name:'Relatório · Canais de Comunicação',date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{answered,correct,total}});toast('Relatório salvo na sua Central.');
+   addReport({name:'Relatório · Canais de Comunicação',date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'channels',answered,correct,total,checklist:def.map((point,i)=>({point:point.title||point,status:d['s'+i]||'pending'}))}});toast('Relatório salvo na sua Central.');
  });
  document.getElementById('channelPrint')?.addEventListener('click',()=>window.print())
 }
@@ -608,7 +608,7 @@ function renderBusinessChecklist(item){
  document.querySelectorAll('[data-business-value]').forEach(b=>b.onclick=()=>{const row=b.closest('[data-business-key]'),d=getBusinessChecklistState(item.id);d[row.dataset.businessKey]=b.dataset.businessValue;setBusinessChecklistState(item.id,d);renderBusinessChecklist(item);toast('Progresso salvo.')});
  document.querySelectorAll('[data-point-suggest]').forEach(b=>b.onclick=()=>{const row=b.closest('.channelCheckItem');row.querySelector('.pointOutput').innerHTML=prototypeSuggestion(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance));row.querySelector('.pointOutput').scrollIntoView({behavior:'smooth',block:'nearest'})});
  document.querySelectorAll('[data-point-mark]').forEach(b=>b.onclick=()=>askMarkAboutPoint(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance)));
- document.getElementById('businessSaveReport')?.addEventListener('click',()=>{const d=getBusinessChecklistState(item.id);addReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{progress:businessChecklistProgress(def,d)}});toast('Relatório salvo na sua Central.')});
+ document.getElementById('businessSaveReport')?.addEventListener('click',()=>{const d=getBusinessChecklistState(item.id);addReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'business',progress:businessChecklistProgress(def,d),checklist:def.map((point,i)=>({point:point.title||point,status:d['s'+i]||d[i]||'pending'}))}});toast('Relatório salvo na sua Central.')});
  document.getElementById('businessPrint')?.addEventListener('click',()=>window.print());
 }
 function showBusinessChecklist(item){
@@ -628,7 +628,7 @@ function renderMarketingChecklist(item){
  document.querySelectorAll('[data-mkt-value]').forEach(b=>b.onclick=()=>{const row=b.closest('[data-marketing-key]'),d=getMarketingChecklistState(item.id);d[row.dataset.marketingKey]=b.dataset.mktValue;setMarketingChecklistState(item.id,d);renderMarketingChecklist(item);toast('Progresso salvo.')});
  document.querySelectorAll('[data-point-suggest]').forEach(b=>b.onclick=()=>{const row=b.closest('.channelCheckItem');row.querySelector('.pointOutput').innerHTML=prototypeSuggestion(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance));row.querySelector('.pointOutput').scrollIntoView({behavior:'smooth',block:'nearest'})});
  document.querySelectorAll('[data-point-mark]').forEach(b=>b.onclick=()=>askMarkAboutPoint(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance)));
- document.getElementById('mktSaveReport')?.addEventListener('click',()=>{const d=getMarketingChecklistState(item.id);addReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{progress:marketingChecklistProgress(def,d)}});toast('Relatório salvo na sua Central.')});
+ document.getElementById('mktSaveReport')?.addEventListener('click',()=>{const d=getMarketingChecklistState(item.id);addReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'marketing',progress:marketingChecklistProgress(def,d),checklist:def.map((point,i)=>({point:point.title||point,status:d['s'+i]||d[i]||'pending'}))}});toast('Relatório salvo na sua Central.')});
  document.getElementById('mktPrint')?.addEventListener('click',()=>window.print());
 }
 function showMarketingChecklist(item){
@@ -741,7 +741,7 @@ function renderAnalysisDetail(id,sub=''){
    const d=getAnalysisData(id,sub),vals=points.map((_,i)=>d['s'+i]).filter(Boolean),app=vals.filter(v=>v!=='na').length||1,ok=vals.filter(v=>v==='correct').length,score=Math.round(ok/app*100);
    const priorities=points.filter((_,i)=>d['s'+i]==='improve').slice(0,3);
    document.getElementById('analysisResult').innerHTML=`<div class="analysisResultCard"><span class="eyebrow">RESULTADO DA ANÁLISE</span><h3>${score}% de adequação inicial</h3><p>Este resultado combina suas respostas específicas com o Perfil da Empresa.</p>${priorities.length?`<div class="analysisPriorities">${priorities.map((x,i)=>`<div><strong>${i+1}</strong><span>${x}</span></div>`).join('')}</div>`:'<p>Nenhum ponto foi marcado como “Preciso fazer isso” nesta etapa.</p>'}${analysisSpecialistView(score,priorities)}<button class="outline" onclick="window.print()">Imprimir relatório</button></div>`;
-   addReport({name:`Relatório · ${sub?`${a[2]} · ${sub}`:a[2]}`,date:new Date().toLocaleDateString('pt-BR'),status:'Concluído',meta:{score}});
+   addReport({name:`Relatório · ${sub?`${a[2]} · ${sub}`:a[2]}`,date:new Date().toLocaleDateString('pt-BR'),status:'Concluído',meta:{type:'analysis',analysisId:id,sub,score,answers:qs.map((question,i)=>({question,answer:d['q'+i]||''})),checklist:points.map((point,i)=>({point,status:d['s'+i]||'pending'})),priorities}});
  });
  document.getElementById('analysisPrint')?.addEventListener('click',()=>window.print());
 }
@@ -771,7 +771,7 @@ function renderLogos(){
   track.innerHTML=[...names,...names].map(n=>`<div class="logo-chip">${n}</div>`).join('');
 }
 function route(name,options={}){
- if(name==='central' && !mivUser){
+ if((name==='central'||name==='report') && !mivUser){
   openAuth('login');
   authStatus('loginStatus','Entre ou crie uma conta para acessar sua Central.','');
   return;
@@ -797,16 +797,32 @@ function reportMetricRows(meta={}){
  if(meta.answered!=null&&meta.total!=null)rows.push(['Respondidos',`${meta.answered} de ${meta.total}`]);
  return rows;
 }
+function reportStatusLabel(v){return v==='correct'?'Está certo':v==='improve'?'Preciso fazer isso':v==='na'?'Não se aplica':'Não respondido'}
+function renderFullSavedReport(report){
+ if(!report)return;
+ const meta=report.meta||{}, rows=reportMetricRows(meta), body=document.getElementById('fullSavedReport');if(!body)return;
+ const date=report.date||new Date(report.created_at||Date.now()).toLocaleDateString('pt-BR');
+ const answers=Array.isArray(meta.answers)?meta.answers:[];
+ const checklist=Array.isArray(meta.checklist)?meta.checklist:[];
+ const priorities=Array.isArray(meta.priorities)?meta.priorities:checklist.filter(x=>x.status==='improve').map(x=>x.point).slice(0,3);
+ const hasDetails=answers.length||checklist.length||priorities.length;
+ body.innerHTML=`<header class="fullReportHeader"><span class="eyebrow">RELATÓRIO SALVO</span><h1>${report.name||'Relatório'}</h1><p>${String(report.status||'Salvo')} · ${date}</p></header>
+ ${rows.length?`<section class="fullReportMetrics">${rows.map(([k,v])=>`<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</section>`:''}
+ ${meta.score!=null?`<section class="fullReportSection"><span class="eyebrow">RESULTADO</span><h2>${meta.score}% de adequação inicial</h2><p>Este resultado representa o cenário registrado no momento em que a análise foi salva.</p></section>`:''}
+ ${answers.length?`<section class="fullReportSection"><span class="eyebrow">RESPOSTAS DA ANÁLISE</span><h2>Contexto informado</h2><div class="fullReportAnswers">${answers.map((x,i)=>`<div><small>${x.question||`Pergunta ${i+1}`}</small><p>${x.answer||'Não respondido'}</p></div>`).join('')}</div></section>`:''}
+ ${checklist.length?`<section class="fullReportSection"><span class="eyebrow">CHECKLIST</span><h2>Situação dos pontos avaliados</h2><div class="fullReportChecklist">${checklist.map(x=>`<div class="report-status-${x.status||'pending'}"><strong>${x.point||'Ponto avaliado'}</strong><span>${reportStatusLabel(x.status)}</span></div>`).join('')}</div></section>`:''}
+ ${priorities.length?`<section class="fullReportSection"><span class="eyebrow">PRIORIDADES</span><h2>O que merece atenção primeiro</h2><div class="analysisPriorities">${priorities.map((x,i)=>`<div><strong>${i+1}</strong><span>${x}</span></div>`).join('')}</div></section>`:''}
+ ${meta.score!=null?`<section class="fullReportSection">${analysisSpecialistView(Number(meta.score)||0,priorities)}</section>`:''}
+ ${!hasDetails?`<section class="fullReportSection legacyReport"><span class="eyebrow">RELATÓRIO HISTÓRICO</span><h2>Dados disponíveis deste relatório</h2><p>Este relatório foi criado antes de o sistema começar a armazenar o conteúdo completo das análises. Por isso, os indicadores acima foram preservados, mas respostas e checklist detalhado não estavam salvos. Os novos relatórios passarão a abrir completos nesta página.</p></section>`:''}`;
+}
 function openSavedReport(report){
  if(!report)return;
- const meta=report.meta||{};const rows=reportMetricRows(meta);
- const body=document.getElementById('savedReportBody');if(!body)return;
- body.innerHTML=`<span class="eyebrow">RELATÓRIO SALVO</span><h2>${report.name||'Relatório'}</h2><p class="savedReportMeta">${String(report.status||'Salvo')} · ${report.date||new Date(report.created_at||Date.now()).toLocaleDateString('pt-BR')}</p>${rows.length?`<div class="savedReportStats">${rows.map(([k,v])=>`<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</div>`:''}<div class="savedReportNote"><strong>Resumo salvo</strong><p>Este relatório foi recuperado da sua conta. Os próximos relatórios passarão a guardar cada vez mais detalhes da análise no Supabase.</p></div><div class="savedReportActions"><button class="outline" onclick="window.print()">Imprimir</button><button class="primary" id="closeSavedReport2">Fechar</button></div>`;
- document.getElementById('savedReportModal')?.classList.add('show');document.getElementById('savedReportOverlay')?.classList.add('show');
- document.getElementById('closeSavedReport2')?.addEventListener('click',closeSavedReport);
+ state.currentReport=report;
+ renderFullSavedReport(report);
+ route('report');
 }
-function closeSavedReport(){document.getElementById('savedReportModal')?.classList.remove('show');document.getElementById('savedReportOverlay')?.classList.remove('show')}
-function updateMark(){const title=document.getElementById('ctxTitle'),text=document.getElementById('ctxText');if(state.route==='detail'&&state.current){title.textContent=state.current.title;text.textContent=`Página atual + nicho ${state.profile.niche}. Posso adaptar esta solução.`}else if(state.route==='central'){title.textContent='Minha Central';text.textContent='Posso revisar seus favoritos e sugerir o próximo passo.'}else{title.textContent=state.profile.niche;text.textContent='Posso indicar estratégias, análises, ferramentas e conteúdos para este nicho.'}}
+function closeSavedReport(){route('central')}
+function updateMark(){const title=document.getElementById('ctxTitle'),text=document.getElementById('ctxText');if(state.route==='detail'&&state.current){title.textContent=state.current.title;text.textContent=`Página atual + nicho ${state.profile.niche}. Posso adaptar esta solução.`}else if(state.route==='central'){title.textContent='Minha Central';text.textContent='Posso revisar seus favoritos e sugerir o próximo passo.'}else if(state.route==='report'){title.textContent='Relatório salvo';text.textContent='Posso ajudar a interpretar este relatório e transformar prioridades em próximos passos.'}else{title.textContent=state.profile.niche;text.textContent='Posso indicar estratégias, análises, ferramentas e conteúdos para este nicho.'}}
 function markReply(q){if(state.route==='detail'&&state.current)return `Para ${state.profile.niche}, eu adaptaria “${state.current.title}” para uma ação simples, específica e mensurável. Posso transformar esta página em checklist ou plano.`;if(/começo|começar|primeiro/i.test(q))return `Eu começaria por uma análise curta da área mais ligada ao seu objetivo e depois abriria uma ferramenta prática. Para ${state.profile.niche}, a vitrine “Recomendado para você” já está ordenada nessa lógica.`;return `Considerando ${state.profile.niche}, eu posso filtrar a vitrine, explicar um card, comparar opções ou transformar uma ideia em próximos passos.`}
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2100)}
 
@@ -1059,7 +1075,7 @@ document.getElementById('logoutBtn')?.addEventListener('click',()=>window.mivLog
 history.replaceState({mivRoute:state.route||'home'},'',location.hash?location.href:location.pathname);
 window.addEventListener('popstate',e=>{
  const name=e.state?.mivRoute || (location.hash?location.hash.slice(1):'home');
- route(name,{fromPop:true,instant:true});
+ if(name==='report'&&state.currentReport)renderFullSavedReport(state.currentReport);route(name,{fromPop:true,instant:true});
 });
 initSupabase();
 
@@ -1127,5 +1143,5 @@ initSupabase();
   },true);
 })();
 
-// V13.10 saved report modal controls
-document.getElementById('closeSavedReport')?.addEventListener('click',closeSavedReport);document.getElementById('savedReportOverlay')?.addEventListener('click',closeSavedReport);
+// V13.11 saved report modal controls
+document.getElementById('printFullReport')?.addEventListener('click',()=>window.print());
