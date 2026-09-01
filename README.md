@@ -19,3 +19,11 @@ Teste principal: salvar empresa em um navegador e abrir a mesma conta em outro n
 - Navegação usa History API: Voltar/Avançar do navegador.
 - Botão Entrar destacado em azul.
 - Favoritos dependem da tabela public.user_favorites criada por SUPABASE_V13_7.sql.
+
+## V13.9
+- Histórico sincronizado no Supabase por usuário.
+- Relatórios/análises salvos no Supabase por usuário.
+- Progresso de checklists e análises sincronizado no Supabase.
+- Migração automática dos dados locais existentes no primeiro login após criar as tabelas.
+- Favoritos de análises também passam a sincronizar com `user_favorites`.
+- O `localStorage` permanece apenas como cache/espelho para manter a interface rápida.

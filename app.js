@@ -568,7 +568,7 @@ const channelDefinitions=[
 ];
 
 function getChannelState(){try{return JSON.parse(localStorage.getItem('mivChannelChecklist')||'{}')}catch(e){return{}}}
-function setChannelState(data){localStorage.setItem('mivChannelChecklist',JSON.stringify(data))}
+function setChannelState(data){localStorage.setItem('mivChannelChecklist',JSON.stringify(data));persistProgress('channels','canais',data)}
 function channelProgress(ch,stateMap){const vals=ch.items.map(i=>stateMap[`${ch.id}:${i[0]}`]).filter(Boolean);const correct=vals.filter(v=>v==='correct').length;const applicable=ch.items.length-vals.filter(v=>v==='na').length;return applicable?Math.round(correct/applicable*100):0}
 function renderChannelSection(ch,stateMap){const p=channelProgress(ch,stateMap);return `<section class="channelSection" id="channel-${ch.id}"><div class="channelSectionHead"><div><span>${ch.group} · ${ch.importance}</span><h3>${ch.name}</h3><p>${ch.intro}</p></div><div class="channelScore"><strong>${p}%</strong><small>adequado</small></div></div><div class="channelItems">${ch.items.map(item=>{const key=`${ch.id}:${item[0]}`,v=stateMap[key]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-channel-key="${key}"><div class="channelCheckText"><strong>${item[1]}</strong><p>${item[2]}</p></div><div class="channelStates"><button class="${v==='correct'?'active ok':''}" data-check-value="correct">✓ Está certo</button><button class="${v==='improve'?'active improve':''}" data-check-value="improve">○ Preciso fazer isso</button><button class="${v==='na'?'active na':''}" data-check-value="na">× Não se aplica</button></div><div class="pointActions"><button class="paidAction" data-point-suggest data-title="${encodeURIComponent(item[1])}" data-guidance="${encodeURIComponent(item[2])}">🔒 Sugestão para este ponto</button><button class="paidAction" data-point-mark data-title="${encodeURIComponent(item[1])}" data-guidance="${encodeURIComponent(item[2])}">🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div></section>`}
 function renderChannelsModule(){const body=document.getElementById('detailBody'),stateMap=getChannelState();body.innerHTML=`${profileNotice()}<span class="eyebrow">CHECKLIST DE PROFISSIONALIZAÇÃO</span><h2>Como estão seus canais de comunicação?</h2><p>Revise cada canal, marque o que já está certo e acompanhe o que falta melhorar. Seu progresso fica salvo neste navegador durante o protótipo e futuramente será sincronizado com sua conta.</p><div class="channelSummary">${channelDefinitions.map(ch=>`<button class="channelJump" data-channel-jump="${ch.id}"><span>${ch.group}</span><strong>${ch.name}</strong><small>${channelProgress(ch,stateMap)}% concluído</small></button>`).join('')}</div><div id="channelChecklist">${channelDefinitions.map(ch=>renderChannelSection(ch,stateMap)).join('')}</div><div class="channelReportActions"><button class="primary" id="channelSaveReport">Salvar progresso / relatório</button><button class="outline" id="channelPrint">Imprimir relatório</button></div>`;bindChannelChecklist()}
@@ -587,7 +587,7 @@ function bindChannelChecklist(){
  document.querySelectorAll('[data-point-mark]').forEach(b=>b.onclick=()=>askMarkAboutPoint(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance)));
  document.getElementById('channelSaveReport')?.addEventListener('click',()=>{
    const data=getChannelState(),total=channelDefinitions.reduce((n,c)=>n+c.items.length,0),answered=Object.keys(data).length,correct=Object.values(data).filter(v=>v==='correct').length;
-   state.reports.unshift({name:'Relatório · Canais de Comunicação',date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{answered,correct,total}});save();toast('Relatório salvo na sua Central.');
+   addReport({name:'Relatório · Canais de Comunicação',date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{answered,correct,total}});toast('Relatório salvo na sua Central.');
  });
  document.getElementById('channelPrint')?.addEventListener('click',()=>window.print())
 }
@@ -596,7 +596,7 @@ function showChannelsDetail(item){state.current=item;document.getElementById('de
 
 
 function getBusinessChecklistState(id){try{return JSON.parse(localStorage.getItem('mivBusinessChecklist:'+id)||'{}')}catch(e){return{}}}
-function setBusinessChecklistState(id,data){localStorage.setItem('mivBusinessChecklist:'+id,JSON.stringify(data))}
+function setBusinessChecklistState(id,data){localStorage.setItem('mivBusinessChecklist:'+id,JSON.stringify(data));persistProgress('business',id,data)}
 function businessChecklistProgress(def,data){
  const items=def.sections.flatMap(s=>s.items),applicable=items.length-Object.values(data).filter(v=>v==='na').length;
  return applicable?Math.round(Object.values(data).filter(v=>v==='correct').length/applicable*100):0;
@@ -608,7 +608,7 @@ function renderBusinessChecklist(item){
  document.querySelectorAll('[data-business-value]').forEach(b=>b.onclick=()=>{const row=b.closest('[data-business-key]'),d=getBusinessChecklistState(item.id);d[row.dataset.businessKey]=b.dataset.businessValue;setBusinessChecklistState(item.id,d);renderBusinessChecklist(item);toast('Progresso salvo.')});
  document.querySelectorAll('[data-point-suggest]').forEach(b=>b.onclick=()=>{const row=b.closest('.channelCheckItem');row.querySelector('.pointOutput').innerHTML=prototypeSuggestion(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance));row.querySelector('.pointOutput').scrollIntoView({behavior:'smooth',block:'nearest'})});
  document.querySelectorAll('[data-point-mark]').forEach(b=>b.onclick=()=>askMarkAboutPoint(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance)));
- document.getElementById('businessSaveReport')?.addEventListener('click',()=>{const d=getBusinessChecklistState(item.id);state.reports.unshift({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{progress:businessChecklistProgress(def,d)}});save();toast('Relatório salvo na sua Central.')});
+ document.getElementById('businessSaveReport')?.addEventListener('click',()=>{const d=getBusinessChecklistState(item.id);addReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{progress:businessChecklistProgress(def,d)}});toast('Relatório salvo na sua Central.')});
  document.getElementById('businessPrint')?.addEventListener('click',()=>window.print());
 }
 function showBusinessChecklist(item){
@@ -616,7 +616,7 @@ function showBusinessChecklist(item){
 }
 
 function getMarketingChecklistState(id){try{return JSON.parse(localStorage.getItem('mivMarketingChecklist:'+id)||'{}')}catch(e){return{}}}
-function setMarketingChecklistState(id,data){localStorage.setItem('mivMarketingChecklist:'+id,JSON.stringify(data))}
+function setMarketingChecklistState(id,data){localStorage.setItem('mivMarketingChecklist:'+id,JSON.stringify(data));persistProgress('marketing',id,data)}
 function marketingChecklistProgress(def,data){
  const items=def.sections.flatMap(s=>s.items),applicable=items.length-Object.values(data).filter(v=>v==='na').length;
  return applicable?Math.round(Object.values(data).filter(v=>v==='correct').length/applicable*100):0;
@@ -628,7 +628,7 @@ function renderMarketingChecklist(item){
  document.querySelectorAll('[data-mkt-value]').forEach(b=>b.onclick=()=>{const row=b.closest('[data-marketing-key]'),d=getMarketingChecklistState(item.id);d[row.dataset.marketingKey]=b.dataset.mktValue;setMarketingChecklistState(item.id,d);renderMarketingChecklist(item);toast('Progresso salvo.')});
  document.querySelectorAll('[data-point-suggest]').forEach(b=>b.onclick=()=>{const row=b.closest('.channelCheckItem');row.querySelector('.pointOutput').innerHTML=prototypeSuggestion(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance));row.querySelector('.pointOutput').scrollIntoView({behavior:'smooth',block:'nearest'})});
  document.querySelectorAll('[data-point-mark]').forEach(b=>b.onclick=()=>askMarkAboutPoint(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance)));
- document.getElementById('mktSaveReport')?.addEventListener('click',()=>{const d=getMarketingChecklistState(item.id);state.reports.unshift({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{progress:marketingChecklistProgress(def,d)}});save();toast('Relatório salvo na sua Central.')});
+ document.getElementById('mktSaveReport')?.addEventListener('click',()=>{const d=getMarketingChecklistState(item.id);addReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{progress:marketingChecklistProgress(def,d)}});toast('Relatório salvo na sua Central.')});
  document.getElementById('mktPrint')?.addEventListener('click',()=>window.print());
 }
 function showMarketingChecklist(item){
@@ -667,7 +667,7 @@ function showCommercialDetail(item,type){
 
 function openItem(id){const sp=getItem(id);if(sp?.special==='calendar'){openCalendar();return}if(sp?.special==='channels'){showChannelsDetail(sp);return}if(sp?.special==='marketing-checklist'){showMarketingChecklist(sp);return}if(sp?.special==='business-checklist'){showBusinessChecklist(sp);return}if(sp?.special==='consult-sale'){showCommercialDetail(sp,'consult');return}if(sp?.special==='service-sale'){showCommercialDetail(sp,'service');return}if(sp?.special==='notify'){toast('Interesse registrado no protótipo — no produto final este botão salvará o lead para aviso de lançamento.');return}const item=getItem(id);if(!item)return;if(item.access!=='Grátis'){openPaywall(item);return}state.current=item;showDetail(item)}
 function showDetail(item){state.current=item;document.getElementById('useBtn').textContent='Usar agora';document.getElementById('useBtn').onclick=()=>toast('Resultado salvo na sua Central (simulação).');document.getElementById('detailVisual').style.backgroundImage=`url('${item.img}')`;document.getElementById('detailCat').textContent=`${item.cat.toUpperCase()} · ${item.format.toUpperCase()}`;document.getElementById('detailTitle').textContent=item.title;document.getElementById('detailDesc').textContent=item.desc;document.getElementById('favBtn').textContent=state.favorites.includes(item.id)?'♥ Salvo':'♡ Salvar';document.getElementById('detailBody').innerHTML=`<span class="eyebrow">COMO ESTA PÁGINA FUNCIONARIA</span><h2>Conteúdo prático e conectado ao seu contexto</h2><p>Em produção, esta área pode combinar explicação curta, exemplos específicos do nicho, checklist, ferramenta interativa e resultado salvável.</p><h2>Aplicação sugerida</h2><ul><li>Entenda o objetivo desta solução.</li><li>Adapte ao contexto de <strong>${state.profile.niche}</strong>.</li><li>Escolha uma única ação prioritária.</li><li>Salve o resultado na sua Central.</li><li>Peça ao MARK para revisar ou transformar em plano.</li></ul><h2>MARK nesta página</h2><p>O MARK sabe que você está vendo <strong>${item.title}</strong> e pode responder considerando seu nicho atual.</p>`;const rel=items.filter(x=>x.id!==item.id&&(x.cat===item.cat||x.tag===item.tag)).slice(0,5);document.getElementById('related').innerHTML=rel.map(x=>`<div class="relatedItem" data-related="${x.id}"><strong>${x.title}</strong><span>${x.format} · ${x.access}</span></div>`).join('');document.querySelectorAll('[data-related]').forEach(x=>x.onclick=()=>openItem(x.dataset.related));addHistory(item);route('detail')}
-function addHistory(item){if(!state.history.some(x=>x.id===item.id)){state.history.unshift({id:item.id,title:item.title,ts:new Date().toISOString()});save()}}
+function addHistory(item){if(!item)return;const existing=state.history.find(x=>x.id===item.id),entry={id:item.id,title:item.title,ts:new Date().toISOString()};if(existing){Object.assign(existing,entry);state.history=state.history.filter(x=>x.id!==item.id);state.history.unshift(existing)}else state.history.unshift(entry);save();if(mivUser&&mivSupabase)persistHistory(entry).catch(err=>console.warn('[MIV history]',err))}
 function openPaywall(item){state.current=item;document.getElementById('payTitle').textContent=item.title;document.getElementById('singlePrice').textContent=item.price||'Plano Pro';document.getElementById('paywall').classList.add('show');document.getElementById('overlay').classList.add('show')}
 function closePaywall(){document.getElementById('paywall').classList.remove('show');if(!document.getElementById('mark').classList.contains('open'))document.getElementById('overlay').classList.remove('show')}
 function renderAnalyses(){const analysisImgs={empresa:imgs.team,marca:imgs.store,mercado:imgs.analytics,oferta:imgs.planning,presenca:imgs.store,marketing:imgs.marketing,vendas:imgs.sales,clientes:imgs.team,gestao:imgs.analytics};document.getElementById('analysisGrid').innerHTML=analyses.map((a,i)=>{const saved=state.analysisFav.includes(a[0]);return `<article class="analysisCard"><div class="analysisPhoto analysisPhotoFallback"><img src="${analysisImgs[a[0]]||imgs.team}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><span>ÁREA ${i+1}</span><button class="analysisFav ${saved?'saved':''}" data-analysis-fav="${a[0]}">${saved?'♥':'♡'}</button></div><div class="analysisContent"><h3>${a[2]}</h3><h4>${a[3]}?</h4><p>O MARK investiga esta área considerando seu momento, objetivo, capacidade e contexto — sem procurar uma resposta padrão.</p><div class="subs">${a[4].map(s=>`<button data-sub="${a[0]}|${s}"><span><b>${s}</b><small>Analisar este ponto separadamente</small></span><strong>Analisar</strong></button>`).join('')}</div><div class="analysisActions"><button class="analysisFull" data-analysis="${a[0]}">Analisar área completa</button><button class="seeSubs">Ver ${a[4].length} subanálises</button></div></div></article>`}).join('');bindAnalysisFav();document.querySelectorAll('[data-analysis]').forEach(b=>b.onclick=()=>startAnalysis(b.dataset.analysis));document.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>startAnalysis(...b.dataset.sub.split('|')))}
@@ -706,7 +706,7 @@ function analysisQuestions(id,sub=''){
 }
 function analysisKey(id,sub=''){return 'mivAnalysis:'+id+':'+sub}
 function getAnalysisData(id,sub=''){try{return JSON.parse(localStorage.getItem(analysisKey(id,sub))||'{}')}catch(e){return{}}}
-function saveAnalysisData(id,sub,data){localStorage.setItem(analysisKey(id,sub),JSON.stringify(data))}
+function saveAnalysisData(id,sub,data){localStorage.setItem(analysisKey(id,sub),JSON.stringify(data));persistProgress('analysis',id+':'+sub,data)}
 function analysisSpecialistView(score,priorities){
  let intro=score>=75
   ?'A base desta área está relativamente organizada. Agora vale concentrar energia nos poucos pontos que ainda limitam o resultado.'
@@ -716,8 +716,8 @@ function analysisSpecialistView(score,priorities){
  return `<div class="specialistView"><span class="eyebrow">VISÃO DOS ESPECIALISTAS</span><h3>O que priorizar agora</h3><p>${intro}</p>${priorities.length?priorities.map((x,i)=>`<div class="specialistPriority"><strong>${i+1}</strong><span>${x}</span></div>`).join(''):'<div class="specialistPriority"><strong>1</strong><span>Consolide os pontos avaliados e avance para otimizações de maior impacto.</span></div>'}<p class="specialistHuman">Esta orientação representa a metodologia da MivCast aplicada às informações fornecidas. Ela não significa que houve revisão humana individual nesta etapa.</p></div>`;
 }
 function toggleAnalysisFavorite(id){
- state.analysisFav=state.analysisFav.includes(id)?state.analysisFav.filter(x=>x!==id):[...state.analysisFav,id];
- save();
+ const adding=!state.analysisFav.includes(id);state.analysisFav=adding?[...state.analysisFav,id]:state.analysisFav.filter(x=>x!==id);
+ save();if(mivUser&&mivSupabase)persistFavorite('analysis',id,adding).catch(err=>console.warn('[MIV analysis favorite]',err));
  if(state.route==='home')renderAnalyses();
  if(state.route==='detail')document.getElementById('favBtn').textContent=state.analysisFav.includes(id)?'♥ Salvo':'♡ Salvar';
  toast(state.analysisFav.includes(id)?'Análise salva na Minha Central':'Análise removida dos favoritos');
@@ -741,7 +741,7 @@ function renderAnalysisDetail(id,sub=''){
    const d=getAnalysisData(id,sub),vals=points.map((_,i)=>d['s'+i]).filter(Boolean),app=vals.filter(v=>v!=='na').length||1,ok=vals.filter(v=>v==='correct').length,score=Math.round(ok/app*100);
    const priorities=points.filter((_,i)=>d['s'+i]==='improve').slice(0,3);
    document.getElementById('analysisResult').innerHTML=`<div class="analysisResultCard"><span class="eyebrow">RESULTADO DA ANÁLISE</span><h3>${score}% de adequação inicial</h3><p>Este resultado combina suas respostas específicas com o Perfil da Empresa.</p>${priorities.length?`<div class="analysisPriorities">${priorities.map((x,i)=>`<div><strong>${i+1}</strong><span>${x}</span></div>`).join('')}</div>`:'<p>Nenhum ponto foi marcado como “Preciso fazer isso” nesta etapa.</p>'}${analysisSpecialistView(score,priorities)}<button class="outline" onclick="window.print()">Imprimir relatório</button></div>`;
-   state.reports.unshift({name:`Relatório · ${sub?`${a[2]} · ${sub}`:a[2]}`,date:new Date().toLocaleDateString('pt-BR'),status:'Concluído',meta:{score}});save();
+   addReport({name:`Relatório · ${sub?`${a[2]} · ${sub}`:a[2]}`,date:new Date().toLocaleDateString('pt-BR'),status:'Concluído',meta:{score}});
  });
  document.getElementById('analysisPrint')?.addEventListener('click',()=>window.print());
 }
@@ -945,6 +945,31 @@ async function loadFavoritesFromSupabase(){
  state.favorites=(data||[]).filter(x=>x.item_type==='item').map(x=>x.item_id);
  state.analysisFav=(data||[]).filter(x=>x.item_type==='analysis').map(x=>x.item_id);save();renderTracks();try{renderAnalyses()}catch(e){}if(state.route==='central')renderCentral();
 }
+
+function newClientId(){try{return crypto.randomUUID()}catch(e){return 'miv-'+Date.now()+'-'+Math.random().toString(36).slice(2)}}
+function addReport(report){const row={...report,client_id:report.client_id||newClientId(),created_at:report.created_at||new Date().toISOString()};state.reports.unshift(row);save();if(mivUser&&mivSupabase)persistReport(row).catch(err=>console.warn('[MIV report]',err));if(state.route==='central')renderCentral();return row}
+async function persistHistory(entry){if(!mivUser||!mivSupabase)return;const {error}=await mivSupabase.from('user_history').upsert({user_id:mivUser.id,company_id:mivActiveCompanyId||null,item_id:entry.id,title:entry.title||null,last_used_at:entry.ts||new Date().toISOString()},{onConflict:'user_id,item_id'});if(error)throw error}
+async function persistReport(report){if(!mivUser||!mivSupabase)return;const {error}=await mivSupabase.from('user_reports').upsert({user_id:mivUser.id,company_id:mivActiveCompanyId||null,client_id:report.client_id||newClientId(),name:report.name,status:report.status||'Salvo',meta:report.meta||{},created_at:report.created_at||new Date().toISOString()},{onConflict:'user_id,client_id'});if(error)throw error}
+async function persistProgress(progressType,itemId,data){if(!mivUser||!mivSupabase)return;try{const {error}=await mivSupabase.from('user_progress').upsert({user_id:mivUser.id,company_id:mivActiveCompanyId||null,progress_type:progressType,item_id:String(itemId||''),data:data||{},updated_at:new Date().toISOString()},{onConflict:'user_id,progress_type,item_id'});if(error)throw error}catch(err){console.warn('[MIV progress]',err)}}
+function collectLocalProgress(){const rows=[];const push=(type,id,key)=>{try{const raw=localStorage.getItem(key);if(raw){const data=JSON.parse(raw);if(data&&Object.keys(data).length)rows.push({progress_type:type,item_id:id,data})}}catch(e){}};push('channels','canais','mivChannelChecklist');for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i)||'';if(k.startsWith('mivBusinessChecklist:'))push('business',k.slice('mivBusinessChecklist:'.length),k);else if(k.startsWith('mivMarketingChecklist:'))push('marketing',k.slice('mivMarketingChecklist:'.length),k);else if(k.startsWith('mivAnalysis:'))push('analysis',k.slice('mivAnalysis:'.length),k)}return rows}
+function mirrorProgressRows(rows){for(const row of rows||[]){const d=JSON.stringify(row.data||{});if(row.progress_type==='channels')localStorage.setItem('mivChannelChecklist',d);else if(row.progress_type==='business')localStorage.setItem('mivBusinessChecklist:'+row.item_id,d);else if(row.progress_type==='marketing')localStorage.setItem('mivMarketingChecklist:'+row.item_id,d);else if(row.progress_type==='analysis')localStorage.setItem('mivAnalysis:'+row.item_id,d)}}
+async function loadWorkspaceFromSupabase(){
+ if(!mivUser||!mivSupabase)return;
+ const localHistory=[...state.history],localReports=[...state.reports],localProgress=collectLocalProgress();
+ const [{data:h,error:he},{data:r,error:re},{data:p,error:pe}]=await Promise.all([
+  mivSupabase.from('user_history').select('item_id,title,last_used_at').eq('user_id',mivUser.id).order('last_used_at',{ascending:false}).limit(100),
+  mivSupabase.from('user_reports').select('client_id,name,status,meta,created_at').eq('user_id',mivUser.id).order('created_at',{ascending:false}).limit(100),
+  mivSupabase.from('user_progress').select('progress_type,item_id,data,updated_at').eq('user_id',mivUser.id)
+ ]);
+ if(he)throw he;if(re)throw re;if(pe)throw pe;
+ let hist=h||[],reps=r||[],prog=p||[];
+ if(!hist.length&&localHistory.length){const rows=localHistory.map(x=>({user_id:mivUser.id,company_id:mivActiveCompanyId||null,item_id:x.id,title:x.title||null,last_used_at:x.ts||new Date().toISOString()}));const {error}=await mivSupabase.from('user_history').upsert(rows,{onConflict:'user_id,item_id'});if(error)throw error;hist=rows.map(x=>({item_id:x.item_id,title:x.title,last_used_at:x.last_used_at}))}
+ if(!reps.length&&localReports.length){const rows=localReports.map(x=>({user_id:mivUser.id,company_id:mivActiveCompanyId||null,client_id:x.client_id||newClientId(),name:x.name,status:x.status||'Salvo',meta:x.meta||{},created_at:x.created_at||new Date().toISOString()}));const {error}=await mivSupabase.from('user_reports').upsert(rows,{onConflict:'user_id,client_id'});if(error)throw error;reps=rows}
+ if(!prog.length&&localProgress.length){const rows=localProgress.map(x=>({user_id:mivUser.id,company_id:mivActiveCompanyId||null,progress_type:x.progress_type,item_id:x.item_id,data:x.data,updated_at:new Date().toISOString()}));const {error}=await mivSupabase.from('user_progress').upsert(rows,{onConflict:'user_id,progress_type,item_id'});if(error)throw error;prog=rows}
+ state.history=hist.map(x=>({id:x.item_id,title:x.title||getItem(x.item_id)?.title||x.item_id,ts:x.last_used_at}));
+ state.reports=reps.map(x=>({client_id:x.client_id,name:x.name,status:x.status,date:new Date(x.created_at).toLocaleDateString('pt-BR'),created_at:x.created_at,meta:x.meta||{}}));
+ mirrorProgressRows(prog);save();if(state.route==='central')renderCentral();
+}
 async function getFirstCompanyLink(){
  const {data,error}=await mivSupabase.from('company_users').select('company_id,member_role,created_at').eq('user_id',mivUser.id).order('created_at',{ascending:true}).limit(1);
  if(error)throw error;return data?.[0]||null;
@@ -998,6 +1023,7 @@ async function applyAuthSession(session){
  Promise.resolve().then(async()=>{
   try{await loadCompanyFromSupabase()}catch(e){console.warn('[MIV company hydrate]',e)}
   try{await loadFavoritesFromSupabase()}catch(e){console.warn('[MIV favorites hydrate]',e)}
+  try{await loadWorkspaceFromSupabase()}catch(e){console.warn('[MIV workspace hydrate]',e)}
   if(state.route==='central')renderCentral();
  });
 }
