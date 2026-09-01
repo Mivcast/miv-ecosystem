@@ -38,3 +38,9 @@ Nenhuma chave secreta foi incluída nos arquivos. `SUPABASE_SECRET_KEY`, `MERCAD
 3. O paywall aceita cupom. Desconto é validado/calculado no backend.
 4. Cupom 100% libera sem Mercado Pago e registra a utilização.
 5. Pagamentos com desconto levam o valor final no metadata; o webhook confere o valor e registra a utilização.
+
+## V13.19 — Cupom com prévia
+- Botão Aplicar no paywall.
+- Validação segura em `/api/validate-coupon`.
+- Exibe preço original, desconto e total antes de abrir Mercado Pago.
+- O checkout continua recalculando o cupom no backend; a prévia não é fonte de verdade do preço.
