@@ -956,7 +956,8 @@ bindCalendar();
 const authModal=document.getElementById('authModal');
 let mivSupabase=null;
 function hasProAccess(){return accessState.plan==='pro'||accessState.plan==='premium'}
-function hasItemAccess(item){if(!item)return false;if(item.access==='Grátis')return true;if(hasProAccess())return true;return accessState.purchases.has(String(item.id))}
+function normalizeAccessItemId(id){const key=String(id||'').trim().toLowerCase();const aliases={'script-whatsapp':'whatsapp','whatsapp-script':'whatsapp','mark-ia':'mark'};return aliases[key]||key}
+function hasItemAccess(item){if(!item)return false;if(item.access==='Grátis')return true;if(hasProAccess())return true;return accessState.purchases.has(normalizeAccessItemId(item.id))}
 function planLabel(){return accessState.plan==='premium'?'Premium':accessState.plan==='pro'?'Pro':'Grátis'}
 function openPlanPaywall(title){const fake={id:'plan-gate',title:title||'Conteúdo Pro',price:'Plano Pro'};state.current=fake;document.getElementById('payTitle').textContent=fake.title;document.getElementById('singlePrice').textContent='Plano Pro';document.getElementById('paywall').classList.add('show');document.getElementById('overlay').classList.add('show')}
 async function loadAccessFromSupabase(){
@@ -970,7 +971,7 @@ async function loadAccessFromSupabase(){
  if(se)console.warn('[MIV access subscription]',se);if(be)console.warn('[MIV access purchases]',be);
  const sub=(subs||[])[0]||null;
  if(sub&&(!sub.current_period_end||sub.current_period_end>now)){accessState.plan=['pro','premium'].includes(sub.plan)?sub.plan:'free';accessState.subscription=sub}
- accessState.purchases=new Set((buys||[]).map(x=>String(x.item_id)));
+ accessState.purchases=new Set((buys||[]).map(x=>normalizeAccessItemId(x.item_id)));
  renderAccessUI();renderTracks();try{renderAnalyses()}catch(e){}if(state.route==='central')renderCentral();
 }
 function renderAccessUI(){
