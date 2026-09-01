@@ -1,3 +1,7 @@
+# MIV Ecosystem V13.16 — Checkout Mercado Pago (teste)
+
+Esta versão conecta o botão de compra avulsa do Script inteligente de WhatsApp ao Checkout Pro do Mercado Pago em ambiente de teste. O preço e o item são validados no backend; o Access Token permanece apenas nas variáveis de ambiente da Vercel. A liberação automática após pagamento será implementada na próxima etapa via Webhook assinado.
+
 # MIV Ecosystem — V13.11 RELATÓRIO COMPLETO
 
 Baseada na V13.10.
