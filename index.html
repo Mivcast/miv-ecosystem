@@ -116,7 +116,7 @@
     <div class="filterbar" id="learnFilters">
       <button class="active" data-learn-filter="Todos">Todos</button><button data-learn-filter="Curso">Cursos</button><button data-learn-filter="Guia">Guias</button><button data-learn-filter="Livro">Livros</button><button data-learn-filter="Vídeo">Vídeos</button><i></i><button data-learn-filter="Grátis">Grátis</button><button data-learn-filter="Pago">Pagos</button>
     </div>
-    <div class="shelf" id="learnTrack"></div>
+    <div class="learnDiscovery"><input id="learnSearch" placeholder="Buscar conteúdo, tema ou assunto"><select id="learnArea"><option value="Todos">Todas as áreas</option></select><select id="learnLevel"><option value="Todos">Todos os níveis</option><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select></div><div class="shelf" id="learnTrack"></div><div id="learningTracks" class="learningTracks"></div>
   </section>
 
   <section class="credibility" id="credibilidade">
@@ -200,6 +200,10 @@
     <div class="companyProfileActions"><button class="primary" id="saveCompanyProfile">Salvar informações da empresa</button><span id="companyProfileStatus"></span></div>
   </section>
   <div class="wrap stats"><div>Favoritos<strong id="favCount">0</strong></div><div>Conteúdos usados<strong id="usedCount">0</strong></div><div>Análises<strong id="repCount">0</strong></div><div>Progresso<strong id="progCount">18%</strong></div></div>
+  <section class="wrap centralSec"><span class="eyebrow">CONTINUE DE ONDE PAROU</span><h2>Em andamento</h2><div class="centralGrid" id="centralContinue"></div></section>
+  <section class="wrap centralSec"><span class="eyebrow">RECOMENDADO PARA SUA EMPRESA</span><div class="centralTitleActions"><h2>Próximos passos sugeridos</h2><button class="outline" id="centralAskMark">Perguntar ao MARK.IA</button></div><div class="centralGrid" id="centralRecommendations"></div></section>
+  <section class="wrap centralSec"><span class="eyebrow">CALENDÁRIO</span><h2>Ideias de marketing salvas</h2><div class="centralGrid" id="centralCalendarIdeas"></div></section>
+  <section class="wrap centralSec"><span class="eyebrow">SEUS ACESSOS</span><h2>Compras e liberações</h2><div class="centralGrid" id="centralPurchases"></div></section>
   <section class="wrap centralSec"><span class="eyebrow">SALVOS POR VOCÊ</span><h2>Favoritos</h2><div class="centralGrid" id="favorites"></div></section>
   <section class="wrap centralSec"><span class="eyebrow">SEU HISTÓRICO</span><h2>O que você já usou</h2><div id="history"></div></section>
   <section class="wrap centralSec"><span class="eyebrow">ANÁLISES</span><h2>Relatórios e diagnósticos</h2><div class="centralGrid" id="reports"></div></section>
