@@ -45,28 +45,64 @@ function safeHexEqual(a, b) {
   return crypto.timingSafeEqual(left, right);
 }
 
-function verifyMercadoPagoSignature(req, secret) {
-  const xSignature = first(req.headers['x-signature']);
-  const xRequestId = first(req.headers['x-request-id']);
-  const queryDataIdRaw = first(req.query?.['data.id']);
-  const queryDataId = queryDataIdRaw == null ? '' : String(queryDataIdRaw).toLowerCase();
+function getQueryParam(req, name) {
+  // Em Vercel, nomes com ponto (ex.: data.id) podem variar conforme a camada
+  // que fez o parsing. Lemos primeiro a URL bruta com WHATWG URL e usamos
+  // req.query somente como fallback.
+  try {
+    const rawUrl = String(req.url || '');
+    const parsed = new URL(rawUrl, 'https://miv-ecosystem.local');
+    const value = parsed.searchParams.get(name);
+    if (value != null) return value;
+  } catch (_) {}
 
+  const direct = first(req.query?.[name]);
+  if (direct != null) return direct;
+
+  // Compatibilidade com exemplos antigos da documentação que usam data_id.
+  if (name === 'data.id') {
+    const legacy = first(req.query?.data_id);
+    if (legacy != null) return legacy;
+  }
+  return null;
+}
+
+function verifyMercadoPagoSignature(req, secretInput) {
+  const xSignature = first(req.headers['x-signature']);
+  const xRequestIdRaw = first(req.headers['x-request-id']);
+  const xRequestId = xRequestIdRaw == null ? '' : String(xRequestIdRaw).trim();
+  const queryDataIdRaw = getQueryParam(req, 'data.id');
+  const queryDataId = queryDataIdRaw == null ? '' : String(queryDataIdRaw).trim().toLowerCase();
+  const secret = String(secretInput || '').trim();
+
+  if (!secret) return { ok: false, reason: 'missing_secret' };
   if (!xSignature) return { ok: false, reason: 'missing_x_signature' };
 
   const { ts, v1 } = parseSignature(xSignature);
   if (!ts || !v1) return { ok: false, reason: 'invalid_x_signature' };
 
-  // Manifest oficial do Mercado Pago. Pares ausentes são omitidos.
+  // Manifest oficial do Mercado Pago:
+  // id:<data.id>;request-id:<x-request-id>;ts:<ts>;
+  // Campos ausentes são omitidos.
   let manifest = '';
   if (queryDataId) manifest += `id:${queryDataId};`;
   if (xRequestId) manifest += `request-id:${xRequestId};`;
   if (ts) manifest += `ts:${ts};`;
 
-  const expected = crypto.createHmac('sha256', secret).update(manifest).digest('hex');
+  const expected = crypto.createHmac('sha256', secret).update(manifest, 'utf8').digest('hex');
+  const ok = safeHexEqual(expected, String(v1).trim());
+
   return {
-    ok: safeHexEqual(expected, v1),
-    reason: safeHexEqual(expected, v1) ? null : 'signature_mismatch',
-    queryDataId
+    ok,
+    reason: ok ? null : 'signature_mismatch',
+    queryDataId,
+    // Diagnóstico seguro: não registra segredo, assinatura ou manifest completo.
+    debug: {
+      hasDataId: Boolean(queryDataId),
+      hasRequestId: Boolean(xRequestId),
+      hasTimestamp: Boolean(ts),
+      secretLength: secret.length
+    }
   };
 }
 
@@ -96,7 +132,7 @@ async function upsertPurchase({ supabaseUrl, secretKey, row }) {
 module.exports = async function handler(req, res) {
   // Ajuda a confirmar rapidamente que a rota foi publicada, sem processar nada.
   if (req.method === 'GET') {
-    return send(res, 200, { ok: true, service: 'miv-mercadopago-webhook', version: '13.18' });
+    return send(res, 200, { ok: true, service: 'miv-mercadopago-webhook', version: '13.22' });
   }
 
   if (req.method !== 'POST') {
@@ -117,7 +153,7 @@ module.exports = async function handler(req, res) {
 
     const signature = verifyMercadoPagoSignature(req, webhookSecret);
     if (!signature.ok) {
-      console.warn('[MIV webhook] Assinatura inválida:', signature.reason);
+      console.warn('[MIV webhook] Assinatura inválida:', signature.reason, signature.debug || {});
       return send(res, 401, { error: 'Assinatura inválida.' });
     }
 
