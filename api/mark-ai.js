@@ -44,6 +44,19 @@ module.exports=async function handler(req,res){
     const ur=await fetch(`${su}/auth/v1/user`,{headers:{apikey:pk,Authorization:`Bearer ${token}`}});
     if(!ur.ok)return send(res,401,{error:'Sua sessão expirou. Entre novamente.'});
     const user=await ur.json();
+    // V13.29: franquia mensal do MARK.IA — Grátis 5, PRO 80, Premium 300 (limites pagos vêm do Admin/Supabase).
+    const now=new Date(), periodMonth=`${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,'0')}-01`;
+    let plan='free', markLimit=5;
+    const activeSubs=await rows(su,sk,`user_subscriptions?user_id=eq.${user.id}&status=eq.active&select=plan,current_period_end,created_at&order=created_at.desc&limit=1`);
+    const activeSub=activeSubs[0];
+    if(activeSub&&(!activeSub.current_period_end||new Date(activeSub.current_period_end)>now)&&['pro','premium'].includes(activeSub.plan)){
+      plan=activeSub.plan;
+      const planRows=await rows(su,sk,`subscription_plans?plan_key=eq.${plan}&select=mark_monthly_limit&limit=1`);
+      markLimit=Number(planRows[0]?.mark_monthly_limit||(plan==='premium'?300:80));
+    }
+    const usageRows=await rows(su,sk,`mark_ai_usage?user_id=eq.${user.id}&period_month=eq.${periodMonth}&select=interactions&limit=1`);
+    const used=Number(usageRows[0]?.interactions||0);
+    if(used>=markLimit)return send(res,429,{error:`Você atingiu as ${markLimit} interações do MARK.IA disponíveis neste mês no plano ${plan==='free'?'Grátis':plan==='pro'?'PRO':'Premium'}.`,code:'mark_monthly_limit',usage:{plan,used,limit:markLimit,remaining:0}});
     const question=clean(req.body?.question,5000);if(!question)return send(res,400,{error:'Digite uma pergunta.'});
     const itemId=clean(req.body?.context?.item_id,160).toLowerCase();
     const route=clean(req.body?.context?.route,80);const pageTitle=clean(req.body?.context?.title,400);
@@ -91,6 +104,9 @@ module.exports=async function handler(req,res){
     if(!gr.ok){console.error('[MARK Gemini]',gr.status,JSON.stringify(gd).slice(0,1200));return send(res,502,{error:'O MARK.IA não conseguiu gerar a resposta agora.',code:'gemini_error'});}
     const answer=(gd.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').trim();
     if(!answer)return send(res,502,{error:'O MARK.IA recebeu uma resposta vazia. Tente novamente.'});
-    return send(res,200,{answer,sources:extractSources(gd),web_used:extractSources(gd).length>0,web_mode:webMode,model});
+    const nextUsed=used+1;
+    const usageResp=await sbFetch(su,sk,'mark_ai_usage?on_conflict=user_id,period_month',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:user.id,period_month:periodMonth,interactions:nextUsed,updated_at:new Date().toISOString()})});
+    if(!usageResp.ok)console.warn('[MARK usage]',usageResp.status,await usageResp.text().catch(()=>''));
+    return send(res,200,{answer,sources:extractSources(gd),web_used:extractSources(gd).length>0,web_mode:webMode,model,usage:{plan,used:nextUsed,limit:markLimit,remaining:Math.max(0,markLimit-nextUsed)}});
   }catch(e){console.error('[MARK.IA]',e);return send(res,500,{error:'Não foi possível conversar com o MARK.IA agora.'});}
 };
