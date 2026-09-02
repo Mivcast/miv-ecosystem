@@ -132,7 +132,7 @@ async function upsertPurchase({ supabaseUrl, secretKey, row }) {
 module.exports = async function handler(req, res) {
   // Ajuda a confirmar rapidamente que a rota foi publicada, sem processar nada.
   if (req.method === 'GET') {
-    return send(res, 200, { ok: true, service: 'miv-mercadopago-webhook', version: '13.22' });
+    return send(res, 200, { ok: true, service: 'miv-mercadopago-webhook', version: '13.28' });
   }
 
   if (req.method !== 'POST') {
@@ -158,9 +158,31 @@ module.exports = async function handler(req, res) {
     }
 
     const type = String(req.body?.type || first(req.query?.type) || '').toLowerCase();
-    if (type && type !== 'payment') {
+
+    if (type === 'subscription_preapproval') {
+      const subscriptionId = String(signature.queryDataId || req.body?.data?.id || '').trim();
+      if (!subscriptionId) return send(res, 200, {received:true,verified:true,processed:false,reason:'missing_subscription_id'});
+      const sr = await fetch(`https://api.mercadopago.com/preapproval/${encodeURIComponent(subscriptionId)}`, {headers:{Authorization:`Bearer ${mpToken}`}});
+      const sub = await sr.json().catch(()=>({}));
+      if (!sr.ok) return send(res, 200, {received:true,verified:true,processed:false,reason:'subscription_unavailable'});
+      const parts=String(sub.external_reference||'').split('|');
+      const userId=parts[0]==='miv-sub'?String(parts[1]||''):''; const plan=parts[0]==='miv-sub'?String(parts[2]||''):'';
+      const uuidPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if(!uuidPattern.test(userId)||!['pro','premium'].includes(plan)) return send(res,200,{received:true,verified:true,processed:false,reason:'invalid_subscription_metadata'});
+      const mpStatus=String(sub.status||'').toLowerCase();
+      const status=mpStatus==='authorized'?'active':mpStatus==='pending'?'pending':mpStatus==='paused'?'past_due':['cancelled','canceled'].includes(mpStatus)?'canceled':'pending';
+      const row={user_id:userId,plan,status,provider:'mercadopago',provider_subscription_id:String(sub.id||subscriptionId),provider_plan_id:sub.preapproval_plan_id||null,payer_email:sub.payer_email||null,current_period_start:sub.date_created||new Date().toISOString(),current_period_end:sub.next_payment_date||null,next_payment_date:sub.next_payment_date||null,last_payment_status:sub.summarized?.last_charged_amount?'charged':null,updated_at:new Date().toISOString()};
+      const ur=await fetch(`${supabaseUrl}/rest/v1/user_subscriptions?on_conflict=provider_subscription_id`,{method:'POST',headers:{apikey:supabaseSecretKey,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(row)});
+      if(!ur.ok){console.error('[MIV webhook subscription] Supabase',ur.status,await ur.text());return send(res,500,{error:'Falha ao atualizar assinatura.'})}
+      await fetch(`${supabaseUrl}/rest/v1/subscription_events`,{method:'POST',headers:{apikey:supabaseSecretKey,'Content-Type':'application/json'},body:JSON.stringify({user_id:userId,provider:'mercadopago',provider_subscription_id:String(sub.id||subscriptionId),event_type:type,provider_status:mpStatus,payload:{id:sub.id,status:sub.status,next_payment_date:sub.next_payment_date}})});
+      console.log('[MIV webhook] Assinatura atualizada:',{userId,plan,status,subscriptionId});
+      return send(res,200,{received:true,verified:true,processed:true,subscription:true,status});
+    }
+
+    if (type && type !== 'payment' && type !== 'subscription_authorized_payment') {
       return send(res, 200, { received: true, verified: true, processed: false, reason: 'event_ignored' });
     }
+    if(type==='subscription_authorized_payment') return send(res,200,{received:true,verified:true,processed:false,reason:'invoice_event_acknowledged'});
 
     // Para consultar o recurso usamos o ID do body como fallback. Para validar a assinatura,
     // o ID continua vindo exclusivamente do query param, como exige o Mercado Pago.
