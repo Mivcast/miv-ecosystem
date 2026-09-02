@@ -262,7 +262,7 @@
         <button id="calNext">›</button>
         <button id="calToday" class="calToday">Hoje</button>
       </div>
-      <div class="calLegend"><span>● Nacional</span><span>★ Relevante</span><span>◆ Personalizada</span></div>
+      <div class="calLegend"><span>● Nacional/Local</span><span>▲ Nicho</span><span>★ Relevante</span><span>◆ Personalizada</span></div>
     </div>
     <div class="calLayout">
       <div>
@@ -277,11 +277,13 @@
         <input id="calCity" placeholder="Ex.: Votuporanga / SP">
         <label>Datas da empresa, equipe ou pessoais</label>
         <textarea id="calCustomDates" placeholder="Ex.: 31 de agosto - aniversário da Claudia&#10;15/09 - aniversário da empresa&#10;20 de outubro - evento interno"></textarea>
-        <button class="primary full" id="calSaveImportant">Salvar datas importantes</button>
+        <button class="primary full" id="calSaveImportant">Salvar configuração</button>
+        <button class="secondary full calResearchBtn" id="calRefreshResearch">↻ Atualizar datas do nicho/cidade</button>
+        <div id="calSources" class="calSources"></div>
         <div class="calSavedStatus" id="calSavedStatus">Nenhuma personalização salva neste navegador.</div>
         <p><b>Grátis:</b> visualizar datas, relevância e oportunidades.</p>
         <p>🔒 <b>Planos pagos:</b> ideias completas de criativos, campanhas, ofertas, mensagens e CTA para cada data.</p>
-        <small class="calPrototypeNote">No protótipo local, nicho, cidade e datas próprias ficam salvos no navegador. A busca automática de eventos da cidade/nicho será conectada ao backend.</small>
+        <small class="calPrototypeNote">Datas nacionais ficam disponíveis para todos. Ao atualizar, o MARK.IA pesquisa datas do nicho e eventos locais atuais. Eventos externos devem ser conferidos nas fontes apresentadas.</small>
       </aside>
     </div>
   </div>
@@ -296,5 +298,5 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=13.14"></script>
+<script src="app.js?v=13.26"></script>
 </body></html>
