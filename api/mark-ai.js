@@ -84,7 +84,8 @@ module.exports=async function handler(req,res){
     contents.push({role:'user',parts:[{text:question}]});
     const body={systemInstruction:{parts:[{text:system}]},contents,generationConfig:{temperature:0.45,maxOutputTokens:1800}};
     if(webMode!=='never')body.tools=[{google_search:{}}];
-    const model=/^[a-zA-Z0-9._-]+$/.test(settings.model_name||'')?settings.model_name:'gemini-2.5-flash';
+    let model=/^[a-zA-Z0-9._-]+$/.test(settings.model_name||'')?settings.model_name:'gemini-3.8-flash';
+    if(model==='gemini-2.5-flash') model='gemini-3.8-flash';
     const gr=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,{method:'POST',headers:{'x-goog-api-key':gk,'Content-Type':'application/json'},body:JSON.stringify(body)});
     const gd=await gr.json().catch(()=>({}));
     if(!gr.ok){console.error('[MARK Gemini]',gr.status,JSON.stringify(gd).slice(0,1200));return send(res,502,{error:'O MARK.IA não conseguiu gerar a resposta agora.',code:'gemini_error'});}

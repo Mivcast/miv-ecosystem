@@ -15,7 +15,7 @@ NOVO
 - Base de conhecimento textual: conhecimento, método, livro, guia, regra ou outro.
 - Instruções por área.
 - Instruções por card.
-- Configuração de modelo Gemini no Admin (padrão gemini-2.5-flash).
+- Configuração de modelo Gemini no Admin (padrão gemini-3.8-flash).
 - Prompts e base privada não são enviados ao navegador do cliente; o backend monta o contexto.
 
 INSTALAÇÃO

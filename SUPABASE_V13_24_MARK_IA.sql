@@ -8,7 +8,7 @@ create table if not exists public.mark_ai_settings (
   owner_knowledge text,
   response_rules text,
   web_mode text not null default 'when_needed' check (web_mode in ('never','when_needed','always')),
-  model_name text not null default 'gemini-2.5-flash',
+  model_name text not null default 'gemini-3.8-flash',
   updated_at timestamptz not null default now()
 );
 
@@ -20,7 +20,7 @@ values (
  '',
  'Não invente fatos sobre a empresa. Quando faltar informação essencial, diga o que falta e faça perguntas objetivas. Diferencie fatos, hipóteses e recomendações. Não afirme que houve revisão humana quando não houve.',
  'when_needed',
- 'gemini-2.5-flash'
+ 'gemini-3.8-flash'
 ) on conflict (id) do nothing;
 
 create table if not exists public.mark_ai_knowledge (
