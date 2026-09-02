@@ -51,3 +51,7 @@ Nenhuma chave secreta foi incluída nos arquivos. `SUPABASE_SECRET_KEY`, `MERCAD
 - Remove uso incorreto da nova Secret Key como `Authorization: Bearer`, pois ela não é JWT.
 - Corrige validação de cupons, criação de checkout com cupom e gravações do webhook.
 - Não exige novo SQL nem nova variável de ambiente.
+
+
+## V13.24 — MARK.IA + Base de Conhecimento V1
+Veja `README_V13_24.txt` e execute `SUPABASE_V13_24_MARK_IA.sql`. Configure `GEMINI_API_KEY` somente no servidor/Vercel.
