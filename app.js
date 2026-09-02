@@ -1009,12 +1009,34 @@ let mivActiveCompanyId=null;
 let mivCompanySyncing=false;
 function authStatus(id,msg,type=''){const el=document.getElementById(id);if(!el)return;el.textContent=msg||'';el.className='authStatus '+type}
 function friendlyAuthError(err){const m=(err?.message||'').toLowerCase();if(m.includes('invalid login'))return 'E-mail ou senha incorretos.';if(m.includes('already registered'))return 'Este e-mail já possui uma conta.';if(m.includes('password'))return 'A senha precisa atender aos requisitos de segurança.';if(m.includes('email'))return 'Verifique o endereço de e-mail informado.';return err?.message||'Não foi possível concluir. Tente novamente.'}
+let dynamicCatalogReady=false;
+async function loadDynamicCatalog(){
+ if(!mivSupabase)return false;
+ try{
+  const {data:cats,error:ce}=await mivSupabase.from('ecosystem_categories').select('shelf_key,title,active,sort_order').order('sort_order');
+  const {data:rows,error:re}=await mivSupabase.from('ecosystem_cards').select('*').order('sort_order');
+  if(ce||re){console.warn('[MIV catalog] fallback local',ce||re);return false}
+  if(!rows?.length)return false;
+  const byId=new Map(items.map(x=>[x.id,x]));
+  for(const r of rows){
+   const target=byId.get(r.item_id);
+   const data={id:r.item_id,cat:r.cat||'',format:r.format||'',access:r.access_level||'Grátis',price:r.price_label||'',icon:r.icon||'◆',tag:r.tag||'',title:r.title||r.item_id,desc:r.description||'',img:r.image_url||'',special:r.special||null,_dbActive:r.active!==false,_shelf:r.shelf_key,_sort:Number(r.sort_order||0)};
+   if(target)Object.assign(target,data);else{items.push(data);byId.set(data.id,data)}
+  }
+  Object.keys(bases).forEach(k=>bases[k].splice(0,bases[k].length));
+  rows.filter(r=>r.active!==false).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).forEach(r=>{if(bases[r.shelf_key]&&!bases[r.shelf_key].includes(r.item_id))bases[r.shelf_key].push(r.item_id)});
+  dynamicCatalogReady=true;
+  try{renderTracks();if(state.route==='central')renderCentral()}catch(e){console.warn('[MIV catalog render]',e)}
+  return true;
+ }catch(e){console.warn('[MIV catalog]',e);return false}
+}
 async function initSupabase(){
  try{
   const r=await fetch('/api/config',{cache:'no-store'});if(!r.ok)throw new Error('Configuração indisponível.');
   const c=await r.json();if(!c.supabaseUrl||!c.supabasePublishableKey)throw new Error('Variáveis do Supabase não encontradas no Vercel.');
   if(!window.supabase?.createClient)throw new Error('Biblioteca Supabase não carregou.');
   mivSupabase=window.supabase.createClient(c.supabaseUrl,c.supabasePublishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  await loadDynamicCatalog();
   const {data}=await mivSupabase.auth.getSession();await applyAuthSession(data.session);
   mivSupabase.auth.onAuthStateChange((_event,session)=>{if(session)closeAuth();setTimeout(()=>applyAuthSession(session),0)});
  }catch(err){console.error('[MIV Supabase]',err);authStatus('loginStatus','Conexão com a conta indisponível. Recarregue a página.','error')}
