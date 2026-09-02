@@ -55,3 +55,6 @@ Nenhuma chave secreta foi incluída nos arquivos. `SUPABASE_SECRET_KEY`, `MERCAD
 
 ## V13.24 — MARK.IA + Base de Conhecimento V1
 Veja `README_V13_24.txt` e execute `SUPABASE_V13_24_MARK_IA.sql`. Configure `GEMINI_API_KEY` somente no servidor/Vercel.
+
+## V13.25 — Motor de Análises Inteligente
+Ao gerar uma análise, o sistema agora consulta `/api/analysis-ai` e combina Perfil da Empresa, respostas, checklist, score e a base privada do MARK.IA para produzir interpretação estruturada. Se a IA falhar, há fallback local para preservar o fluxo.

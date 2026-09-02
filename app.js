@@ -763,11 +763,24 @@ function renderAnalysisDetail(id,sub=''){
  document.querySelectorAll('[data-analysis-status]').forEach(btn=>btn.addEventListener('click',()=>{const row=btn.closest('[data-analysis-row]'),d=getAnalysisData(id,sub);d['s'+row.dataset.analysisRow]=btn.dataset.analysisStatus;saveAnalysisData(id,sub,d);renderAnalysisDetail(id,sub)}));
  document.querySelectorAll('[data-analysis-suggest]').forEach((btn,i)=>btn.addEventListener('click',()=>{const row=btn.closest('.channelCheckItem');row.querySelector('.pointOutput').innerHTML=prototypeSuggestion(points[i],'Considere este ponto com base na realidade, objetivo e contexto atual da empresa.')}));
  document.querySelectorAll('[data-analysis-mark]').forEach((btn,i)=>btn.addEventListener('click',()=>askMarkAboutPoint(points[i],'Quero entender melhor este ponto dentro desta análise.')));
- document.getElementById('analysisGenerate')?.addEventListener('click',()=>{
+ document.getElementById('analysisGenerate')?.addEventListener('click',async()=>{
    const d=getAnalysisData(id,sub),vals=points.map((_,i)=>d['s'+i]).filter(Boolean),app=vals.filter(v=>v!=='na').length||1,ok=vals.filter(v=>v==='correct').length,score=Math.round(ok/app*100);
-   const priorities=points.filter((_,i)=>d['s'+i]==='improve').slice(0,3);
-   document.getElementById('analysisResult').innerHTML=`<div class="analysisResultCard"><span class="eyebrow">RESULTADO DA ANÁLISE</span><h3>${score}% de adequação inicial</h3><p>Este resultado combina suas respostas específicas com o Perfil da Empresa.</p>${priorities.length?`<div class="analysisPriorities">${priorities.map((x,i)=>`<div><strong>${i+1}</strong><span>${x}</span></div>`).join('')}</div>`:'<p>Nenhum ponto foi marcado como “Preciso fazer isso” nesta etapa.</p>'}${analysisSpecialistView(score,priorities)}<button class="outline" onclick="window.print()">Imprimir relatório</button></div>`;
-   addReport({name:`Relatório · ${sub?`${a[2]} · ${sub}`:a[2]}`,date:new Date().toLocaleDateString('pt-BR'),status:'Concluído',meta:{type:'analysis',analysisId:id,sub,score,answers:qs.map((question,i)=>({question,answer:d['q'+i]||''})),checklist:points.map((point,i)=>({point,status:d['s'+i]||'pending'})),priorities}});
+   const localPriorities=points.filter((_,i)=>d['s'+i]==='improve').slice(0,5);
+   const answers=qs.map((question,i)=>({question,answer:d['q'+i]||''})),checklist=points.map((point,i)=>({point,status:d['s'+i]||'pending'}));
+   const box=document.getElementById('analysisResult');
+   box.innerHTML=`<div class="analysisResultCard"><span class="eyebrow">RESULTADO DA ANÁLISE</span><h3>${score}% de adequação inicial</h3><p>Interpretando respostas, checklist, Perfil da Empresa e metodologia cadastrada no MARK.IA...</p><div class="analysisAiLoading">● ● ● Gerando interpretação inteligente</div></div>`;
+   let ai=null;
+   try{
+     if(mivUser&&mivSupabase){
+       const {data:sessionData,error}=await mivSupabase.auth.getSession();if(error)throw error;const token=sessionData?.session?.access_token;if(!token)throw new Error('Sessão expirada');
+       const r=await fetch('/api/analysis-ai',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({analysis_id:id,analysis_title:a[2],sub,score,answers,checklist})});
+       const out=await r.json().catch(()=>({}));if(!r.ok)throw new Error(out.error||'Falha na interpretação inteligente');ai=out.analysis||null;
+     }
+   }catch(err){console.warn('[MIV analysis-ai]',err);}
+   const priorities=(ai?.priorities?.length?ai.priorities:localPriorities).slice(0,5);
+   const list=(title,arr)=>Array.isArray(arr)&&arr.length?`<section class="analysisAiSection"><span class="eyebrow">${title}</span>${arr.map((x,i)=>`<div class="analysisAiLine"><strong>${i+1}</strong><span>${x}</span></div>`).join('')}</section>`:'';
+   box.innerHTML=`<div class="analysisResultCard"><span class="eyebrow">RESULTADO DA ANÁLISE</span><h3>${score}% de adequação inicial</h3><p>${ai?.score_interpretation||'Este resultado combina suas respostas específicas com o Perfil da Empresa.'}</p>${ai?.summary?`<section class="analysisAiSummary"><span class="eyebrow">LEITURA DO CENÁRIO</span><p>${ai.summary}</p></section>`:''}${list('PONTOS FORTES',ai?.strengths)}${list('GARGALOS IDENTIFICADOS',ai?.bottlenecks)}${priorities.length?`<section class="analysisAiSection"><span class="eyebrow">PRIORIDADES</span><div class="analysisPriorities">${priorities.map((x,i)=>`<div><strong>${i+1}</strong><span>${x}</span></div>`).join('')}</div></section>`:'<p>Nenhum ponto prioritário foi identificado nesta etapa.</p>'}${list('PRÓXIMOS PASSOS',ai?.next_steps)}${list('PONTOS DE ATENÇÃO',ai?.watchouts)}${!ai?analysisSpecialistView(score,priorities):'<p class="specialistHuman">Interpretação gerada pelo MARK.IA com a metodologia cadastrada e os dados fornecidos. Não representa revisão humana individual.</p>'}<button class="outline" onclick="window.print()">Imprimir relatório</button></div>`;
+   addReport({name:`Relatório · ${sub?`${a[2]} · ${sub}`:a[2]}`,date:new Date().toLocaleDateString('pt-BR'),status:'Concluído',meta:{type:'analysis',analysisId:id,sub,score,answers,checklist,priorities,ai}});
  });
  document.getElementById('analysisPrint')?.addEventListener('click',()=>window.print());
 }
