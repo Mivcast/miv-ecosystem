@@ -22,6 +22,7 @@ module.exports=async function(req,res){
  try{
   const su=process.env.SUPABASE_URL,pk=process.env.SUPABASE_PUBLISHABLE_KEY,sk=process.env.SUPABASE_SECRET_KEY,mp=process.env.MERCADOPAGO_ACCESS_TOKEN;
   if(!su||!pk||!sk||!mp)return send(res,500,{error:'Servidor não configurado.'});
+  const payEnv=paymentEnvironment(mp);if(!payEnv.ok){console.error('[MIV payment environment]',payEnv);return send(res,503,{error:payEnv.error,code:'payment_environment_mismatch'});}
   const jwt=String(req.headers.authorization||'').replace(/^Bearer\s+/i,'');const user=await userFromJwt(su,pk,jwt);if(!user?.id||!user.email)return send(res,401,{error:'Entre na sua conta para assinar.'});
   const planKey=String(req.body?.plan||'').toLowerCase();if(!['pro','premium'].includes(planKey))return send(res,400,{error:'Plano inválido.'});
   const plans=await sb(su,sk,`subscription_plans?plan_key=eq.${encodeURIComponent(planKey)}&active=eq.true&select=*&limit=1`);const plan=plans?.[0];
