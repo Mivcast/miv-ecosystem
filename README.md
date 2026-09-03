@@ -58,3 +58,7 @@ Veja `README_V13_24.txt` e execute `SUPABASE_V13_24_MARK_IA.sql`. Configure `GEM
 
 ## V13.25 — Motor de Análises Inteligente
 Ao gerar uma análise, o sistema agora consulta `/api/analysis-ai` e combina Perfil da Empresa, respostas, checklist, score e a base privada do MARK.IA para produzir interpretação estruturada. Se a IA falhar, há fallback local para preservar o fluxo.
+
+
+## V13.33
+Ativação automática pós-pagamento: webhook + reconciliação do próprio usuário no retorno/Minha Central.

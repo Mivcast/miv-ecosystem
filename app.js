@@ -824,7 +824,7 @@ function route(name,options={}){
   if(options.replace)history.replaceState({mivRoute:name},'',url);else history.pushState({mivRoute:name},'',url);
  }
  window.scrollTo({top:0,behavior:options.instant?'auto':'smooth'});
- if(name==='central')renderCentral();updateMark();
+ if(name==='central'){renderCentral();setTimeout(()=>syncMySubscription().catch(()=>{}),150)}updateMark();
 }
 function renderCentral(){renderAccessUI();fillCompanyProfileForm();document.getElementById('centralTitle').textContent=`Sua Central · ${state.profile.niche}`;document.getElementById('favCount').textContent=state.favorites.length+state.analysisFav.length;document.getElementById('usedCount').textContent=state.history.length;document.getElementById('repCount').textContent=state.reports.length;document.getElementById('progCount').textContent=Math.min(100,18+(state.favorites.length+state.analysisFav.length)*3+state.history.length*2+state.reports.length*5)+'%';const fs=state.favorites.map(getItem).filter(Boolean);const af=state.analysisFav.map(id=>id==='completa'?['completa','','Análise Empresarial Completa']:analyses.find(a=>a[0]===id)).filter(Boolean);document.getElementById('favorites').innerHTML=(fs.length||af.length)?fs.map(card).join('')+af.map(a=>`<article class="card centralAnalysisCard"><div class="cardBody"><div class="meta"><span>ANÁLISE FAVORITA</span><small>ANÁLISE</small></div><h3>${a[2]}</h3><p>Salva para você fazer depois.</p><button class="open" data-analysis-central="${a[0]}">Usar agora →</button></div></article>`).join(''):`<div class="empty">Use o ♡ em estratégias, ferramentas, conteúdos ou análises para montar sua biblioteca.</div>`;bindCards();document.querySelectorAll('[data-analysis-central]').forEach(x=>x.onclick=()=>startAnalysis(x.dataset.analysisCentral));const histItems=state.history.filter(Boolean).map(h=>getItem(h.id)).filter(Boolean);document.getElementById('history').innerHTML=histItems.length?`<div class="centralGrid">${histItems.map(card).join('')}</div>`:`<div class="empty">Seu histórico aparecerá conforme você explorar.</div>`;bindCards();const reports=(state.reports||[]).filter(Boolean);document.getElementById('reports').innerHTML=reports.length?reports.map((r,i)=>`<div class="centralItem reportCard"><small>${String(r.status||'Salvo').toUpperCase()}</small><h3>${r.name||'Relatório'}</h3><p>Iniciada em ${r.date||'—'}. O relatório está salvo na sua conta.</p><button class="outline centralUse" data-report-index="${i}">Ver relatório</button></div>`).join(''):`<div class="empty">Nenhuma análise iniciada.</div>`;document.querySelectorAll('[data-report-index]').forEach(btn=>btn.onclick=()=>openSavedReport(reports[Number(btn.dataset.reportIndex)]));renderCentralExtras()}
 
@@ -1038,6 +1038,40 @@ async function loadAccessFromSupabase(){
  accessState.purchases=new Set((buys||[]).map(x=>normalizeAccessItemId(x.item_id)));
  renderAccessUI();renderTracks();try{renderAnalyses()}catch(e){}if(state.route==='central')renderCentral();
 }
+let subscriptionConfirming=false;
+async function syncMySubscription({showStatus=false}={}){
+ if(subscriptionConfirming||!mivUser||!mivSupabase)return false;
+ subscriptionConfirming=true;
+ let box=null;
+ try{
+  if(showStatus){
+   box=document.createElement('div');box.id='subscriptionConfirmBox';box.style.cssText='position:fixed;inset:0;background:rgba(10,18,20,.72);z-index:99999;display:grid;place-items:center;padding:24px';
+   box.innerHTML='<div style="background:#fff;border-radius:22px;padding:28px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.25)"><h2 style="margin:0 0 10px">Confirmando sua assinatura…</h2><p style="margin:0;color:#65706d">Estamos verificando a confirmação do Mercado Pago. Isso pode levar alguns segundos.</p></div>';
+   document.body.appendChild(box);
+  }
+  const {data:{session}}=await mivSupabase.auth.getSession();
+  const r=await fetch('/api/sync-my-subscription',{method:'POST',headers:{Authorization:`Bearer ${session?.access_token||''}`}});
+  const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Falha ao confirmar assinatura');
+  await loadAccessFromSupabase();
+  if(showStatus&&box){
+   const active=hasProAccess();
+   box.querySelector('div').innerHTML=active?`<h2 style="margin:0 0 10px">${planLabel()} liberado ✓</h2><p style="margin:0 0 18px;color:#65706d">Sua assinatura foi confirmada e o acesso já está disponível.</p><button id="subscriptionConfirmClose" class="open">Ir para Minha Central</button>`:'<h2 style="margin:0 0 10px">Pagamento em processamento</h2><p style="margin:0 0 18px;color:#65706d">O Mercado Pago ainda está finalizando a confirmação. Sua Central verificará novamente automaticamente.</p><button id="subscriptionConfirmClose" class="open">Continuar</button>';
+   box.querySelector('#subscriptionConfirmClose').onclick=()=>{box.remove();route('central')};
+  }
+  return hasProAccess();
+ }catch(e){console.warn('[MIV subscription auto sync]',e);if(box)box.remove();return false}finally{subscriptionConfirming=false}
+}
+async function autoConfirmSubscriptionReturn(){
+ if(!mivUser||!mivSupabase)return;
+ const qs=new URLSearchParams(location.search);const returning=qs.get('subscription')==='return';
+ if(returning){
+  history.replaceState(null,'',location.pathname+location.hash);
+  for(let i=0;i<3;i++){const ok=await syncMySubscription({showStatus:i===0});if(ok)break;await new Promise(r=>setTimeout(r,2200))}
+ }else{
+  const {data}=await mivSupabase.from('user_subscriptions').select('id').eq('user_id',mivUser.id).eq('status','pending').limit(1);
+  if(data?.length)await syncMySubscription();
+ }
+}
 function renderAccessUI(){
  document.body.dataset.plan=accessState.plan;
  const badge=document.getElementById('centralPlanBadge'),desc=document.getElementById('centralPlanDesc');
@@ -1240,6 +1274,7 @@ async function applyAuthSession(session){
  Promise.resolve().then(async()=>{
   try{await loadCompanyFromSupabase()}catch(e){console.warn('[MIV company hydrate]',e)}
   try{await loadAccessFromSupabase()}catch(e){console.warn('[MIV access hydrate]',e)}
+  try{await autoConfirmSubscriptionReturn()}catch(e){console.warn('[MIV subscription return]',e)}
   try{await loadFavoritesFromSupabase()}catch(e){console.warn('[MIV favorites hydrate]',e)}
   try{await loadWorkspaceFromSupabase()}catch(e){console.warn('[MIV workspace hydrate]',e)}
   try{await loadCentralExtras()}catch(e){console.warn('[MIV central extras hydrate]',e)}
