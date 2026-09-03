@@ -6,6 +6,12 @@ function companyBlock(company,profile){
   const fields={empresa:company?.name,nicho:company?.niche,subnicho:company?.subniche,cidade:company?.city,estado:company?.state,responsavel:profile?.owner_name,area_de_atuacao:profile?.service_area,produtos_servicos:profile?.products_services,publico:profile?.target_audience,ticket_medio:profile?.average_ticket,equipe:profile?.team_size,diferenciais:profile?.differentials,objetivos:profile?.current_goals,dificuldades:profile?.main_difficulties,canais:profile?.current_channels,outras_informacoes:profile?.other_info};
   return Object.entries(fields).filter(([,v])=>v!==null&&v!==undefined&&String(v).trim()!=='').map(([k,v])=>`${k}: ${v}`).join('\n')||'Perfil empresarial ainda pouco preenchido.';
 }
+async function hasAnalysisAiAccess(su,sk,userId){
+  const now=new Date().toISOString();
+  const subs=await rows(su,sk,`user_subscriptions?user_id=eq.${userId}&status=eq.active&select=plan,current_period_end&order=created_at.desc&limit=1`);
+  const s=subs[0];
+  return !!(s&&['pro','premium'].includes(s.plan)&&(!s.current_period_end||s.current_period_end>now));
+}
 function safeJson(text){try{return JSON.parse(text)}catch(e){const m=String(text||'').match(/\{[\s\S]*\}/);if(m)try{return JSON.parse(m[0])}catch(_){ }return null}}
 module.exports=async function handler(req,res){
   if(req.method!=='POST')return send(res,405,{error:'Método não permitido.'});
@@ -17,6 +23,7 @@ module.exports=async function handler(req,res){
     const ur=await fetch(`${su}/auth/v1/user`,{headers:{apikey:pk,Authorization:`Bearer ${token}`}});if(!ur.ok)return send(res,401,{error:'Sua sessão expirou. Entre novamente.'});
     const user=await ur.json();
     const analysisTitle=clean(req.body?.analysis_title,500),areaId=clean(req.body?.analysis_id,100),sub=clean(req.body?.sub,500),score=Math.max(0,Math.min(100,Number(req.body?.score)||0));
+    if(!(await hasAnalysisAiAccess(su,sk,user.id)))return send(res,403,{error:'A interpretação completa com IA das análises é liberada nos planos PRO e Premium.',code:'analysis_pro_required'});
     const answers=Array.isArray(req.body?.answers)?req.body.answers.slice(0,30):[];
     const checklist=Array.isArray(req.body?.checklist)?req.body.checklist.slice(0,80):[];
     const settings=(await rows(su,sk,'mark_ai_settings?id=eq.global&select=*'))[0]||{};

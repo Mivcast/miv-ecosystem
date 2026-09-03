@@ -8,6 +8,16 @@ async function rows(url,key,path){
   if(!r.ok)throw new Error(`Supabase ${r.status}: ${JSON.stringify(data).slice(0,300)}`);
   return Array.isArray(data)?data:[];
 }
+const normItem=v=>({'script-whatsapp':'whatsapp','whatsapp-script':'whatsapp','mark-ia':'mark'}[String(v||'').trim().toLowerCase()]||String(v||'').trim().toLowerCase());
+async function hasContextItemAccess(su,sk,userId,plan,item){
+  if(!item)return true;
+  const level=String(item.access_level||'').trim().toLowerCase();
+  if(['free','gratis','grátis',''].includes(level))return true;
+  if(['pro','premium'].includes(plan))return true;
+  const itemId=normItem(item.item_id);
+  const buys=await rows(su,sk,`user_purchases?user_id=eq.${userId}&status=eq.paid&item_id=eq.${encodeURIComponent(itemId)}&select=id&limit=1`);
+  return buys.length>0;
+}
 function resolveWebMode(globalMode,areaMode,cardMode){
   if(cardMode&&cardMode!=='inherit')return cardMode;
   if(areaMode&&areaMode!=='inherit')return areaMode;
@@ -66,9 +76,10 @@ module.exports=async function handler(req,res){
     const knowledge=await rows(su,sk,'mark_ai_knowledge?active=eq.true&select=title,kind,content,sort_order&order=sort_order.asc&limit=30');
     let card=null,area=null,cardRules=null;
     if(itemId){
-      card=(await rows(su,sk,`ecosystem_cards?item_id=eq.${encodeURIComponent(itemId)}&select=item_id,shelf_key,cat,format,title,description,tag&limit=1`))[0]||null;
+      card=(await rows(su,sk,`ecosystem_cards?item_id=eq.${encodeURIComponent(normItem(itemId))}&select=item_id,shelf_key,cat,format,title,description,tag,access_level&limit=1`))[0]||null;
+      if(card&&!(await hasContextItemAccess(su,sk,user.id,plan,card)))return send(res,403,{error:'Este contexto do MARK.IA exige acesso ao item ou um plano compatível.',code:'item_access_required'});
       if(card?.shelf_key)area=(await rows(su,sk,`mark_ai_area_instructions?shelf_key=eq.${encodeURIComponent(card.shelf_key)}&select=*&limit=1`))[0]||null;
-      cardRules=(await rows(su,sk,`mark_ai_card_instructions?item_id=eq.${encodeURIComponent(itemId)}&select=*&limit=1`))[0]||null;
+      cardRules=(await rows(su,sk,`mark_ai_card_instructions?item_id=eq.${encodeURIComponent(normItem(itemId))}&select=*&limit=1`))[0]||null;
     }
     const memberships=await rows(su,sk,`company_users?user_id=eq.${user.id}&select=company_id,member_role,created_at&order=created_at.asc&limit=1`);
     const companyId=memberships[0]?.company_id;let company=null,profile=null;
