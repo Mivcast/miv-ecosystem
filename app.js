@@ -1025,8 +1025,9 @@ function hasItemAccess(item){if(!item)return false;if(item.access==='Grátis')re
 function planLabel(){return accessState.plan==='premium'?'Premium':accessState.plan==='pro'?'Pro':'Grátis'}
 function openPlanPaywall(title){const fake={id:'plan-gate',title:title||'Conteúdo Pro',price:'Plano Pro'};state.current=fake;document.getElementById('payTitle').textContent=fake.title;document.getElementById('singlePrice').textContent='Plano Pro';document.getElementById('paywall').classList.add('show');document.getElementById('overlay').classList.add('show')}
 async function loadAccessFromSupabase(){
- accessState.plan='free';accessState.subscription=null;accessState.purchases=new Set();accessState.ready=true;
- if(!mivUser||!mivSupabase){renderAccessUI();return}
+ accessState.plan='free';accessState.subscription=null;accessState.purchases=new Set();accessState.ready=false;
+ renderAccessUI();
+ if(!mivUser||!mivSupabase){accessState.ready=true;renderAccessUI();return}
  const now=new Date().toISOString();
  const [{data:subs,error:se},{data:buys,error:be}]=await Promise.all([
   mivSupabase.from('user_subscriptions').select('id,plan,status,current_period_end,next_payment_date,created_at,cancel_at_period_end,scheduled_plan,scheduled_change_at,provider,provider_subscription_id').eq('user_id',mivUser.id).eq('status','active').order('created_at',{ascending:false}).limit(1),
@@ -1036,6 +1037,7 @@ async function loadAccessFromSupabase(){
  const sub=(subs||[])[0]||null;
  if(sub&&(!sub.current_period_end||sub.current_period_end>now)){accessState.plan=['pro','premium'].includes(sub.plan)?sub.plan:'free';accessState.subscription=sub}
  accessState.purchases=new Set((buys||[]).map(x=>normalizeAccessItemId(x.item_id)));
+ accessState.ready=true;
  renderAccessUI();renderTracks();try{renderAnalyses()}catch(e){}if(state.route==='central')renderCentral();
 }
 let subscriptionConfirming=false;
@@ -1098,15 +1100,16 @@ function renderSubscriptionManager(){
  undo.hidden=sub.scheduled_plan!=='pro'||!!sub.cancel_at_period_end;
  cancel.hidden=!!sub.cancel_at_period_end;
  if(up)up.onclick=()=>startSubscription('premium');
- if(down)down.onclick=()=>scheduleDowngrade();
+ if(down){down.onclick=()=>scheduleDowngrade();down.style.cssText='background:none;border:0;box-shadow:none;padding:4px 0;color:#75807d;text-decoration:underline;text-underline-offset:3px;font:inherit;font-size:13px;cursor:pointer'}
  if(undo)undo.onclick=()=>undoDowngrade();
- if(cancel)cancel.onclick=()=>cancelCurrentSubscription();
+ if(cancel){cancel.onclick=()=>cancelCurrentSubscription();cancel.style.cssText='background:none;border:0;box-shadow:none;padding:4px 0;color:#8a9290;text-decoration:underline;text-underline-offset:3px;font:inherit;font-size:13px;cursor:pointer'}
 }
 function renderAccessUI(){
  document.body.dataset.plan=accessState.plan;
  const badge=document.getElementById('centralPlanBadge'),desc=document.getElementById('centralPlanDesc');
- if(badge)badge.textContent=planLabel();
- if(desc)desc.textContent=hasProAccess()?'Itens Pro estão liberados nesta conta.':accessState.purchases.size?`${accessState.purchases.size} item(ns) avulso(s) liberado(s).`:'Conteúdos gratuitos liberados. Itens Pro continuam protegidos.';
+ const checking=!!mivUser&&!accessState.ready;
+ if(badge)badge.textContent=checking?'Verificando…':planLabel();
+ if(desc)desc.textContent=checking?'Confirmando seu plano e seus acessos…':hasProAccess()?'Itens Pro estão liberados nesta conta.':accessState.purchases.size?`${accessState.purchases.size} item(ns) avulso(s) liberado(s).`:'Conteúdos gratuitos liberados. Itens Pro continuam protegidos.';
  const proBtn=document.getElementById('planProBtn'),premiumBtn=document.getElementById('planPremiumBtn');
  if(proBtn){proBtn.textContent=accessState.plan==='pro'?'Plano atual':accessState.plan==='premium'?'Downgrade para PRO':'Quero acesso Pro';proBtn.disabled=accessState.plan==='pro'}
  if(premiumBtn){premiumBtn.textContent=accessState.plan==='premium'?'Plano atual':accessState.plan==='pro'?'Fazer upgrade para Premium':'Quero acesso Premium';premiumBtn.disabled=accessState.plan==='premium'}
@@ -1403,14 +1406,12 @@ document.getElementById('shareFullReport')?.addEventListener('click',shareCurren
 
 document.getElementById('planFreeBtn')?.addEventListener('click',()=>{if(mivUser)route('central');else openAuth('register')});
 document.getElementById('planAvulsoBtn')?.addEventListener('click',()=>{route('home');setTimeout(()=>document.getElementById('estrategias')?.scrollIntoView({behavior:'smooth'}),80)});
-document.getElementById('planProBtn')?.addEventListener('click',()=>toast('Plano Pro preparado. A ativação automática será ligada ao pagamento na próxima etapa.'));
-document.getElementById('planPremiumBtn')?.addEventListener('click',()=>toast('Plano Premium preparado. A contratação será ligada ao fluxo comercial/pagamento.'));
 
 /* V13.28 — assinaturas recorrentes */
 let subscriptionPlans={};
 function moneyCents(c){return Number(c)>0?new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(c)/100)+'/mês':'Preço no Admin'}
 async function loadSubscriptionPlans(){if(!mivSupabase)return;try{const {data,error}=await mivSupabase.from('subscription_plans').select('*').eq('active',true).order('sort_order');if(error)throw error;subscriptionPlans=Object.fromEntries((data||[]).map(x=>[x.plan_key,x]));const p=document.getElementById('planProPrice'),m=document.getElementById('planPremiumPrice'),cp=document.getElementById('centralProPrice'),cm=document.getElementById('centralPremiumPrice');if(p)p.textContent=moneyCents(subscriptionPlans.pro?.price_cents);if(m)m.textContent=moneyCents(subscriptionPlans.premium?.price_cents);if(cp)cp.textContent=moneyCents(subscriptionPlans.pro?.price_cents);if(cm)cm.textContent=moneyCents(subscriptionPlans.premium?.price_cents);try{renderSubscriptionManager()}catch(_){} }catch(e){console.warn('[MIV plans]',e)}}
-async function startSubscription(plan){if(!mivUser){openAuth('login');return}const cfg=subscriptionPlans[plan];if(!cfg||Number(cfg.price_cents)<=0){toast('Configure o preço do plano no Admin primeiro.');return}if(accessState.plan===plan){toast(`Este já é o seu plano ${plan==='premium'?'Premium':'PRO'}.`);return}if(accessState.plan==='premium'&&plan==='pro'){await scheduleDowngrade();return}const upgrading=accessState.plan==='pro'&&plan==='premium';const msg=upgrading?`Fazer upgrade do PRO para Premium por ${moneyCents(cfg.price_cents)}? A recorrência PRO atual será encerrada e a Premium será iniciada.`:`Assinar ${cfg.name} por ${moneyCents(cfg.price_cents)}?`;if(!confirm(msg))return;try{const {data:{session}}=await mivSupabase.auth.getSession();const r=await fetch('/api/create-subscription',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session?.access_token||''}`},body:JSON.stringify({plan})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Não foi possível iniciar a assinatura.');if(d.init_point)location.href=d.init_point;else{toast('Assinatura criada. Atualizando status...');setTimeout(()=>loadAccessFromSupabase(),1200)}}catch(e){alert(e.message||'Erro ao iniciar assinatura.')}}
+async function startSubscription(plan){if(!mivUser){openAuth('login');return}const cfg=subscriptionPlans[plan];if(!cfg||Number(cfg.price_cents)<=0){toast('Configure o preço do plano no Admin primeiro.');return}if(accessState.plan===plan){toast(`Este já é o seu plano ${plan==='premium'?'Premium':'PRO'}.`);return}if(accessState.plan==='premium'&&plan==='pro'){await scheduleDowngrade();return}const upgrading=accessState.plan==='pro'&&plan==='premium';const msg=upgrading?`Fazer upgrade do PRO para Premium por ${moneyCents(cfg.price_cents)}? Seu PRO permanece ativo durante o checkout e a troca para Premium acontece após a confirmação do pagamento.`:`Assinar ${cfg.name} por ${moneyCents(cfg.price_cents)}?`;if(!confirm(msg))return;try{const {data:{session}}=await mivSupabase.auth.getSession();const r=await fetch('/api/create-subscription',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session?.access_token||''}`},body:JSON.stringify({plan})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Não foi possível iniciar a assinatura.');if(d.init_point)location.href=d.init_point;else{toast('Assinatura criada. Atualizando status...');setTimeout(()=>loadAccessFromSupabase(),1200)}}catch(e){alert(e.message||'Erro ao iniciar assinatura.')}}
 async function subscriptionAction(action){
  const {data:{session}}=await mivSupabase.auth.getSession();
  const r=await fetch('/api/manage-subscription',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session?.access_token||''}`},body:JSON.stringify({action})});
