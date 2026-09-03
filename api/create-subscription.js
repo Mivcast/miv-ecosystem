@@ -10,8 +10,19 @@ module.exports=async function(req,res){
   const planKey=String(req.body?.plan||'').toLowerCase();if(!['pro','premium'].includes(planKey))return send(res,400,{error:'Plano inválido.'});
   const plans=await sb(su,sk,`subscription_plans?plan_key=eq.${encodeURIComponent(planKey)}&active=eq.true&select=*&limit=1`);const plan=plans?.[0];
   if(!plan||Number(plan.price_cents)<=0)return send(res,400,{error:'Preço deste plano ainda não foi configurado no Admin.'});
-  const existing=await sb(su,sk,`user_subscriptions?user_id=eq.${user.id}&status=in.(active,pending)&select=id,plan,provider_subscription_id&order=created_at.desc&limit=1`);
-  if(existing?.[0]?.provider_subscription_id)return send(res,409,{error:'Você já possui uma assinatura em andamento. Gerencie-a pela Minha Central.'});
+  const existing=await sb(su,sk,`user_subscriptions?user_id=eq.${user.id}&status=in.(active,pending)&select=id,plan,status,provider_subscription_id&order=created_at.desc&limit=1`);
+  const current=existing?.[0]||null;
+  if(current?.provider_subscription_id){
+   if(current.plan===planKey)return send(res,409,{error:`Você já está no plano ${planKey==='premium'?'Premium':'PRO'}.`});
+   if(current.plan==='premium'&&planKey==='pro')return send(res,409,{error:'Downgrade do Premium para o PRO deve ser agendado para o próximo ciclo. Use a Minha Central.'});
+   if(current.plan==='pro'&&planKey==='premium'){
+    // Upgrade imediato: encerra a recorrência PRO antes de abrir a Premium, evitando duas cobranças recorrentes ativas.
+    const cr=await fetch(`https://api.mercadopago.com/preapproval/${encodeURIComponent(current.provider_subscription_id)}`,{method:'PUT',headers:{Authorization:`Bearer ${mp}`,'Content-Type':'application/json'},body:JSON.stringify({status:'cancelled'})});
+    const cd=await cr.json().catch(()=>({}));
+    if(!cr.ok){console.error('[MIV subscription upgrade cancel]',cr.status,cd);return send(res,502,{error:'Não foi possível encerrar o PRO para iniciar o upgrade. Tente novamente.'})}
+    await sb(su,sk,`user_subscriptions?id=eq.${encodeURIComponent(current.id)}`,{method:'PATCH',body:JSON.stringify({status:'canceled',cancel_at_period_end:false,updated_at:new Date().toISOString()})});
+   }
+  }
   const origin=`https://${req.headers['x-forwarded-host']||req.headers.host||'miv-ecosystem.vercel.app'}`;
   // Em testes do Mercado Pago, payer e collector precisam pertencer ao ambiente de teste.
   // Se MERCADOPAGO_TEST_PAYER_EMAIL estiver configurada, ela substitui SOMENTE o payer_email enviado ao MP.
