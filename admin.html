@@ -1,5 +1,68 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MIV Ecosystem — Admin</title><style>
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f5f8fc;color:#18314d}button,input,select,textarea{font:inherit} textarea{width:100%;min-height:120px;border:1px solid #d7e3ef;border-radius:10px;padding:11px;background:#fbfdff;resize:vertical}.markGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fieldBlock{display:flex;flex-direction:column;gap:6px}.fieldBlock label{font-size:10px;font-weight:800;color:#526b84}.markCard{border:1px solid #e0e8f1;border-radius:14px;padding:14px;margin-top:10px;background:#fbfdff}.markCard h3{margin:0 0 8px}.wideSelect{min-width:260px}@media(max-width:900px){.markGrid{grid-template-columns:1fr}}.hidden{display:none!important}.login{position:fixed;inset:0;background:#edf2f8;display:grid;place-items:center;z-index:50}.loginCard{width:min(430px,92vw);background:#fff;border:1px solid #d9e4ef;border-radius:23px;padding:28px;box-shadow:0 25px 80px #17304e22}.loginCard input{width:100%;padding:11px;border:1px solid #d7e3ef;border-radius:9px;margin:6px 0 12px}.primary{background:#397bd0;color:#fff;border:0;border-radius:10px;padding:11px 14px;font-weight:800}.loginCard .primary{width:100%}.muted{font-size:11px;color:#74889d;line-height:1.5}.error{color:#b42318;font-size:11px;min-height:18px}.shell{display:grid;grid-template-columns:245px 1fr;min-height:100vh}.side{background:#0d1b2a;color:#dce8f3;padding:22px 15px;position:sticky;top:0;height:100vh}.brand{display:flex;gap:10px;align-items:center;margin-bottom:25px}.brand b{width:40px;height:40px;border-radius:12px;background:#3f7ed3;display:grid;place-items:center;color:#fff}.side button{width:100%;border:0;background:none;color:#aabccf;text-align:left;padding:11px 12px;border-radius:10px;margin:2px 0}.side button.active,.side button:hover{background:#17324e;color:#fff}.main{padding:28px}.top{display:flex;justify-content:space-between;gap:15px;align-items:center}.top h1{margin:3px 0 20px}.topActions{display:flex;gap:8px;align-items:center}.badge{background:#e5f0ff;color:#326eba;border-radius:999px;padding:8px 11px;font-size:10px;font-weight:800}.secondary{border:1px solid #d8e2ed;background:#fff;border-radius:9px;padding:8px 10px}.view{display:none}.view.active{display:block}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat,.panel{background:#fff;border:1px solid #dbe5ef;border-radius:18px;padding:18px}.stat span{font-size:9px;color:#71869b;text-transform:uppercase}.stat strong{display:block;font-size:28px;margin-top:8px}.panel{margin-top:14px;overflow:auto}.panel h2{margin-top:0}.table{width:100%;border-collapse:collapse}.table th,.table td{font-size:11px;padding:11px;border-bottom:1px solid #e7edf4;text-align:left;white-space:nowrap}.table button{border:1px solid #d8e2ed;background:#fff;border-radius:7px;padding:6px 8px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.toolbar input,.toolbar select{border:1px solid #d7e3ef;border-radius:9px;padding:10px;background:#fbfdff}.ey{font-size:9px;letter-spacing:.17em;color:#3d79ca;font-weight:900}.status{font-weight:800}.ok{color:#23835b}.warn{color:#9a6700}@media(max-width:850px){.shell{grid-template-columns:78px 1fr}.side span{display:none}.stats{grid-template-columns:1fr 1fr}.main{padding:15px}}
+
+/* PASSO 2/7 — Modernização visual do Admin (somente apresentação) */
+:root{
+  --adm-bg:#f4f7f9;--adm-surface:#ffffff;--adm-line:#e3e9ed;--adm-text:#172826;
+  --adm-muted:#71817e;--adm-dark:#102321;--adm-accent:#1f8f78;--adm-accent-soft:#eaf7f3;
+  --adm-shadow:0 12px 34px rgba(18,43,39,.07);
+}
+body{background:var(--adm-bg);color:var(--adm-text)}
+.login{background:linear-gradient(145deg,#eef4f2 0%,#f7f9fa 55%,#e8f2ef 100%)}
+.loginCard{border:1px solid rgba(20,60,53,.09);border-radius:26px;padding:32px;box-shadow:0 28px 80px rgba(15,43,38,.13)}
+.loginCard h2{font-size:25px;letter-spacing:-.03em;color:#142a27;margin:9px 0 8px}
+.loginCard input{border:1px solid #dce6e3;border-radius:12px;padding:12px 13px;background:#fff;outline:none;transition:.2s}
+.loginCard input:focus,.toolbar input:focus,.toolbar select:focus,textarea:focus{border-color:#6ab9a8;box-shadow:0 0 0 3px rgba(31,143,120,.10)}
+.primary{background:var(--adm-accent);border-radius:11px;box-shadow:0 7px 18px rgba(31,143,120,.18);transition:.18s}
+.primary:hover{transform:translateY(-1px);filter:brightness(.97)}
+.shell{grid-template-columns:260px minmax(0,1fr)}
+.side{background:linear-gradient(180deg,#102522 0%,#0d1e1c 100%);padding:24px 16px;border-right:1px solid rgba(255,255,255,.04)}
+.brand{padding:0 8px 20px;margin-bottom:13px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand b{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#29a88d,#16715f);box-shadow:0 8px 22px rgba(0,0,0,.20)}
+.brand strong{font-size:15px;letter-spacing:.04em}.brand small{font-size:9px;letter-spacing:.18em;color:#7fa69e}
+.side button{color:#9eb5b0;padding:11px 12px;border-radius:11px;margin:3px 0;font-size:13px;font-weight:650;transition:.16s}
+.side button:hover{background:rgba(255,255,255,.065);color:#fff}
+.side button.active{background:linear-gradient(90deg,rgba(42,167,140,.22),rgba(42,167,140,.08));color:#fff;box-shadow:inset 3px 0 0 #38b89c}
+.main{padding:30px 34px 48px;max-width:1680px;width:100%;margin:0 auto}
+.top{min-height:68px;margin-bottom:8px}
+.top h1{font-size:29px;letter-spacing:-.035em;color:#152a27;margin:5px 0 18px}
+.ey{color:var(--adm-accent);font-size:9px;letter-spacing:.19em}
+.topActions{gap:9px}
+.badge{background:var(--adm-accent-soft);color:#176d5b;padding:8px 12px;border:1px solid #d5eee7}
+.secondary{border:1px solid #dce5e3;background:#fff;border-radius:10px;padding:9px 11px;color:#415a55;transition:.16s}
+.secondary:hover,.table button:hover{border-color:#a9cfc6;background:#f4fbf9}
+.stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.stat,.panel{border:1px solid var(--adm-line);box-shadow:var(--adm-shadow)}
+.stat{position:relative;overflow:hidden;border-radius:18px;padding:20px 20px 18px;min-height:116px}
+.stat:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#72b9a9}
+.stat span{font-size:9px;letter-spacing:.09em;color:#7a8d89;font-weight:800}
+.stat strong{font-size:31px;letter-spacing:-.04em;color:#17302b;margin-top:12px}
+.panel{border-radius:19px;padding:20px 21px;margin-top:16px}
+.panel h2{font-size:17px;letter-spacing:-.02em;color:#19312d;margin:0 0 7px}
+.muted{color:var(--adm-muted);font-size:11px}
+.toolbar{gap:9px;margin:14px 0 15px;align-items:end}
+.toolbar label{font-size:10px;font-weight:800;color:#647a75;display:flex;flex-direction:column;gap:5px}
+.toolbar input,.toolbar select{border:1px solid #dce6e3;border-radius:10px;padding:10px 11px;background:#fff;outline:none;min-height:39px}
+.table{border-collapse:separate;border-spacing:0}
+.table th{font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#7b8c89;background:#f8faf9;border-top:1px solid #edf1f0}
+.table th:first-child{border-radius:9px 0 0 9px}.table th:last-child{border-radius:0 9px 9px 0}
+.table th,.table td{padding:12px 11px;border-bottom:1px solid #edf1f0}
+.table td{font-size:11px;color:#405651}
+.table tbody tr{transition:.15s}.table tbody tr:hover{background:#fafcfb}
+.table button{border:1px solid #dbe5e2;background:#fff;border-radius:8px;padding:6px 9px;color:#415a55}
+.status.ok{color:#168061}.status.warn{color:#a36a00}
+.markGrid{gap:14px}
+.markCard{border:1px solid #e1e9e7;border-radius:16px;background:#fbfdfc;padding:16px}
+.fieldBlock label{color:#58716b;font-size:10px}
+textarea{border-color:#dce6e3;border-radius:12px;background:#fff;outline:none;line-height:1.5}
+@media(max-width:1100px){.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:850px){
+  .shell{grid-template-columns:76px minmax(0,1fr)}.main{padding:18px 15px 35px}
+  .side{padding:18px 10px}.side button{padding:12px;text-align:center}.brand{padding:0 0 16px;justify-content:center}
+  .top{align-items:flex-start;flex-direction:column}.topActions{margin-top:-10px;margin-bottom:8px;flex-wrap:wrap}
+}
+@media(max-width:560px){.stats{grid-template-columns:1fr}.panel{padding:16px}.top h1{font-size:25px}}
+
 </style></head><body>
 <div class="login" id="login"><div class="loginCard"><div class="ey">ÁREA RESTRITA</div><h2>Administração MIV Ecosystem</h2><p class="muted">Entre com uma conta que tenha <b>role = admin</b>. Usuários comuns são recusados mesmo conhecendo este endereço.</p><label>E-mail<input id="email" type="email" autocomplete="username"></label><label>Senha<input id="pass" type="password" autocomplete="current-password"></label><button class="primary" id="enter">Entrar no Admin</button><p class="error" id="loginError"></p><p class="muted"><a href="./">← Voltar ao MIV Ecosystem</a></p></div></div>
 <div class="shell"><aside class="side"><div class="brand"><b>M</b><span><strong>MIV</strong><br><small>ADMIN</small></span></div><button class="active" data-v="dashboard">◫ <span>Visão Geral</span></button><button data-v="users">◎ <span>Usuários</span></button><button data-v="companies">⌂ <span>Empresas</span></button><button data-v="plans">◇ <span>Planos</span></button><button data-v="purchases">$ <span>Compras & Liberações</span></button><button data-v="coupons">% <span>Cupons</span></button><button data-v="markia">◈ <span>MARK.IA</span></button><button data-v="catalog">▦ <span>Cards & Categorias</span></button><button data-v="learning">▤ <span>Aprenda & Aplique</span></button></aside><main class="main"><div class="top"><div><div class="ey">PAINEL PRIVADO</div><h1 id="title">Visão Geral</h1></div><div class="topActions"><span class="badge" id="adminName">Administrador</span><button class="secondary" id="refresh">Atualizar</button><button class="secondary" id="logout">Sair</button></div></div>
