@@ -62,3 +62,7 @@ Ao gerar uma análise, o sistema agora consulta `/api/analysis-ai` e combina Per
 
 ## V13.33
 Ativação automática pós-pagamento: webhook + reconciliação do próprio usuário no retorno/Minha Central.
+
+
+## V13.37 — Ambientes de pagamento seguros
+Antes do lançamento, o Mercado Pago passa a ter separação explícita de TESTE/PRODUÇÃO com `MIV_PAYMENT_MODE`, URL pública centralizada em `MIV_SITE_URL` e bloqueio de credencial incompatível com o ambiente escolhido. Veja `README_V13_37.txt`. Não há SQL novo.
