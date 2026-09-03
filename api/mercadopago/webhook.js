@@ -169,13 +169,19 @@ module.exports = async function handler(req, res) {
       const userId=parts[0]==='miv-sub'?String(parts[1]||''):''; const plan=parts[0]==='miv-sub'?String(parts[2]||''):'';
       const uuidPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       if(!uuidPattern.test(userId)||!['pro','premium'].includes(plan)) return send(res,200,{received:true,verified:true,processed:false,reason:'invalid_subscription_metadata'});
+      const existingResp=await fetch(`${supabaseUrl}/rest/v1/user_subscriptions?provider_subscription_id=eq.${encodeURIComponent(String(sub.id||subscriptionId))}&select=*&limit=1`,{headers:{apikey:supabaseSecretKey}});
+      const existingRows=existingResp.ok?await existingResp.json().catch(()=>[]):[];const existing=existingRows?.[0]||null;
       const mpStatus=String(sub.status||'').toLowerCase();
-      const status=mpStatus==='authorized'?'active':mpStatus==='pending'?'pending':mpStatus==='paused'?'past_due':['cancelled','canceled'].includes(mpStatus)?'canceled':'pending';
-      const row={user_id:userId,plan,status,provider:'mercadopago',provider_subscription_id:String(sub.id||subscriptionId),provider_plan_id:sub.preapproval_plan_id||null,payer_email:sub.payer_email||null,current_period_start:sub.date_created||new Date().toISOString(),current_period_end:sub.next_payment_date||null,next_payment_date:sub.next_payment_date||null,last_payment_status:sub.summarized?.last_charged_amount?'charged':null,updated_at:new Date().toISOString()};
+      const now=Date.now();const paidEnd=existing?.current_period_end?new Date(existing.current_period_end).getTime():0;
+      let status=mpStatus==='authorized'?'active':mpStatus==='pending'?'pending':mpStatus==='paused'?'past_due':['cancelled','canceled'].includes(mpStatus)?'canceled':'pending';
+      if(['cancelled','canceled'].includes(mpStatus)&&existing?.cancel_at_period_end&&paidEnd>now)status='active';
+      let effectivePlan=existing?.plan||plan,scheduledPlan=existing?.scheduled_plan||null,scheduledAt=existing?.scheduled_change_at||null;
+      if(scheduledPlan&&scheduledAt&&new Date(scheduledAt).getTime()<=now){effectivePlan=scheduledPlan;scheduledPlan=null;scheduledAt=null}
+      const row={user_id:userId,plan:effectivePlan,status,provider:'mercadopago',provider_subscription_id:String(sub.id||subscriptionId),provider_plan_id:sub.preapproval_plan_id||null,payer_email:sub.payer_email||existing?.payer_email||null,current_period_start:existing?.current_period_start||sub.date_created||new Date().toISOString(),current_period_end:existing?.cancel_at_period_end?(existing.current_period_end||sub.next_payment_date||null):(sub.next_payment_date||existing?.current_period_end||null),next_payment_date:existing?.cancel_at_period_end?null:(sub.next_payment_date||null),cancel_at_period_end:!!existing?.cancel_at_period_end,scheduled_plan:scheduledPlan,scheduled_change_at:scheduledAt,last_payment_status:sub.summarized?.last_charged_amount?'charged':existing?.last_payment_status||null,updated_at:new Date().toISOString()};
       const ur=await fetch(`${supabaseUrl}/rest/v1/user_subscriptions?on_conflict=provider_subscription_id`,{method:'POST',headers:{apikey:supabaseSecretKey,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(row)});
       if(!ur.ok){console.error('[MIV webhook subscription] Supabase',ur.status,await ur.text());return send(res,500,{error:'Falha ao atualizar assinatura.'})}
       await fetch(`${supabaseUrl}/rest/v1/subscription_events`,{method:'POST',headers:{apikey:supabaseSecretKey,'Content-Type':'application/json'},body:JSON.stringify({user_id:userId,provider:'mercadopago',provider_subscription_id:String(sub.id||subscriptionId),event_type:type,provider_status:mpStatus,payload:{id:sub.id,status:sub.status,next_payment_date:sub.next_payment_date}})});
-      console.log('[MIV webhook] Assinatura atualizada:',{userId,plan,status,subscriptionId});
+      console.log('[MIV webhook] Assinatura atualizada:',{userId,plan:row.plan,status,subscriptionId});
       return send(res,200,{received:true,verified:true,processed:true,subscription:true,status});
     }
 

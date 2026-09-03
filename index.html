@@ -175,6 +175,22 @@
 <section id="view-central" class="view">
   <div class="wrap centralHero"><div><span class="eyebrow">MINHA CENTRAL</span><h1 id="centralTitle">Seu espaço dentro do ecossistema.</h1><p>Tudo que você favoritou, usou, comprou ou analisou fica organizado aqui.</p></div><button id="editProfile" class="outline">Editar nicho</button></div>
   <section class="wrap accessPanel" id="accessPanel"><div><span class="eyebrow">PLANO & ACESSO</span><h2>Seu acesso ao MIV Ecosystem</h2><p id="centralPlanDesc">Carregando permissões da sua conta...</p></div><div class="accessPlanRight"><span>PLANO ATUAL</span><strong id="centralPlanBadge">Grátis</strong><button class="outline" data-scroll="planos">Ver planos</button></div></section>
+  <section class="wrap subscriptionManager" id="subscriptionManager" hidden>
+    <div class="subscriptionManagerHead"><div><span class="eyebrow">MINHA ASSINATURA</span><h2>Gerencie seu plano</h2><p id="subscriptionManagerText">Carregando informações da assinatura...</p></div><span class="subscriptionStatus" id="subscriptionStatusBadge">Ativa</span></div>
+    <div class="subscriptionManagerGrid">
+      <div><small>PLANO</small><strong id="subscriptionPlanName">—</strong></div>
+      <div><small>VALOR</small><strong id="subscriptionPlanPrice">—</strong></div>
+      <div><small>PRÓXIMA COBRANÇA</small><strong id="subscriptionNextCharge">—</strong></div>
+      <div><small>STATUS</small><strong id="subscriptionHumanStatus">—</strong></div>
+    </div>
+    <div class="subscriptionNotice" id="subscriptionNotice" hidden></div>
+    <div class="subscriptionManagerActions">
+      <button class="primary" id="subscriptionUpgradeBtn" hidden>Fazer upgrade para Premium</button>
+      <button class="outline" id="subscriptionDowngradeBtn" hidden>Programar downgrade para PRO</button>
+      <button class="outline" id="subscriptionUndoDowngradeBtn" hidden>Cancelar downgrade programado</button>
+      <button class="outline dangerAction" id="subscriptionCancelBtn">Cancelar renovação</button>
+    </div>
+  </section>
   <section class="wrap centralSec centralPlanCompare"><span class="eyebrow">ESCOLHA O NÍVEL IDEAL</span><h2>O que muda em cada plano?</h2><p>Grátis para experimentar, PRO para resolver e Premium para aprofundar com o MARK.IA.</p><div class="centralGrid"><div class="centralItem"><small>GRÁTIS</small><h3>Experimentar</h3><p>Cards selecionados, prévias e relatórios resumidos.</p><b>5 MARK.IA/mês</b></div><div class="centralItem"><small>PRO · <span id="centralProPrice">R$ 47,90/mês</span></small><h3>Resolver</h3><p>Todos os cards PRO, análises, relatórios, calendário e conteúdos completos.</p><b>80 MARK.IA/mês</b></div><div class="centralItem"><small>PREMIUM · <span id="centralPremiumPrice">R$ 97,90/mês</span></small><h3>Aprofundar</h3><p>Tudo do PRO + uso muito maior do MARK e inteligência cruzada do negócio.</p><b>300 MARK.IA/mês</b></div></div><button class="outline" data-scroll="planos">Comparar planos completos</button></section>
   <section class="wrap companyProfilePanel" id="companyProfilePanel">
     <div class="companyProfileHead">

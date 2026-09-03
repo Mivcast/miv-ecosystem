@@ -15,10 +15,15 @@ module.exports=async function(req,res){
    const r=await fetch(`https://api.mercadopago.com/preapproval/${encodeURIComponent(sid)}`,{headers:{Authorization:`Bearer ${mp}`}});
    const sub=await r.json().catch(()=>({}));if(!r.ok)continue;
    const mpStatus=String(sub.status||'').toLowerCase();
-   const status=mpStatus==='authorized'?'active':mpStatus==='pending'?'pending':mpStatus==='paused'?'past_due':['cancelled','canceled'].includes(mpStatus)?'canceled':row.status;
-   const patch={status,provider_plan_id:sub.preapproval_plan_id||row.provider_plan_id||null,payer_email:sub.payer_email||row.payer_email||null,next_payment_date:sub.next_payment_date||null,current_period_end:sub.next_payment_date||row.current_period_end||null,updated_at:new Date().toISOString()};
+   const now=Date.now();const end=row.current_period_end?new Date(row.current_period_end).getTime():0;
+   let status=mpStatus==='authorized'?'active':mpStatus==='pending'?'pending':mpStatus==='paused'?'past_due':['cancelled','canceled'].includes(mpStatus)?'canceled':row.status;
+   // Cancelamento no fim do ciclo: Mercado Pago já fica cancelado, mas o acesso permanece até a data paga.
+   if(['cancelled','canceled'].includes(mpStatus)&&row.cancel_at_period_end&&end>now)status='active';
+   let plan=row.plan,scheduled_plan=row.scheduled_plan||null,scheduled_change_at=row.scheduled_change_at||null;
+   if(scheduled_plan&&scheduled_change_at&&new Date(scheduled_change_at).getTime()<=now){plan=scheduled_plan;scheduled_plan=null;scheduled_change_at=null}
+   const patch={plan,status,scheduled_plan,scheduled_change_at,provider_plan_id:sub.preapproval_plan_id||row.provider_plan_id||null,payer_email:sub.payer_email||row.payer_email||null,next_payment_date:row.cancel_at_period_end?null:(sub.next_payment_date||null),current_period_end:row.cancel_at_period_end?(row.current_period_end||sub.next_payment_date||null):(sub.next_payment_date||row.current_period_end||null),updated_at:new Date().toISOString()};
    await sbFetch(su,sk,`user_subscriptions?id=eq.${encodeURIComponent(row.id)}&user_id=eq.${encodeURIComponent(user.id)}`,{method:'PATCH',prefer:'return=representation',body:JSON.stringify(patch)});updated++;
-   if(status==='active'&&!best)best={plan:row.plan,status,next_payment_date:patch.next_payment_date};
+   if(status==='active'&&!best)best={plan:patch.plan,status,next_payment_date:patch.next_payment_date,current_period_end:patch.current_period_end,cancel_at_period_end:!!row.cancel_at_period_end,scheduled_plan:patch.scheduled_plan,scheduled_change_at:patch.scheduled_change_at};
   }
   return send(res,200,{ok:true,checked,updated,subscription:best});
  }catch(e){console.error('[MIV user sync subscription]',e);return send(res,500,{error:'Não foi possível confirmar sua assinatura agora.'})}
