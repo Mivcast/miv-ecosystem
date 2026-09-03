@@ -1,4 +1,4 @@
-const {validatePaymentEnvironment,publicSiteUrl,checkoutUrl}=require('./_payment-env');
+const {validatePaymentEnvironment,publicSiteUrl,checkoutUrl}=require('../lib/payment-env');
 const FALLBACK_ITEM_CATALOG={whatsapp:{title:'Script inteligente de WhatsApp',unit_price:19.90,item_type:'card'}};
 const send=(res,s,b)=>res.status(s).json(b);const norm=v=>({'script-whatsapp':'whatsapp','whatsapp-script':'whatsapp'}[String(v||'').trim().toLowerCase()]||String(v||'').trim().toLowerCase());
 async function sbFetch(url,key,path,opt={}){return fetch(`${url}/rest/v1/${path}`,{...opt,headers:{apikey:key,'Content-Type':'application/json',...(opt.headers||{})}})}

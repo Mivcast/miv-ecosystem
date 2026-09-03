@@ -1,4 +1,4 @@
-const {validatePaymentEnvironment,publicSiteUrl,checkoutUrl}=require('./_payment-env');
+const {validatePaymentEnvironment,publicSiteUrl,checkoutUrl}=require('../lib/payment-env');
 function send(res,s,b){return res.status(s).json(b)}
 async function sb(url,key,path,opts={}){const r=await fetch(`${url}/rest/v1/${path}`,{...opts,headers:{apikey:key,'Content-Type':'application/json',Prefer:opts.prefer||'',...(opts.headers||{})}});const t=await r.text();let d=null;try{d=t?JSON.parse(t):null}catch{d=t}if(!r.ok)throw new Error(`Supabase ${r.status}: ${typeof d==='string'?d:JSON.stringify(d)}`);return d}
 async function userFromJwt(url,pub,jwt){const r=await fetch(`${url}/auth/v1/user`,{headers:{apikey:pub,Authorization:`Bearer ${jwt}`}});if(!r.ok)return null;return r.json()}
