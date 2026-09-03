@@ -23,7 +23,19 @@ module.exports=async function(req,res){
    if(scheduled_plan&&scheduled_change_at&&new Date(scheduled_change_at).getTime()<=now){plan=scheduled_plan;scheduled_plan=null;scheduled_change_at=null}
    const patch={plan,status,scheduled_plan,scheduled_change_at,provider_plan_id:sub.preapproval_plan_id||row.provider_plan_id||null,payer_email:sub.payer_email||row.payer_email||null,next_payment_date:row.cancel_at_period_end?null:(sub.next_payment_date||null),current_period_end:row.cancel_at_period_end?(row.current_period_end||sub.next_payment_date||null):(sub.next_payment_date||row.current_period_end||null),updated_at:new Date().toISOString()};
    await sbFetch(su,sk,`user_subscriptions?id=eq.${encodeURIComponent(row.id)}&user_id=eq.${encodeURIComponent(user.id)}`,{method:'PATCH',prefer:'return=representation',body:JSON.stringify(patch)});updated++;
-   if(status==='active'&&!best)best={plan:patch.plan,status,next_payment_date:patch.next_payment_date,current_period_end:patch.current_period_end,cancel_at_period_end:!!row.cancel_at_period_end,scheduled_plan:patch.scheduled_plan,scheduled_change_at:patch.scheduled_change_at};
+
+   // Segunda camada do upgrade seguro: se o Premium já está ativo, encerra qualquer PRO recorrente anterior.
+   // Assim a reconciliação do próprio usuário corrige o cenário mesmo se o webhook atrasar.
+   if(status==='active'&&patch.plan==='premium'){
+    const oldPros=await sbFetch(su,sk,`user_subscriptions?user_id=eq.${encodeURIComponent(user.id)}&plan=eq.pro&status=eq.active&provider=eq.mercadopago&provider_subscription_id=not.is.null&select=id,provider_subscription_id`);
+    for(const old of (oldPros||[])){
+      if(String(old.provider_subscription_id)===sid)continue;
+      const cr=await fetch(`https://api.mercadopago.com/preapproval/${encodeURIComponent(old.provider_subscription_id)}`,{method:'PUT',headers:{Authorization:`Bearer ${mp}`,'Content-Type':'application/json'},body:JSON.stringify({status:'cancelled'})});
+      if(!cr.ok)continue;
+      await sbFetch(su,sk,`user_subscriptions?id=eq.${encodeURIComponent(old.id)}`,{method:'PATCH',body:JSON.stringify({status:'canceled',cancel_at_period_end:false,updated_at:new Date().toISOString()})});updated++;
+    }
+   }
+   if(status==='active'&&(!best||patch.plan==='premium'))best={plan:patch.plan,status,next_payment_date:patch.next_payment_date,current_period_end:patch.current_period_end,cancel_at_period_end:!!row.cancel_at_period_end,scheduled_plan:patch.scheduled_plan,scheduled_change_at:patch.scheduled_change_at};
   }
   return send(res,200,{ok:true,checked,updated,subscription:best});
  }catch(e){console.error('[MIV user sync subscription]',e);return send(res,500,{error:'Não foi possível confirmar sua assinatura agora.'})}
