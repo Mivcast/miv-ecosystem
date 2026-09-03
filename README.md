@@ -62,7 +62,3 @@ Ao gerar uma análise, o sistema agora consulta `/api/analysis-ai` e combina Per
 
 ## V13.33
 Ativação automática pós-pagamento: webhook + reconciliação do próprio usuário no retorno/Minha Central.
-
-
-## V13.37.2 — proteção de pagamento sem alterar arquitetura
-Baseada diretamente na V13.36, mantendo a estrutura de deploy já validada.
