@@ -1070,6 +1070,47 @@ async function syncMySubscription({showStatus=false}={}){
   return hasProAccess();
  }catch(e){console.warn('[MIV subscription auto sync]',e);if(box)box.remove();return false}finally{subscriptionConfirming=false}
 }
+let purchaseConfirming=false;
+function getPaymentReturnParams(){
+ const params=new URLSearchParams(location.search);
+ const hashParts=String(location.hash||'').split('&');
+ if(hashParts.length>1){
+  const hashParams=new URLSearchParams(hashParts.slice(1).join('&'));
+  hashParams.forEach((value,key)=>{if(!params.has(key))params.set(key,value)});
+ }
+ return params;
+}
+async function syncSinglePurchaseReturn({showStatus=false}={}){
+ if(purchaseConfirming||!mivUser||!mivSupabase)return false;
+ const params=getPaymentReturnParams();
+ const status=String(params.get('status')||params.get('collection_status')||params.get('payment')||'').toLowerCase();
+ const paymentId=params.get('payment_id')||params.get('collection_id');
+ if(!paymentId||!['success','approved'].includes(status))return false;
+ purchaseConfirming=true;
+ let box=null;
+ try{
+  if(showStatus){
+   box=document.createElement('div');box.id='purchaseConfirmBox';box.style.cssText='position:fixed;inset:0;background:rgba(10,18,20,.72);z-index:99999;display:grid;place-items:center;padding:24px';
+   box.innerHTML='<div style="background:#fff;border-radius:22px;padding:28px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.25)"><h2 style="margin:0 0 10px">Confirmando sua compra…</h2><p style="margin:0;color:#65706d">Estamos verificando o pagamento aprovado no Mercado Pago.</p></div>';
+   document.body.appendChild(box);
+  }
+  const {data:{session}}=await mivSupabase.auth.getSession();
+  const r=await fetch('/api/create-mercadopago-preference',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session?.access_token||''}`},body:JSON.stringify({action:'sync_purchase',payment_id:paymentId,collection_id:params.get('collection_id')||''})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(d.error||'Falha ao confirmar compra');
+  await loadAccessFromSupabase();
+  if(state.route==='central')renderCentral();
+  if(showStatus&&box){
+   box.querySelector('div').innerHTML=d.synced?`<h2 style="margin:0 0 10px">Item liberado ✓</h2><p style="margin:0 0 18px;color:#65706d">Sua compra foi confirmada e já está disponível na sua conta.</p><button id="purchaseConfirmClose" class="open">Ir para Minha Central</button>`:'<h2 style="margin:0 0 10px">Compra em processamento</h2><p style="margin:0 0 18px;color:#65706d">O Mercado Pago ainda está finalizando a confirmação. Atualize sua Central em alguns segundos.</p><button id="purchaseConfirmClose" class="open">Continuar</button>';
+   box.querySelector('#purchaseConfirmClose').onclick=()=>{box.remove();route('central')};
+  }
+  return !!d.synced;
+ }catch(e){console.warn('[MIV purchase auto sync]',e);if(box)box.remove();toast(e.message||'Não foi possível confirmar a compra agora.');return false}
+ finally{
+  purchaseConfirming=false;
+  if(String(location.search||'').includes('payment='))history.replaceState(null,'',location.pathname+(location.hash?location.hash.split('&')[0]:''));
+ }
+}
 async function autoConfirmSubscriptionReturn(){
  if(!mivUser||!mivSupabase)return;
  const qs=new URLSearchParams(location.search);const returning=qs.get('subscription')==='return';
@@ -1313,6 +1354,7 @@ async function applyAuthSession(session){
  Promise.resolve().then(async()=>{
   try{await loadCompanyFromSupabase()}catch(e){console.warn('[MIV company hydrate]',e)}
   try{await loadAccessFromSupabase()}catch(e){console.warn('[MIV access hydrate]',e)}
+  try{await syncSinglePurchaseReturn({showStatus:true})}catch(e){console.warn('[MIV purchase return]',e)}
   try{await autoConfirmSubscriptionReturn()}catch(e){console.warn('[MIV subscription return]',e)}
   try{await loadFavoritesFromSupabase()}catch(e){console.warn('[MIV favorites hydrate]',e)}
   try{await loadWorkspaceFromSupabase()}catch(e){console.warn('[MIV workspace hydrate]',e)}
@@ -1326,7 +1368,7 @@ document.querySelectorAll('[data-open-auth]').forEach(b=>b.addEventListener('cli
 document.querySelectorAll('[data-auth-switch]').forEach(b=>b.addEventListener('click',()=>openAuth(b.dataset.authSwitch)));
 document.getElementById('authClose')?.addEventListener('click',closeAuth);authModal?.addEventListener('click',e=>{if(e.target===authModal)closeAuth()});
 document.getElementById('doLogin')?.addEventListener('click',async()=>{const email=document.getElementById('loginEmail').value.trim(),password=document.getElementById('loginPassword').value;if(!email||!password){authStatus('loginStatus','Informe e-mail e senha.','error');return}if(!mivSupabase){authStatus('loginStatus','A conexão ainda não está pronta. Recarregue a página.','error');return}authStatus('loginStatus','Entrando...');const {data,error}=await mivSupabase.auth.signInWithPassword({email,password});if(error){authStatus('loginStatus',friendlyAuthError(error),'error');return}if(data?.session){mivUser=data.session.user;closeAuth();applyAuthSession(data.session);authStatus('loginStatus','Login realizado.','ok');toast('Bem-vindo à sua Central.');route('central')}});
-document.getElementById('doRegister')?.addEventListener('click',async()=>{const email=document.getElementById('regEmail').value.trim(),password=document.getElementById('regPass').value,p2=document.getElementById('regPass2').value;if(!email||!password){authStatus('registerStatus','Preencha pelo menos e-mail e senha.','error');return}if(password!==p2){authStatus('registerStatus','As senhas não coincidem.','error');return}if(!mivSupabase){authStatus('registerStatus','A conexão ainda não está pronta.','error');return}authStatus('registerStatus','Criando conta...');const meta={full_name:document.getElementById('regName').value.trim(),phone:document.getElementById('regPhone').value.trim(),business:document.getElementById('regBusiness').value.trim(),niche:document.getElementById('regNiche').value.trim(),city:document.getElementById('regCity').value.trim()};const {data,error}=await mivSupabase.auth.signUp({email,password,options:{data:meta}});if(error){authStatus('registerStatus',friendlyAuthError(error),'error');return}if(data.session){authStatus('registerStatus','Conta criada.','ok');closeAuth();toast('Conta criada com sucesso.');route('central')}else authStatus('registerStatus','Conta criada. Verifique seu e-mail para confirmar o acesso.','ok')});
+document.getElementById('doRegister')?.addEventListener('click',async()=>{const email=document.getElementById('regEmail').value.trim(),password=document.getElementById('regPass').value,p2=document.getElementById('regPass2').value;if(!email||!password){authStatus('registerStatus','Preencha pelo menos e-mail e senha.','error');return}if(password!==p2){authStatus('registerStatus','As senhas não coincidem.','error');return}if(!mivSupabase){authStatus('registerStatus','A conexão ainda não está pronta.','error');return}authStatus('registerStatus','Criando conta...');const meta={full_name:document.getElementById('regName').value.trim(),phone:document.getElementById('regPhone').value.trim(),business:document.getElementById('regBusiness').value.trim(),niche:document.getElementById('regNiche').value.trim(),city:document.getElementById('regCity').value.trim()};const {data,error}=await mivSupabase.auth.signUp({email,password,options:{data:meta,emailRedirectTo:location.origin}});if(error){authStatus('registerStatus',friendlyAuthError(error),'error');return}if(data.session){authStatus('registerStatus','Conta criada.','ok');closeAuth();toast('Conta criada com sucesso.');route('central')}else authStatus('registerStatus','Conta criada. Verifique seu e-mail para confirmar o acesso.','ok')});
 document.getElementById('doForgot')?.addEventListener('click',async()=>{const email=document.getElementById('forgotEmail').value.trim();if(!email){authStatus('forgotStatus','Informe seu e-mail.','error');return}if(!mivSupabase){authStatus('forgotStatus','A conexão ainda não está pronta.','error');return}const {error}=await mivSupabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin});authStatus('forgotStatus',error?friendlyAuthError(error):'Se o e-mail estiver cadastrado, você receberá as instruções.',error?'error':'ok')});
 window.mivLogout=async function(){if(mivSupabase)await mivSupabase.auth.signOut();mivActiveCompanyId=null;mirrorCompanyProfile({});toast('Você saiu da sua conta.');route('home')};
 document.getElementById('logoutBtn')?.addEventListener('click',()=>window.mivLogout());
