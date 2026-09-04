@@ -50,6 +50,14 @@
 - Em sandbox, compra avulsa tambem respeita `MERCADOPAGO_TEST_PAYER_EMAIL` quando o token comeca com `TEST-`.
 - Em producao, o payer continua sendo o e-mail real do usuario autenticado.
 
+## Ajuste V13.42
+
+- Webhook aceita variacoes seguras do ID assinado pelo Mercado Pago: `data.id` na URL, `id` legado, `data.id` no body e evento sem ID assinado.
+- Assinatura invalida continua retornando 401 e nao libera compra.
+- Retorno `payment=success` agora chama `/api/create-mercadopago-preference` com `action: "sync_purchase"` e usuario autenticado.
+- Essa sincronizacao consulta o pagamento direto no Mercado Pago e so grava `user_purchases` quando status, usuario, item e valor batem com os metadados do checkout.
+- Cadastro passa `emailRedirectTo: location.origin` para novos e-mails de confirmacao abrirem no dominio atual.
+
 ## Testes pendentes
 
 - Pagamento aprovado.

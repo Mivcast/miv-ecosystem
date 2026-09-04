@@ -67,12 +67,38 @@ function getQueryParam(req, name) {
   return null;
 }
 
+function addUniqueCandidate(candidates, value, source) {
+  if (value == null) return;
+  const raw = String(value).trim();
+  if (!raw) return;
+
+  const values = [raw];
+  const lower = raw.toLowerCase();
+  if (lower !== raw) values.push(lower);
+
+  values.forEach((candidate) => {
+    if (!candidates.some((item) => item.value === candidate)) {
+      candidates.push({ value: candidate, source });
+    }
+  });
+}
+
+function getWebhookDataIdCandidates(req) {
+  const candidates = [];
+
+  addUniqueCandidate(candidates, getQueryParam(req, 'data.id'), 'query:data.id');
+  addUniqueCandidate(candidates, getQueryParam(req, 'id'), 'query:id');
+  addUniqueCandidate(candidates, req.body?.data?.id, 'body:data.id');
+  addUniqueCandidate(candidates, req.body?.id, 'body:id');
+
+  return candidates;
+}
+
 function verifyMercadoPagoSignature(req, secretInput) {
   const xSignature = first(req.headers['x-signature']);
   const xRequestIdRaw = first(req.headers['x-request-id']);
   const xRequestId = xRequestIdRaw == null ? '' : String(xRequestIdRaw).trim();
-  const queryDataIdRaw = getQueryParam(req, 'data.id');
-  const queryDataId = queryDataIdRaw == null ? '' : String(queryDataIdRaw).trim().toLowerCase();
+  const candidates = getWebhookDataIdCandidates(req);
   const secret = String(secretInput || '').trim();
 
   if (!secret) return { ok: false, reason: 'missing_secret' };
@@ -84,24 +110,51 @@ function verifyMercadoPagoSignature(req, secretInput) {
   // Manifest oficial do Mercado Pago:
   // id:<data.id>;request-id:<x-request-id>;ts:<ts>;
   // Campos ausentes são omitidos.
-  let manifest = '';
-  if (queryDataId) manifest += `id:${queryDataId};`;
-  if (xRequestId) manifest += `request-id:${xRequestId};`;
-  if (ts) manifest += `ts:${ts};`;
+  const manifestInputs = candidates.length ? candidates : [{ value: '', source: 'no-id' }];
+  if (candidates.length) manifestInputs.push({ value: '', source: 'no-id' });
 
-  const expected = crypto.createHmac('sha256', secret).update(manifest, 'utf8').digest('hex');
-  const ok = safeHexEqual(expected, String(v1).trim());
+  for (const candidate of manifestInputs) {
+    let manifest = '';
+    if (candidate.value) manifest += `id:${candidate.value};`;
+    if (xRequestId) manifest += `request-id:${xRequestId};`;
+    if (ts) manifest += `ts:${ts};`;
+
+    const expected = crypto.createHmac('sha256', secret).update(manifest, 'utf8').digest('hex');
+    const ok = safeHexEqual(expected, String(v1).trim());
+    if (ok) {
+      return {
+        ok: true,
+        reason: null,
+        resourceDataId: candidate.value,
+        signatureIdSource: candidate.source,
+        debug: {
+          hasQueryDataId: candidates.some((item) => item.source === 'query:data.id'),
+          hasQueryId: candidates.some((item) => item.source === 'query:id'),
+          hasBodyDataId: candidates.some((item) => item.source === 'body:data.id'),
+          hasBodyId: candidates.some((item) => item.source === 'body:id'),
+          hasRequestId: Boolean(xRequestId),
+          hasTimestamp: Boolean(ts),
+          secretLength: secret.length,
+          testedManifests: manifestInputs.length
+        }
+      };
+    }
+  }
 
   return {
-    ok,
-    reason: ok ? null : 'signature_mismatch',
-    queryDataId,
+    ok: false,
+    reason: 'signature_mismatch',
+    resourceDataId: candidates[0]?.value || '',
     // Diagnóstico seguro: não registra segredo, assinatura ou manifest completo.
     debug: {
-      hasDataId: Boolean(queryDataId),
+      hasQueryDataId: candidates.some((item) => item.source === 'query:data.id'),
+      hasQueryId: candidates.some((item) => item.source === 'query:id'),
+      hasBodyDataId: candidates.some((item) => item.source === 'body:data.id'),
+      hasBodyId: candidates.some((item) => item.source === 'body:id'),
       hasRequestId: Boolean(xRequestId),
       hasTimestamp: Boolean(ts),
-      secretLength: secret.length
+      secretLength: secret.length,
+      testedManifests: manifestInputs.length
     }
   };
 }
@@ -181,7 +234,7 @@ module.exports = async function handler(req, res) {
     const type = String(req.body?.type || first(req.query?.type) || '').toLowerCase();
 
     if (type === 'subscription_preapproval') {
-      const subscriptionId = String(signature.queryDataId || req.body?.data?.id || '').trim();
+      const subscriptionId = String(signature.resourceDataId || req.body?.data?.id || '').trim();
       if (!subscriptionId) return send(res, 200, {received:true,verified:true,processed:false,reason:'missing_subscription_id'});
       const sr = await fetch(`https://api.mercadopago.com/preapproval/${encodeURIComponent(subscriptionId)}`, {headers:{Authorization:`Bearer ${mpToken}`}});
       const sub = await sr.json().catch(()=>({}));
@@ -224,9 +277,7 @@ module.exports = async function handler(req, res) {
     }
     if(type==='subscription_authorized_payment') return send(res,200,{received:true,verified:true,processed:false,reason:'invoice_event_acknowledged'});
 
-    // Para consultar o recurso usamos o ID do body como fallback. Para validar a assinatura,
-    // o ID continua vindo exclusivamente do query param, como exige o Mercado Pago.
-    const paymentId = String(signature.queryDataId || req.body?.data?.id || '').trim();
+    const paymentId = String(signature.resourceDataId || req.body?.data?.id || '').trim();
     if (!paymentId) {
       return send(res, 200, { received: true, verified: true, processed: false, reason: 'missing_payment_id' });
     }
