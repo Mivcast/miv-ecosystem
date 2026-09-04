@@ -65,6 +65,14 @@
 - Em token de teste, a assinatura prefere `sandbox_init_point` antes de `init_point`.
 - Para testar assinaturas no sandbox, use um Access Token de vendedor teste e um e-mail de comprador teste diferente do vendedor.
 
+## Ajuste V13.45
+
+- A area de Planos agora tem campo de cupom opcional para Pro/Premium.
+- Cupons de plano reutilizam a tabela `coupons`; `item_id` vazio vale para todos, `pro` vale para Pro e `premium` vale para Premium.
+- Para evitar mensalidade recorrente com desconto acidental, assinatura aceita apenas cupom de 100% neste lancamento.
+- Cupom 100% em plano cria `free_trial` de um ciclo no Mercado Pago; a recorrencia volta ao valor normal do plano depois do periodo gratis.
+- Descontos parciais continuam permitidos somente em compras avulsas.
+
 ## Testes pendentes
 
 - Pagamento aprovado.
