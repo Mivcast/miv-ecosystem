@@ -1,64 +1,60 @@
-# MIV Ecosystem V13.17 — Webhook + liberação automática
+# MIV Ecosystem
 
-Baseada na V13.16.
+Plataforma da MivCast Marketing Digital para reunir vitrine de estrategias, ferramentas, analises empresariais, conteudos, consultoria, servicos e MARK.IA.
 
-## O que entrou nesta versão
-- Endpoint `GET/POST /api/mercadopago/webhook`.
-- Validação da assinatura `x-signature` do Mercado Pago via HMAC-SHA256.
-- Consulta server-side do pagamento em `GET /v1/payments/{id}`.
-- Só libera conteúdo quando o pagamento está `approved`.
-- Valida usuário, item e valor no servidor.
-- Grava/upserta `user_purchases` com a `SUPABASE_SECRET_KEY` somente no backend.
-- Repetições do mesmo Webhook são idempotentes graças à chave única `(user_id,item_type,item_id)`.
-- A preferência de compra agora também informa `notification_url` explicitamente.
-- `GET /api/mercadopago/webhook` funciona como health-check e não libera nada.
+Estado atual: **V13.38 - revisao de acessos e monetizacao**.
 
-## Variáveis Vercel necessárias
-- `SUPABASE_URL`
-- `SUPABASE_PUBLISHABLE_KEY`
-- `SUPABASE_SECRET_KEY`
-- `MERCADOPAGO_ACCESS_TOKEN`
-- `MERCADOPAGO_WEBHOOK_SECRET`
+## Prioridade
 
-## Teste do Webhook
-No Mercado Pago Developers > Webhooks > Modo de teste:
-1. URL: `https://miv-ecosystem.vercel.app/api/mercadopago/webhook`
-2. Evento: `Pagamentos (legacy)`
-3. Salvar e gerar a assinatura secreta.
-4. Usar `Simular notificação`.
+O objetivo imediato e terminar o minimo necessario para lancamento real:
 
-O simulador pode usar um Data ID que não corresponde a um pagamento real. Nesse caso a rota deve responder HTTP 200 após validar a assinatura, mas não libera conteúdo. Para liberar de fato, o ID consultado precisa corresponder a um pagamento `approved` criado pela preferência da MIV.
+1. Venda real funcionando.
+2. Pagamento confirmado automaticamente.
+3. Plano ou card liberado pelo backend/Supabase.
+4. Central refletindo o acesso correto.
+5. Dados de usuario protegidos por autenticacao e RLS.
 
-## Segurança
-Nenhuma chave secreta foi incluída nos arquivos. `SUPABASE_SECRET_KEY`, `MERCADOPAGO_ACCESS_TOKEN` e `MERCADOPAGO_WEBHOOK_SECRET` devem existir apenas nas Environment Variables da Vercel.
+Evite reconstruir a aplicacao, redesenhar a interface ou ampliar escopo antes da venda real estar comprovada.
 
-## V13.18 — Cupons V1
-1. Execute `SUPABASE_V13_18_CUPONS.sql` no SQL Editor do projeto MIV Ecosystem.
-2. Admin > Cupons permite criar percentual, valor fixo, limitar item/usos/validade e ativar/desativar.
-3. O paywall aceita cupom. Desconto é validado/calculado no backend.
-4. Cupom 100% libera sem Mercado Pago e registra a utilização.
-5. Pagamentos com desconto levam o valor final no metadata; o webhook confere o valor e registra a utilização.
+## Estrutura
 
-## V13.19 — Cupom com prévia
-- Botão Aplicar no paywall.
-- Validação segura em `/api/validate-coupon`.
-- Exibe preço original, desconto e total antes de abrir Mercado Pago.
-- O checkout continua recalculando o cupom no backend; a prévia não é fonte de verdade do preço.
+- `index.html`: frontend principal.
+- `styles.css`: identidade visual e responsividade.
+- `app.js`: vitrine, Central, MARK.IA, calendario, analises e integracao Supabase no cliente.
+- `admin.html`: painel administrativo restrito por conta admin.
+- `api/`: funcoes serverless Vercel.
+- `SUPABASE_*.sql`: historico de schema/migracoes manuais.
+- `modules/`: documentacao modular de cards/areas.
 
+## Documentacao operacional
 
-## V13.20 — Correção Supabase Secret Key
-- Corrige chamadas REST do backend para usar `sb_secret_...` somente no header `apikey`.
-- Remove uso incorreto da nova Secret Key como `Authorization: Bearer`, pois ela não é JWT.
-- Corrige validação de cupons, criação de checkout com cupom e gravações do webhook.
-- Não exige novo SQL nem nova variável de ambiente.
+- `PROJECT_STATUS.md`
+- `LAUNCH_CHECKLIST.md`
+- `AGENTS.md`
+- `.env.example`
+- `docs/SUPABASE_SCHEMA.md`
+- `docs/MERCADO_PAGO_FLOW.md`
+- `docs/PLANS_PERMISSIONS.md`
+- `docs/CARDS_INVENTORY.md`
+- `docs/DEPLOY_ROLLBACK.md`
 
+## Variaveis de ambiente
 
-## V13.24 — MARK.IA + Base de Conhecimento V1
-Veja `README_V13_24.txt` e execute `SUPABASE_V13_24_MARK_IA.sql`. Configure `GEMINI_API_KEY` somente no servidor/Vercel.
+Use `.env.example` como referencia. Nunca commitar valores reais de `SUPABASE_SECRET_KEY`, `MERCADOPAGO_ACCESS_TOKEN`, `MERCADOPAGO_WEBHOOK_SECRET` ou `GEMINI_API_KEY`.
 
-## V13.25 — Motor de Análises Inteligente
-Ao gerar uma análise, o sistema agora consulta `/api/analysis-ai` e combina Perfil da Empresa, respostas, checklist, score e a base privada do MARK.IA para produzir interpretação estruturada. Se a IA falhar, há fallback local para preservar o fluxo.
+## Deploy
 
+O projeto publicado conhecido e:
 
-## V13.33
-Ativação automática pós-pagamento: webhook + reconciliação do próprio usuário no retorno/Minha Central.
+https://miv-ecosystem.vercel.app/
+
+Antes de publicar, comparar o commit local com a producao e validar pelo menos:
+
+- home carrega;
+- login/cadastro funcionam;
+- Central nao mostra plano incorreto durante sincronizacao;
+- card pago nao libera sem compra/plano;
+- checkout sandbox cria preferencia;
+- webhook `payment` aprovado registra `user_purchases`;
+- assinatura aprovada registra `user_subscriptions`;
+- MARK.IA e analises respeitam permissao.
