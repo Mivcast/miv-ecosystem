@@ -22,3 +22,9 @@
 - Nao confiar em alteracao visual no navegador.
 - Confirmar que todas as APIs pagas repetem a validacao server-side.
 - Confirmar que `subscription_plans` esta legivel para carregar precos onde necessario.
+
+## Ajuste V13.40
+
+- `subscription_plans` precisa ter uma policy publica simples para `active = true`.
+- A policy publica nao deve chamar `public.is_admin()`, porque visitantes anonimos podem nao ter permissao de executar a funcao.
+- A leitura/gestao administrativa fica em policy separada para usuarios autenticados admin.
