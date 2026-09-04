@@ -20,6 +20,7 @@
 - [ ] Confirmar tabelas existentes.
 - [ ] Confirmar grants para tabelas publicas de catalogo.
 - [ ] Confirmar RLS em todas as tabelas expostas.
+- [ ] Executar `SUPABASE_V13_39_STATUS_ASSINATURAS.sql`.
 - [ ] Testar usuario A sem acesso a dados de usuario B.
 - [ ] Testar usuario comum bloqueado no Admin.
 - [ ] Testar usuario admin acessando Admin.

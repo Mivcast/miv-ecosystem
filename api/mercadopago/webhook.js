@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-const ITEM_CATALOG = {
+const FALLBACK_ITEM_CATALOG = {
   whatsapp: {
     title: 'Script inteligente de WhatsApp',
     amount_cents: 1990,
@@ -112,6 +112,27 @@ async function getMercadoPagoPayment(paymentId, accessToken) {
   });
   const data = await response.json().catch(() => ({}));
   return { ok: response.ok, status: response.status, data };
+}
+
+async function getCatalogItem({ supabaseUrl, secretKey, itemId }) {
+  const response = await fetch(`${supabaseUrl}/rest/v1/ecosystem_cards?item_id=eq.${encodeURIComponent(itemId)}&active=eq.true&select=item_id,title,price_cents,access_level&limit=1`, {
+    headers: { apikey: secretKey }
+  });
+  const rows = await response.json().catch(() => []);
+  if (response.ok) {
+    const item = rows?.[0];
+    if (item && Number.isInteger(item.price_cents) && item.price_cents >= 0) {
+      return {
+        title: item.title,
+        amount_cents: item.price_cents,
+        item_type: 'card',
+        access_level: item.access_level || null
+      };
+    }
+  } else {
+    console.error('[MIV webhook] Falha ao consultar catálogo:', response.status, rows);
+  }
+  return FALLBACK_ITEM_CATALOG[itemId] || null;
 }
 
 async function upsertPurchase({ supabaseUrl, secretKey, row }) {
@@ -251,7 +272,7 @@ module.exports = async function handler(req, res) {
     }
 
     const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    const catalogItem = ITEM_CATALOG[itemId];
+    const catalogItem = await getCatalogItem({ supabaseUrl, secretKey: supabaseSecretKey, itemId });
     if (!uuidPattern.test(userId) || !catalogItem || itemType !== catalogItem.item_type) {
       console.error('[MIV webhook] Metadados de compra inválidos.', { userId, itemId, itemType });
       return send(res, 200, { received: true, verified: true, processed: false, reason: 'invalid_purchase_metadata' });
