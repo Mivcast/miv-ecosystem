@@ -39,6 +39,12 @@
 - Liberacao deve ser idempotente.
 - `MERCADOPAGO_TEST_PAYER_EMAIL` so pode operar com token `TEST-`.
 
+## Ajuste V13.39
+
+- Webhook de compra avulsa valida `item_id` contra `ecosystem_cards` ativo no Supabase, com fallback apenas para o card historico `whatsapp`.
+- Preferencia usa o host da requisicao em `back_urls` e `notification_url`, permitindo testar Preview sem redirecionar para producao.
+- `user_subscriptions.status` deve aceitar `pending`, pois o backend grava esse status ao criar uma assinatura antes da aprovacao do Mercado Pago.
+
 ## Testes pendentes
 
 - Pagamento aprovado.
