@@ -1027,7 +1027,7 @@ let mivSupabase=null;
 function hasProAccess(){return accessState.plan==='pro'||accessState.plan==='premium'}
 function normalizeAccessItemId(id){const key=String(id||'').trim().toLowerCase();const aliases={'script-whatsapp':'whatsapp','whatsapp-script':'whatsapp','mark-ia':'mark'};return aliases[key]||key}
 function hasItemAccess(item){if(!item)return false;if(item.access==='Grátis')return true;if(hasProAccess())return true;return accessState.purchases.has(normalizeAccessItemId(item.id))}
-function planLabel(){return accessState.plan==='premium'?'Premium':accessState.plan==='pro'?'Pro':'Grátis'}
+function planLabel(){return accessState.plan==='premium'?'Premium':accessState.plan==='pro'?'Pro':accessState.plan==='pending'?'Processando':accessState.plan==='past_due'?'Pagamento pendente':'Grátis'}
 function openPlanPaywall(title){const fake={id:'plan-gate',title:title||'Conteúdo Pro',price:'Plano Pro'};state.current=fake;document.getElementById('payTitle').textContent=fake.title;document.getElementById('singlePrice').textContent='Plano Pro';document.getElementById('paywall').classList.add('show');document.getElementById('overlay').classList.add('show')}
 async function loadAccessFromSupabase(){
  accessState.plan='free';accessState.subscription=null;accessState.purchases=new Set();accessState.ready=false;
@@ -1035,12 +1035,14 @@ async function loadAccessFromSupabase(){
  if(!mivUser||!mivSupabase){accessState.ready=true;renderAccessUI();return}
  const now=new Date().toISOString();
  const [{data:subs,error:se},{data:buys,error:be}]=await Promise.all([
-  mivSupabase.from('user_subscriptions').select('id,plan,status,current_period_end,next_payment_date,created_at,cancel_at_period_end,scheduled_plan,scheduled_change_at,provider,provider_subscription_id').eq('user_id',mivUser.id).eq('status','active').order('created_at',{ascending:false}).limit(1),
+  mivSupabase.from('user_subscriptions').select('id,plan,status,current_period_end,next_payment_date,created_at,cancel_at_period_end,scheduled_plan,scheduled_change_at,provider,provider_subscription_id').eq('user_id',mivUser.id).in('status',['active','pending','past_due']).order('created_at',{ascending:false}).limit(1),
   mivSupabase.from('user_purchases').select('item_id,status').eq('user_id',mivUser.id).eq('status','paid')
  ]);
  if(se)console.warn('[MIV access subscription]',se);if(be)console.warn('[MIV access purchases]',be);
  const sub=(subs||[])[0]||null;
- if(sub&&(!sub.current_period_end||sub.current_period_end>now)){accessState.plan=['pro','premium'].includes(sub.plan)?sub.plan:'free';accessState.subscription=sub}
+ if(sub?.status==='active'&&(!sub.current_period_end||sub.current_period_end>now)){accessState.plan=['pro','premium'].includes(sub.plan)?sub.plan:'free';accessState.subscription=sub}
+ else if(sub?.status==='pending'){accessState.plan='pending';accessState.subscription=sub}
+ else if(sub?.status==='past_due'){accessState.plan='past_due';accessState.subscription=sub}
  accessState.purchases=new Set((buys||[]).map(x=>normalizeAccessItemId(x.item_id)));
  accessState.ready=true;
  renderAccessUI();renderTracks();try{renderAnalyses()}catch(e){}if(state.route==='central')renderCentral();
@@ -1155,7 +1157,7 @@ function renderAccessUI(){
  const badge=document.getElementById('centralPlanBadge'),desc=document.getElementById('centralPlanDesc');
  const checking=!!mivUser&&!accessState.ready;
  if(badge)badge.textContent=checking?'Verificando…':planLabel();
- if(desc)desc.textContent=checking?'Confirmando seu plano e seus acessos…':hasProAccess()?'Itens Pro estão liberados nesta conta.':accessState.purchases.size?`${accessState.purchases.size} item(ns) avulso(s) liberado(s).`:'Conteúdos gratuitos liberados. Itens Pro continuam protegidos.';
+ if(desc)desc.textContent=checking?'Confirmando seu plano e seus acessos…':accessState.plan==='pending'?'Sua assinatura está em processamento. O acesso pago será liberado após confirmação do Mercado Pago.':accessState.plan==='past_due'?'Há uma pendência de pagamento na assinatura. Itens Pro ficam protegidos até regularização.':hasProAccess()?'Itens Pro estão liberados nesta conta.':accessState.purchases.size?`${accessState.purchases.size} item(ns) avulso(s) liberado(s).`:'Conteúdos gratuitos liberados. Itens Pro continuam protegidos.';
  const proBtn=document.getElementById('planProBtn'),premiumBtn=document.getElementById('planPremiumBtn');
  if(proBtn){proBtn.textContent=accessState.plan==='pro'?'Plano atual':accessState.plan==='premium'?'Downgrade para PRO':'Quero acesso Pro';proBtn.disabled=accessState.plan==='pro'}
  if(premiumBtn){premiumBtn.textContent=accessState.plan==='premium'?'Plano atual':accessState.plan==='pro'?'Fazer upgrade para Premium':'Quero acesso Premium';premiumBtn.disabled=accessState.plan==='premium'}
