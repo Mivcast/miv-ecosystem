@@ -9,6 +9,29 @@ function mpSubscriptionError(data){
  }
  return message||'Não foi possível iniciar a assinatura.';
 }
+function norm(v){return String(v||'').trim().toLowerCase()}
+function couponMatchesPlan(coupon,planKey){
+ const item=norm(coupon?.item_id);
+ return !item||item===planKey||item===`plan:${planKey}`||item===`${planKey}-subscription`;
+}
+async function validateSubscriptionCoupon(su,sk,user,planKey,priceCents,code){
+ const normalized=String(code||'').trim().toUpperCase();
+ if(!normalized)return null;
+ const rows=await sb(su,sk,`coupons?code=eq.${encodeURIComponent(normalized)}&active=eq.true&select=*&limit=1`);
+ const coupon=rows?.[0];
+ if(!coupon)return {error:'Cupom inválido ou inativo.'};
+ const now=Date.now();
+ if(coupon.starts_at&&new Date(coupon.starts_at).getTime()>now)return {error:'Este cupom ainda não está válido.'};
+ if(coupon.expires_at&&new Date(coupon.expires_at).getTime()<now)return {error:'Este cupom expirou.'};
+ if(!couponMatchesPlan(coupon,planKey))return {error:'Este cupom não vale para este plano.'};
+ const reds=await sb(su,sk,`coupon_redemptions?coupon_id=eq.${encodeURIComponent(coupon.id)}&select=user_id`);
+ if(coupon.max_uses&&reds.length>=coupon.max_uses)return {error:'Este cupom atingiu o limite de usos.'};
+ if(coupon.max_uses_per_user&&reds.filter(x=>x.user_id===user.id).length>=coupon.max_uses_per_user)return {error:'Você já utilizou este cupom.'};
+ let discountCents=coupon.discount_type==='percent'?Math.round(priceCents*Math.min(Number(coupon.discount_value),100)/100):Math.round(Number(coupon.discount_value)*100);
+ discountCents=Math.max(0,Math.min(discountCents,priceCents));
+ if(discountCents<priceCents)return {error:'Neste lançamento, cupons para planos precisam ser de 100% para liberar o primeiro mês grátis. Descontos parciais continuam disponíveis para compras avulsas.'};
+ return {coupon,discountCents};
+}
 module.exports=async function(req,res){
  if(req.method!=='POST')return send(res,405,{error:'Método não permitido.'});
  try{
@@ -25,6 +48,9 @@ module.exports=async function(req,res){
 
   if(active?.plan===planKey)return send(res,409,{error:`Você já está no plano ${planKey==='premium'?'Premium':'PRO'}.`});
   if(active?.plan==='premium'&&planKey==='pro')return send(res,409,{error:'Downgrade do Premium para o PRO deve ser agendado para o próximo ciclo. Use a Minha Central.'});
+  const planPriceCents=Number(plan.price_cents);
+  const couponResult=await validateSubscriptionCoupon(su,sk,user,planKey,planPriceCents,req.body?.coupon_code);
+  if(couponResult?.error)return send(res,400,{error:couponResult.error});
 
   // Uma tentativa pendente anterior do mesmo plano não deve bloquear o cliente para sempre.
   // Ao iniciar novamente, cancelamos apenas a tentativa PENDENTE antiga. Nunca cancelamos o plano ativo antes do novo pagamento.
@@ -42,10 +68,12 @@ module.exports=async function(req,res){
   const payerEmail=(isTestToken&&testPayerEmail)?testPayerEmail:user.email;
   const isUpgrade=active?.plan==='pro'&&planKey==='premium';
   const body={reason:`MIV Ecosystem ${plan.name}`,external_reference:`miv-sub|${user.id}|${planKey}${isUpgrade?'|upgrade':''}`,payer_email:payerEmail,auto_recurring:{frequency:Number(plan.frequency||1),frequency_type:plan.frequency_type||'months',transaction_amount:Number(plan.price_cents)/100,currency_id:plan.currency_id||'BRL'},back_url:`${origin}/?subscription=return`,status:'pending'};
+  if(couponResult?.coupon)body.free_trial={frequency:Number(plan.frequency||1),frequency_type:plan.frequency_type||'months'};
   const r=await fetch('https://api.mercadopago.com/preapproval',{method:'POST',headers:{Authorization:`Bearer ${mp}`,'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await r.json().catch(()=>({}));if(!r.ok){console.error('[MIV subscription create]',r.status,{isTestToken,hasTestPayerEmail:!!testPayerEmail,payerMode:isTestToken?'test':'real',mpError:data});return send(res,502,{error:mpSubscriptionError(data)})}
   const row={user_id:user.id,plan:planKey,status:String(data.status||'pending'),provider:'mercadopago',provider_subscription_id:String(data.id||''),payer_email:payerEmail,current_period_start:new Date().toISOString(),current_period_end:null,next_payment_date:data.next_payment_date||null,updated_at:new Date().toISOString()};
   await sb(su,sk,'user_subscriptions',{method:'POST',prefer:'resolution=merge-duplicates,return=representation',body:JSON.stringify(row)});
+  if(couponResult?.coupon){try{await sb(su,sk,'coupon_redemptions',{method:'POST',body:JSON.stringify({coupon_id:couponResult.coupon.id,user_id:user.id,item_id:`plan:${planKey}`,discount_cents:couponResult.discountCents,redeemed_at:new Date().toISOString()})})}catch(e){console.error('[MIV subscription coupon redemption]',e)}}
   const initPoint=isTestToken?(data.sandbox_init_point||data.init_point||null):(data.init_point||data.sandbox_init_point||null);
-  return send(res,200,{ok:true,id:data.id,status:data.status,init_point:initPoint,upgrade:isUpgrade});
+  return send(res,200,{ok:true,id:data.id,status:data.status,init_point:initPoint,upgrade:isUpgrade,free_trial_coupon:couponResult?.coupon?.code||null});
  }catch(e){console.error('[MIV subscription create]',e);return send(res,500,{error:'Erro ao iniciar assinatura.'})}
 }
