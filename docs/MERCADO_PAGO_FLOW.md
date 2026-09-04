@@ -45,6 +45,11 @@
 - Preferencia usa o host da requisicao em `back_urls` e `notification_url`, permitindo testar Preview sem redirecionar para producao.
 - `user_subscriptions.status` deve aceitar `pending`, pois o backend grava esse status ao criar uma assinatura antes da aprovacao do Mercado Pago.
 
+## Ajuste V13.41
+
+- Em sandbox, compra avulsa tambem respeita `MERCADOPAGO_TEST_PAYER_EMAIL` quando o token comeca com `TEST-`.
+- Em producao, o payer continua sendo o e-mail real do usuario autenticado.
+
 ## Testes pendentes
 
 - Pagamento aprovado.
