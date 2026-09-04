@@ -58,6 +58,13 @@
 - Essa sincronizacao consulta o pagamento direto no Mercado Pago e so grava `user_purchases` quando status, usuario, item e valor batem com os metadados do checkout.
 - Cadastro passa `emailRedirectTo: location.origin` para novos e-mails de confirmacao abrirem no dominio atual.
 
+## Ajuste V13.44
+
+- Criacao de assinatura com token `TEST-` exige `MERCADOPAGO_TEST_PAYER_EMAIL` configurado.
+- Quando o Mercado Pago responde que comprador e vendedor precisam ser ambos reais ou ambos teste, a API retorna orientacao em portugues para corrigir as credenciais.
+- Em token de teste, a assinatura prefere `sandbox_init_point` antes de `init_point`.
+- Para testar assinaturas no sandbox, use um Access Token de vendedor teste e um e-mail de comprador teste diferente do vendedor.
+
 ## Testes pendentes
 
 - Pagamento aprovado.
