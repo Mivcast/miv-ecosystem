@@ -13,8 +13,8 @@ create table if not exists public.subscription_plans (
 );
 insert into public.subscription_plans(plan_key,name,description,price_cents,sort_order)
 values
- ('pro','Pro','Libera os recursos PRO do ecossistema.',0,10),
- ('premium','Premium','Inclui PRO e benefícios Premium/humanos.',0,20)
+ ('pro','Pro','Libera os recursos PRO do ecossistema.',4790,10),
+ ('premium','Premium','Inclui PRO e benefícios Premium/humanos.',9790,20)
 on conflict (plan_key) do nothing;
 
 alter table public.user_subscriptions add column if not exists provider_subscription_id text;
