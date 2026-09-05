@@ -203,6 +203,33 @@ async function upsertPurchase({ supabaseUrl, secretKey, row }) {
   return { ok: response.ok, status: response.status, data };
 }
 
+function subscriptionCouponRef(externalReference) {
+  const parts = String(externalReference || '').split('|');
+  const out = {};
+  parts.forEach((part) => {
+    const index = part.indexOf(':');
+    if (index > 0) out[part.slice(0, index)] = part.slice(index + 1);
+  });
+  return out.coupon ? { couponId: out.coupon, discountCents: Number(out.discount || 0) } : null;
+}
+
+async function recordSubscriptionCoupon({ supabaseUrl, secretKey, userId, plan, subscription }) {
+  const ref = subscriptionCouponRef(subscription.external_reference);
+  if (!ref?.couponId) return;
+  const itemId = `plan:${plan}`;
+  const existingResp = await fetch(`${supabaseUrl}/rest/v1/coupon_redemptions?coupon_id=eq.${encodeURIComponent(ref.couponId)}&user_id=eq.${encodeURIComponent(userId)}&item_id=eq.${encodeURIComponent(itemId)}&select=id&limit=1`, {
+    headers: { apikey: secretKey }
+  });
+  const existing = existingResp.ok ? await existingResp.json().catch(() => []) : [];
+  if (existing?.length) return;
+  const redResp = await fetch(`${supabaseUrl}/rest/v1/coupon_redemptions`, {
+    method: 'POST',
+    headers: { apikey: secretKey, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ coupon_id: ref.couponId, user_id: userId, item_id: itemId, discount_cents: ref.discountCents, redeemed_at: new Date().toISOString() })
+  });
+  if (!redResp.ok) console.error('[MIV webhook subscription] Assinatura ativa, mas falhou registro do cupom:', await redResp.text());
+}
+
 module.exports = async function handler(req, res) {
   // Ajuda a confirmar rapidamente que a rota foi publicada, sem processar nada.
   if (req.method === 'GET') {
@@ -254,6 +281,7 @@ module.exports = async function handler(req, res) {
       const row={user_id:userId,plan:effectivePlan,status,provider:'mercadopago',provider_subscription_id:String(sub.id||subscriptionId),provider_plan_id:sub.preapproval_plan_id||null,payer_email:sub.payer_email||existing?.payer_email||null,current_period_start:existing?.current_period_start||sub.date_created||new Date().toISOString(),current_period_end:existing?.cancel_at_period_end?(existing.current_period_end||sub.next_payment_date||null):(sub.next_payment_date||existing?.current_period_end||null),next_payment_date:existing?.cancel_at_period_end?null:(sub.next_payment_date||null),cancel_at_period_end:!!existing?.cancel_at_period_end,scheduled_plan:scheduledPlan,scheduled_change_at:scheduledAt,last_payment_status:sub.summarized?.last_charged_amount?'charged':existing?.last_payment_status||null,updated_at:new Date().toISOString()};
       const ur=await fetch(`${supabaseUrl}/rest/v1/user_subscriptions?on_conflict=provider_subscription_id`,{method:'POST',headers:{apikey:supabaseSecretKey,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(row)});
       if(!ur.ok){console.error('[MIV webhook subscription] Supabase',ur.status,await ur.text());return send(res,500,{error:'Falha ao atualizar assinatura.'})}
+      if(status==='active')await recordSubscriptionCoupon({supabaseUrl,secretKey:supabaseSecretKey,userId,plan:row.plan,subscription:sub});
 
       // Upgrade seguro: o PRO continua ativo enquanto o cliente está no checkout Premium.
       // Só depois que o Mercado Pago confirma o Premium como authorized encerramos a recorrência PRO anterior.

@@ -14,6 +14,7 @@ function couponMatchesPlan(coupon,planKey){
  const item=norm(coupon?.item_id);
  return !item||item===planKey||item===`plan:${planKey}`||item===`${planKey}-subscription`;
 }
+const MIN_SUBSCRIPTION_COUPON_CENTS=100;
 async function validateSubscriptionCoupon(su,sk,user,planKey,priceCents,code){
  const normalized=String(code||'').trim().toUpperCase();
  if(!normalized)return null;
@@ -29,8 +30,7 @@ async function validateSubscriptionCoupon(su,sk,user,planKey,priceCents,code){
  if(coupon.max_uses_per_user&&reds.filter(x=>x.user_id===user.id).length>=coupon.max_uses_per_user)return {error:'Você já utilizou este cupom.'};
  let discountCents=coupon.discount_type==='percent'?Math.round(priceCents*Math.min(Number(coupon.discount_value),100)/100):Math.round(Number(coupon.discount_value)*100);
  discountCents=Math.max(0,Math.min(discountCents,priceCents));
- if(discountCents<priceCents)return {error:'Neste lançamento, cupons para planos precisam ser de 100% para liberar o primeiro mês grátis. Descontos parciais continuam disponíveis para compras avulsas.'};
- return {coupon,discountCents};
+ return {coupon,discountCents,finalCents:priceCents-discountCents};
 }
 module.exports=async function(req,res){
  if(req.method!=='POST')return send(res,405,{error:'Método não permitido.'});
@@ -67,13 +67,13 @@ module.exports=async function(req,res){
   if(isTestToken&&!testPayerEmail)return send(res,500,{error:'Configure MERCADOPAGO_TEST_PAYER_EMAIL com um comprador de teste do Mercado Pago antes de testar assinaturas no sandbox.'});
   const payerEmail=(isTestToken&&testPayerEmail)?testPayerEmail:user.email;
   const isUpgrade=active?.plan==='pro'&&planKey==='premium';
-  const body={reason:`MIV Ecosystem ${plan.name}`,external_reference:`miv-sub|${user.id}|${planKey}${isUpgrade?'|upgrade':''}`,payer_email:payerEmail,auto_recurring:{frequency:Number(plan.frequency||1),frequency_type:plan.frequency_type||'months',transaction_amount:Number(plan.price_cents)/100,currency_id:plan.currency_id||'BRL'},back_url:`${origin}/?subscription=return`,status:'pending'};
-  if(couponResult?.coupon)body.free_trial={frequency:Number(plan.frequency||1),frequency_type:plan.frequency_type||'months'};
+  const recurringCents=couponResult?.coupon?Math.max(MIN_SUBSCRIPTION_COUPON_CENTS,couponResult.finalCents):planPriceCents;
+  const extraRef=[isUpgrade?'upgrade':null,couponResult?.coupon?`coupon:${couponResult.coupon.id}`:null,couponResult?.coupon?`discount:${couponResult.discountCents}`:null].filter(Boolean).join('|');
+  const body={reason:`MIV Ecosystem ${plan.name}`,external_reference:`miv-sub|${user.id}|${planKey}${extraRef?'|'+extraRef:''}`,payer_email:payerEmail,auto_recurring:{frequency:Number(plan.frequency||1),frequency_type:plan.frequency_type||'months',transaction_amount:recurringCents/100,currency_id:plan.currency_id||'BRL'},back_url:`${origin}/?subscription=return`,status:'pending'};
   const r=await fetch('https://api.mercadopago.com/preapproval',{method:'POST',headers:{Authorization:`Bearer ${mp}`,'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await r.json().catch(()=>({}));if(!r.ok){console.error('[MIV subscription create]',r.status,{isTestToken,hasTestPayerEmail:!!testPayerEmail,payerMode:isTestToken?'test':'real',mpError:data});return send(res,502,{error:mpSubscriptionError(data)})}
   const row={user_id:user.id,plan:planKey,status:String(data.status||'pending'),provider:'mercadopago',provider_subscription_id:String(data.id||''),payer_email:payerEmail,current_period_start:new Date().toISOString(),current_period_end:null,next_payment_date:data.next_payment_date||null,updated_at:new Date().toISOString()};
   await sb(su,sk,'user_subscriptions',{method:'POST',prefer:'resolution=merge-duplicates,return=representation',body:JSON.stringify(row)});
-  if(couponResult?.coupon){try{await sb(su,sk,'coupon_redemptions',{method:'POST',body:JSON.stringify({coupon_id:couponResult.coupon.id,user_id:user.id,item_id:`plan:${planKey}`,discount_cents:couponResult.discountCents,redeemed_at:new Date().toISOString()})})}catch(e){console.error('[MIV subscription coupon redemption]',e)}}
   const initPoint=isTestToken?(data.sandbox_init_point||data.init_point||null):(data.init_point||data.sandbox_init_point||null);
-  return send(res,200,{ok:true,id:data.id,status:data.status,init_point:initPoint,upgrade:isUpgrade,free_trial_coupon:couponResult?.coupon?.code||null});
+  return send(res,200,{ok:true,id:data.id,status:data.status,init_point:initPoint,upgrade:isUpgrade,coupon:couponResult?.coupon?.code||null,discounted_amount:recurringCents/100});
  }catch(e){console.error('[MIV subscription create]',e);return send(res,500,{error:'Erro ao iniciar assinatura.'})}
 }
