@@ -67,11 +67,12 @@
 
 ## Ajuste V13.45
 
-- A area de Planos agora tem campo de cupom opcional para Pro/Premium.
+- Cada card pago de plano (Pro e Premium) agora tem seu proprio campo de cupom opcional.
 - Cupons de plano reutilizam a tabela `coupons`; `item_id` vazio vale para todos, `pro` vale para Pro e `premium` vale para Premium.
-- Para evitar mensalidade recorrente com desconto acidental, assinatura aceita apenas cupom de 100% neste lancamento.
-- Cupom 100% em plano cria `free_trial` de um ciclo no Mercado Pago; a recorrencia volta ao valor normal do plano depois do periodo gratis.
-- Descontos parciais continuam permitidos somente em compras avulsas.
+- A assinatura aplica qualquer desconto valido antes de criar o checkout no Mercado Pago, entao o valor enviado ao provedor ja sai reduzido.
+- Como o Mercado Pago recebe esse valor no `auto_recurring.transaction_amount`, o desconto fica recorrente naquela assinatura criada.
+- Se um desconto deixar a mensalidade zerada ou abaixo do minimo tecnico, a API envia R$ 1,00 para manter o checkout recorrente aceito pelo Mercado Pago.
+- Cupons de 50%, 99%, 100% ou valor fixo podem ser criados/desativados no Admin conforme a campanha.
 
 ## Testes pendentes
 

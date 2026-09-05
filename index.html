@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MIV Ecosystem — Vitrine Inteligente</title>
 <meta name="description" content="Ecossistema empresarial adaptável por nicho com estratégias, análises, ferramentas e inteligência artificial.">
-<link rel="stylesheet" href="styles.css?v=13.45">
+<link rel="stylesheet" href="styles.css?v=13.46">
 </head>
 <body data-theme="clean">
 <header class="floating-header">
@@ -154,16 +154,11 @@
 
   <section class="wrap plans" id="planos">
     <span class="eyebrow center">PLANOS & ACESSO</span><h2 class="center">Use grátis, compre apenas o que precisa ou libere o ecossistema inteiro.</h2><p class="center plan-sub">Uma estrutura flexível para atrair pelo conteúdo gratuito e monetizar por item, assinatura ou apoio humano.</p>
-    <div class="planCouponBox">
-      <label for="subscriptionCoupon">Cupom para Pro/Premium</label>
-      <div><input id="subscriptionCoupon" placeholder="Ex.: PRIMEIROMES"><button class="outline" id="clearSubscriptionCoupon" type="button">Limpar</button></div>
-      <small>Opcional. Neste lançamento, cupons de plano liberam primeiro mês grátis quando o desconto for de 100%.</small>
-    </div>
     <div class="plan-grid">
       <article><span class="plan-label">COMEÇAR</span><h3>Grátis</h3><p>Experimente o ecossistema, descubra gargalos e receba valor antes de decidir pagar.</p><ul><li>Cards e ferramentas selecionados</li><li>Prévia das análises e soluções</li><li>Relatórios resumidos</li><li><b>5 interações com MARK.IA/mês</b></li><li>Central, favoritos e histórico</li></ul><button class="outline full" id="planFreeBtn">Criar conta grátis</button></article>
       <article><span class="plan-label">SEM ASSINATURA</span><h3>Avulso</h3><p>Para quem precisa resolver uma necessidade específica sem contratar mensalidade.</p><ul><li>Compre somente o card desejado</li><li>Acesso permanente ao item comprado</li><li>Soluções e relatório daquele recurso</li><li>Resultado salvo na Central</li><li>Sem mensalidade</li></ul><button class="outline full" id="planAvulsoBtn">Explorar itens pagos</button></article>
-      <article class="featured"><span class="badge-best">MAIS INDICADO</span><span class="plan-label">PARA RESOLVER</span><h3>Pro <small id="planProPrice" style="display:block;color:var(--accent);font-size:14px;margin-top:6px">R$ 47,90/mês</small></h3><p>Para quem quer usar o ecossistema completo no dia a dia.</p><ul><li><b>Todos os cards PRO</b></li><li>Análises e soluções completas</li><li>Relatórios completos</li><li>Calendário e Aprenda & Aplique completos</li><li><b>80 interações com MARK.IA/mês</b></li><li>MARK contextual dentro dos recursos</li></ul><button class="primary full" id="planProBtn">Quero acesso Pro</button></article>
-      <article><span class="plan-lock">TUDO DO PRO</span><span class="plan-label">IA MAIS PROFUNDA</span><h3>Premium <small id="planPremiumPrice" style="display:block;color:var(--accent);font-size:14px;margin-top:6px">R$ 97,90/mês</small></h3><p>Para quem quer o MARK trabalhando com muito mais profundidade sobre o negócio.</p><ul><li>Tudo do PRO</li><li><b>300 interações com MARK.IA/mês</b></li><li>Maior uso de análises profundas com IA</li><li>Inteligência cruzada: empresa + histórico + análises</li><li>Prioridade para recursos avançados futuros</li><li>Recomendações mais contínuas pelo MARK</li></ul><button class="outline full" id="planPremiumBtn">Quero acesso Premium</button></article>
+      <article class="featured"><span class="badge-best">MAIS INDICADO</span><span class="plan-label">PARA RESOLVER</span><h3>Pro <small id="planProPrice" style="display:block;color:var(--accent);font-size:14px;margin-top:6px">R$ 47,90/mês</small></h3><p>Para quem quer usar o ecossistema completo no dia a dia.</p><ul><li><b>Todos os cards PRO</b></li><li>Análises e soluções completas</li><li>Relatórios completos</li><li>Calendário e Aprenda & Aplique completos</li><li><b>80 interações com MARK.IA/mês</b></li><li>MARK contextual dentro dos recursos</li></ul><label class="planCouponInline" for="planProCoupon"><span>Cupom de desconto</span><input id="planProCoupon" placeholder="Cupom opcional"></label><button class="primary full" id="planProBtn">Quero acesso Pro</button></article>
+      <article><span class="plan-lock">TUDO DO PRO</span><span class="plan-label">IA MAIS PROFUNDA</span><h3>Premium <small id="planPremiumPrice" style="display:block;color:var(--accent);font-size:14px;margin-top:6px">R$ 97,90/mês</small></h3><p>Para quem quer o MARK trabalhando com muito mais profundidade sobre o negócio.</p><ul><li>Tudo do PRO</li><li><b>300 interações com MARK.IA/mês</b></li><li>Maior uso de análises profundas com IA</li><li>Inteligência cruzada: empresa + histórico + análises</li><li>Prioridade para recursos avançados futuros</li><li>Recomendações mais contínuas pelo MARK</li></ul><label class="planCouponInline" for="planPremiumCoupon"><span>Cupom de desconto</span><input id="planPremiumCoupon" placeholder="Cupom opcional"></label><button class="outline full" id="planPremiumBtn">Quero acesso Premium</button></article>
     </div>
   </section>
 
@@ -324,5 +319,5 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=13.45"></script>
+<script src="app.js?v=13.46"></script>
 </body></html>
