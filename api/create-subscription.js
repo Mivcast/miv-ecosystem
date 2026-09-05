@@ -10,6 +10,14 @@ function mpSubscriptionError(data){
  return message||'Não foi possível iniciar a assinatura.';
 }
 function norm(v){return String(v||'').trim().toLowerCase()}
+const DEFAULT_SUBSCRIPTION_PLANS={
+ pro:{plan_key:'pro',name:'Pro',description:'Todos os cards PRO, análises e relatórios completos, com uso moderado do MARK.IA.',price_cents:4790,currency_id:'BRL',frequency:1,frequency_type:'months'},
+ premium:{plan_key:'premium',name:'Premium',description:'Tudo do PRO com uso amplo do MARK.IA e inteligência avançada.',price_cents:9790,currency_id:'BRL',frequency:1,frequency_type:'months'}
+};
+function normalizePlan(row,planKey){
+ const base=DEFAULT_SUBSCRIPTION_PLANS[planKey];
+ return {...base,...(row||{}),price_cents:Number(row?.price_cents)>0?Number(row.price_cents):base.price_cents,currency_id:row?.currency_id||base.currency_id,frequency:Number(row?.frequency)>0?Number(row.frequency):base.frequency,frequency_type:row?.frequency_type||base.frequency_type};
+}
 function couponMatchesPlan(coupon,planKey){
  const item=norm(coupon?.item_id);
  return !item||item===planKey||item===`plan:${planKey}`||item===`${planKey}-subscription`;
@@ -39,8 +47,7 @@ module.exports=async function(req,res){
   if(!su||!pk||!sk||!mp)return send(res,500,{error:'Servidor não configurado.'});
   const jwt=String(req.headers.authorization||'').replace(/^Bearer\s+/i,'');const user=await userFromJwt(su,pk,jwt);if(!user?.id||!user.email)return send(res,401,{error:'Entre na sua conta para assinar.'});
   const planKey=String(req.body?.plan||'').toLowerCase();if(!['pro','premium'].includes(planKey))return send(res,400,{error:'Plano inválido.'});
-  const plans=await sb(su,sk,`subscription_plans?plan_key=eq.${encodeURIComponent(planKey)}&active=eq.true&select=*&limit=1`);const plan=plans?.[0];
-  if(!plan||Number(plan.price_cents)<=0)return send(res,400,{error:'Preço deste plano ainda não foi configurado no Admin.'});
+  const plans=await sb(su,sk,`subscription_plans?plan_key=eq.${encodeURIComponent(planKey)}&active=eq.true&select=*&limit=1`);const plan=normalizePlan(plans?.[0],planKey);
 
   const rows=await sb(su,sk,`user_subscriptions?user_id=eq.${encodeURIComponent(user.id)}&provider=eq.mercadopago&status=in.(active,pending)&select=*&order=created_at.desc&limit=10`);
   const active=(rows||[]).find(x=>x.status==='active')||null;

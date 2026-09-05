@@ -74,6 +74,13 @@
 - Se um desconto deixar a mensalidade zerada ou abaixo do minimo tecnico, a API envia R$ 1,00 para manter o checkout recorrente aceito pelo Mercado Pago.
 - Cupons de 50%, 99%, 100% ou valor fixo podem ser criados/desativados no Admin conforme a campanha.
 
+## Ajuste V13.47
+
+- Pro e Premium agora possuem precos padrao no frontend e no backend: R$ 47,90 e R$ 97,90.
+- O Admin continua podendo sobrescrever esses valores, mas preco ausente ou zerado no Supabase nao bloqueia mais o checkout.
+- O seed inicial e o script `SUPABASE_V13_47_PLAN_DEFAULT_PRICES.sql` preenchem esses padroes sem sobrescrever valores positivos definidos pelo administrador.
+- A API de criar assinatura e as acoes de downgrade/undo usam fallback de preco antes de chamar o Mercado Pago.
+
 ## Testes pendentes
 
 - Pagamento aprovado.
