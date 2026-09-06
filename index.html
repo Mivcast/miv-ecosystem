@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MIV Ecosystem — Vitrine Inteligente</title>
 <meta name="description" content="Ecossistema empresarial adaptável por nicho com estratégias, análises, ferramentas e inteligência artificial.">
-<link rel="stylesheet" href="styles.css?v=13.47">
+<link rel="stylesheet" href="styles.css?v=14.0">
 </head>
 <body data-theme="clean">
 <header class="floating-header">
@@ -20,7 +20,7 @@
       <button data-scroll="planos">Planos</button>
     </nav>
     <button class="auth-header-btn" data-open-auth="login">Entrar</button><button class="central-btn" data-route="central">Minha Central</button><button class="logout-header-btn" id="logoutBtn" type="button" hidden>Sair</button>
-    <button class="mobile-menu" id="mobileMenu">☰</button>
+    <button class="mobile-menu" id="mobileMenu" aria-label="Abrir menu" aria-expanded="false">☰</button>
   </div>
 </header>
 
@@ -34,6 +34,16 @@
       <p id="heroText">Estratégias, ferramentas, análises, conteúdos e inteligência reunidos em um só lugar — e organizados de acordo com o seu nicho.</p>
       <div class="hero-actions"><button class="primary" id="focusNiche">Encontrar soluções para meu nicho</button><button class="glass" data-scroll="recomendados">Explorar vitrine</button></div>
       <div class="hero-tags"><span>✦ Estratégias aplicáveis</span><span>◎ Análises profundas</span><span>◈ MARK em todas as páginas</span></div>
+    </div>
+  </section>
+
+  <section class="wrap help-bridge" id="como-ajuda">
+    <span class="eyebrow center">COMO O MIV AJUDA</span>
+    <h2 class="center">Menos tentativa solta, mais clareza sobre o próximo passo.</h2>
+    <div class="help-grid">
+      <article><strong>1</strong><h3>Entende seu contexto</h3><p>Você escolhe o nicho e completa o Perfil da Empresa para o sistema adaptar recomendações, análises e linguagem.</p></article>
+      <article><strong>2</strong><h3>Organiza prioridades</h3><p>Cards, checklists e diagnósticos ajudam a separar o que já está OK do que precisa melhorar primeiro.</p></article>
+      <article><strong>3</strong><h3>Transforma em ação</h3><p>O MARK.IA e os relatórios convertem dúvidas, gargalos e oportunidades em próximos passos aplicáveis.</p></article>
     </div>
   </section>
 
@@ -56,10 +66,6 @@
   <section class="wrap shelfSec" id="recomendados">
     <div class="titleRow"><div><span class="eyebrow">RECOMENDADO PARA VOCÊ</span><h2 id="recTitle">Uma seleção para começar sem se perder.</h2><p>Itens com maior aderência ao nicho e ao objetivo selecionados.</p></div><div class="arrows"><button data-prev="recTrack">‹</button><button data-next="recTrack">›</button></div></div>
     <div class="shelf" id="recTrack"></div>
-    <div class="need-box">
-      <div class="need-copy"><span class="eyebrow">NÃO ENCONTROU O QUE PRECISA?</span><h3>Conte para o MARK o que você gostaria de resolver agora.</h3><p>Escreva sua dúvida, dor ou objetivo com suas próprias palavras. A vitrine reorganiza as sugestões e mostra os conteúdos, ferramentas e análises mais próximos da sua necessidade.</p></div>
-      <div class="need-action"><textarea id="needInput" rows="3" placeholder="Ex.: estou divulgando bastante, mas poucas pessoas chamam no WhatsApp... ou: preciso vender mais sem baixar meus preços."></textarea><button class="primary" id="needSuggest">Encontrar soluções para mim</button><small id="needStatus">Você não precisa saber qual ferramenta procurar.</small></div>
-    </div>
   </section>
 
   <section class="wrap shelfSec" id="marketing">
@@ -96,6 +102,13 @@
     <div class="shelf" id="mivcastTrack"></div>
   </section>
 
+  <section class="wrap shelfSec need-section" id="preciso-de-ajuda">
+    <div class="need-box">
+      <div class="need-copy"><span class="eyebrow">NÃO ENCONTROU O QUE PRECISA?</span><h3>Conte para o MARK o que você gostaria de resolver agora.</h3><p>Escreva sua dúvida, dor ou objetivo com suas próprias palavras. A vitrine reorganiza as sugestões e mostra os conteúdos, ferramentas e análises mais próximos da sua necessidade.</p></div>
+      <div class="need-action"><textarea id="needInput" rows="3" placeholder="Ex.: estou divulgando bastante, mas poucas pessoas chamam no WhatsApp... ou: preciso vender mais sem baixar meus preços."></textarea><button class="primary" id="needSuggest">Encontrar soluções para mim</button><small id="needStatus">Você não precisa saber qual ferramenta procurar.</small></div>
+    </div>
+  </section>
+
   <section class="wrap analysis" id="analises">
     <div class="analysisTop">
       <div><span class="eyebrow">ANÁLISES EMPRESARIAIS</span><h2>Descubra o que está funcionando, o que precisa melhorar e o que fazer primeiro.</h2><p>Escolha uma subanálise específica, favorite para fazer depois ou entre na análise completa de cada área.</p></div>
@@ -123,12 +136,12 @@
     <div class="wrap">
       <span class="eyebrow center">TRAJETÓRIA & PROVA</span>
       <h2 class="center">Experiência transformada em metodologia, ferramentas e orientação.</h2>
-      <p class="demo-note">Indicadores e provas reais da MivCast devem ser apresentados somente quando estiverem comprovados e autorizados para publicação.</p>
+      <p class="demo-note">Números da trajetória MivCast usados como prova de repertório, experiência prática e volume de análise acumulada.</p>
       <div class="number-grid">
-        <div><strong data-count="300">0</strong><span>avaliações e feedbacks</span></div>
-        <div><strong data-count="1000">0</strong><span>projetos e entregas analisadas*</span></div>
-        <div><strong data-count="20">0</strong><span>áreas de apoio ao negócio*</span></div>
-        <div><strong data-count="10">0</strong><span>frentes de diagnóstico</span></div>
+        <div><strong data-count="300">300</strong><span>avaliações no Google</span></div>
+        <div><strong data-count="5300">5300</strong><span>projetos analisados</span></div>
+        <div><strong data-count="240">240</strong><span>nichos mapeados</span></div>
+        <div><strong data-count="19">19</strong><span>anos de mercado</span></div>
       </div>
     </div>
     <div class="logo-marquee"><div class="logo-track" id="logoTrack"></div></div>
@@ -147,8 +160,8 @@
 
   <section class="about-section">
     <div class="wrap about-grid">
-      <div class="about-photo"><div class="photo-placeholder"><span>MIVCAST</span><strong>Matheus Nascimento</strong><small>Marketing Digital</small></div></div>
-      <div class="about-copy"><span class="eyebrow">QUEM ESTÁ POR TRÁS</span><h2>Tecnologia para multiplicar uma forma humana de pensar.</h2><p>O ecossistema nasce para transformar experiência prática em uma estrutura que ajuda empreendedores e profissionais a encontrar direção, aprender, executar e acompanhar decisões em um único lugar.</p><div class="quote">“Mais importante do que entregar uma lista de melhorias é encontrar o gargalo que realmente explica a dor do cliente.”</div><button class="outline">Conhecer a metodologia</button></div>
+      <div class="about-photo real-photo"><img src="https://www.mivcast.com.br/assets/img/imagens_do_index/mivcast2.png" alt="Matheus Nascimento, MivCast" loading="lazy" referrerpolicy="no-referrer"></div>
+      <div class="about-copy"><span class="eyebrow">PRAZER, ME CHAMO MATHEUS</span><h2>Da prática no comércio à construção de marcas mais fortes.</h2><p>Sou Matheus Nascimento. Minha história com marketing, branding e vendas nasceu na prática, acompanhando negócios reais, comércio local, atendimento, comunicação e as decisões que fazem uma empresa crescer ou travar.</p><p>O MIV Ecosystem transforma esse repertório em uma estrutura acessível para quem precisa diagnosticar, priorizar, aprender e agir com mais clareza.</p><div class="quote">Google Activate · IAB Europe · The Open University · Marketing Digital · Branding · Web Design · Social Media</div><button class="outline" data-scroll="consultoria">Conhecer formas de apoio</button></div>
     </div>
   </section>
 
@@ -157,8 +170,8 @@
     <div class="plan-grid">
       <article><span class="plan-label">COMEÇAR</span><h3>Grátis</h3><p>Experimente o ecossistema, descubra gargalos e receba valor antes de decidir pagar.</p><ul><li>Cards e ferramentas selecionados</li><li>Prévia das análises e soluções</li><li>Relatórios resumidos</li><li><b>5 interações com MARK.IA/mês</b></li><li>Central, favoritos e histórico</li></ul><button class="outline full" id="planFreeBtn">Criar conta grátis</button></article>
       <article><span class="plan-label">SEM ASSINATURA</span><h3>Avulso</h3><p>Para quem precisa resolver uma necessidade específica sem contratar mensalidade.</p><ul><li>Compre somente o card desejado</li><li>Acesso permanente ao item comprado</li><li>Soluções e relatório daquele recurso</li><li>Resultado salvo na Central</li><li>Sem mensalidade</li></ul><button class="outline full" id="planAvulsoBtn">Explorar itens pagos</button></article>
-      <article class="featured"><span class="badge-best">MAIS INDICADO</span><span class="plan-label">PARA RESOLVER</span><h3>Pro <small id="planProPrice" style="display:block;color:var(--accent);font-size:14px;margin-top:6px">R$ 47,90/mês</small></h3><p>Para quem quer usar o ecossistema completo no dia a dia.</p><ul><li><b>Todos os cards PRO</b></li><li>Análises e soluções completas</li><li>Relatórios completos</li><li>Calendário e Aprenda & Aplique completos</li><li><b>80 interações com MARK.IA/mês</b></li><li>MARK contextual dentro dos recursos</li></ul><label class="planCouponInline" for="planProCoupon"><span>Cupom de desconto</span><input id="planProCoupon" placeholder="Cupom opcional"></label><button class="primary full" id="planProBtn">Quero acesso Pro</button></article>
-      <article><span class="plan-lock">TUDO DO PRO</span><span class="plan-label">IA MAIS PROFUNDA</span><h3>Premium <small id="planPremiumPrice" style="display:block;color:var(--accent);font-size:14px;margin-top:6px">R$ 97,90/mês</small></h3><p>Para quem quer o MARK trabalhando com muito mais profundidade sobre o negócio.</p><ul><li>Tudo do PRO</li><li><b>300 interações com MARK.IA/mês</b></li><li>Maior uso de análises profundas com IA</li><li>Inteligência cruzada: empresa + histórico + análises</li><li>Prioridade para recursos avançados futuros</li><li>Recomendações mais contínuas pelo MARK</li></ul><label class="planCouponInline" for="planPremiumCoupon"><span>Cupom de desconto</span><input id="planPremiumCoupon" placeholder="Cupom opcional"></label><button class="outline full" id="planPremiumBtn">Quero acesso Premium</button></article>
+      <article class="featured"><span class="badge-best">MAIS INDICADO</span><span class="plan-label">PARA RESOLVER</span><h3>Pro <small id="planProPrice" style="display:block;color:var(--accent);font-size:14px;margin-top:6px">R$ 47,90/mês</small></h3><p>Para quem quer usar o ecossistema completo no dia a dia.</p><ul><li><b>Todos os cards PRO</b></li><li>Análises e soluções completas</li><li>Relatórios completos</li><li>Calendário e Aprenda & Aplique completos</li><li><b>80 interações com MARK.IA/mês</b></li><li>MARK contextual dentro dos recursos</li></ul><details class="planCouponInline"><summary>Tenho cupom</summary><input id="planProCoupon" data-plan-coupon-input="pro" placeholder="Cupom opcional"></details><button class="primary full" id="planProBtn">Quero acesso Pro</button></article>
+      <article><span class="plan-lock">TUDO DO PRO</span><span class="plan-label">IA MAIS PROFUNDA</span><h3>Premium <small id="planPremiumPrice" style="display:block;color:var(--accent);font-size:14px;margin-top:6px">R$ 97,90/mês</small></h3><p>Para quem quer o MARK trabalhando com muito mais profundidade sobre o negócio.</p><ul><li>Tudo do PRO</li><li><b>300 interações com MARK.IA/mês</b></li><li>Maior uso de análises profundas com IA</li><li>Inteligência cruzada: empresa + histórico + análises</li><li>Prioridade para recursos avançados futuros</li><li>Recomendações mais contínuas pelo MARK</li></ul><details class="planCouponInline"><summary>Tenho cupom</summary><input id="planPremiumCoupon" data-plan-coupon-input="premium" placeholder="Cupom opcional"></details><button class="outline full" id="planPremiumBtn">Quero acesso Premium</button></article>
     </div>
   </section>
 
@@ -191,7 +204,7 @@
       <button class="outline dangerAction" id="subscriptionCancelBtn">Cancelar renovação</button>
     </div>
   </section>
-  <section class="wrap centralSec centralPlanCompare"><span class="eyebrow">ESCOLHA O NÍVEL IDEAL</span><h2>O que muda em cada plano?</h2><p>Grátis para experimentar, PRO para resolver e Premium para aprofundar com o MARK.IA.</p><div class="centralGrid"><div class="centralItem"><small>GRÁTIS</small><h3>Experimentar</h3><p>Cards selecionados, prévias e relatórios resumidos.</p><b>5 MARK.IA/mês</b></div><div class="centralItem"><small>PRO · <span id="centralProPrice">R$ 47,90/mês</span></small><h3>Resolver</h3><p>Todos os cards PRO, análises, relatórios, calendário e conteúdos completos.</p><b>80 MARK.IA/mês</b></div><div class="centralItem"><small>PREMIUM · <span id="centralPremiumPrice">R$ 97,90/mês</span></small><h3>Aprofundar</h3><p>Tudo do PRO + uso muito maior do MARK e inteligência cruzada do negócio.</p><b>300 MARK.IA/mês</b></div></div><button class="outline" data-scroll="planos">Comparar planos completos</button></section>
+  <section class="wrap centralSec centralPlanCompare"><span class="eyebrow">ESCOLHA O NÍVEL IDEAL</span><h2>Planos dentro da sua Central</h2><p>Assine ou faça upgrade sem sair da área da conta. O cupom é aplicado antes do Mercado Pago, então o checkout já abre com o valor final.</p><div class="centralGrid centralPlanCards"><div class="centralItem"><small>GRÁTIS</small><h3>Experimentar</h3><p>Cards selecionados, prévias e relatórios resumidos.</p><b>5 MARK.IA/mês</b></div><div class="centralItem"><small>PRO · <span id="centralProPrice">R$ 47,90/mês</span></small><h3>Resolver</h3><p>Todos os cards PRO, análises, relatórios, calendário e conteúdos completos.</p><details class="planCouponInline"><summary>Tenho cupom</summary><input data-plan-coupon-input="pro" placeholder="Cupom opcional"></details><button class="primary full" id="centralPlanProBtn">Quero acesso Pro</button></div><div class="centralItem"><small>PREMIUM · <span id="centralPremiumPrice">R$ 97,90/mês</span></small><h3>Aprofundar</h3><p>Tudo do PRO + uso muito maior do MARK e inteligência cruzada do negócio.</p><details class="planCouponInline"><summary>Tenho cupom</summary><input data-plan-coupon-input="premium" placeholder="Cupom opcional"></details><button class="outline full" id="centralPlanPremiumBtn">Quero acesso Premium</button></div></div></section>
   <section class="wrap companyProfilePanel" id="companyProfilePanel">
     <div class="companyProfileHead">
       <div><span class="eyebrow">INFORMAÇÕES DA EMPRESA</span><h2>Quanto mais o sistema conhece seu negócio, melhores ficam as respostas.</h2><p>Essas informações poderão ser reutilizadas pelo MARK e pelos cards para evitar perguntas repetidas e personalizar sugestões, análises e relatórios.</p></div>
@@ -242,7 +255,7 @@
 </section>
 </main>
 
-<button class="markFab" id="markFab"><b>◈</b><span>MARK<small>Posso ajudar nesta página</small></span></button>
+  <button class="markFab" id="markFab"><b class="markPhoto"><img src="https://www.mivcast.com.br/assets/img/imagens_do_index/mivcast2.png" alt="" loading="lazy" referrerpolicy="no-referrer"></b><span>MARK<small>Posso ajudar nesta página</small></span></button>
 <aside class="mark" id="mark"><header><b>◈</b><div><strong>MARK</strong><small>Consultor contextual</small></div><button id="closeMark">×</button></header><div class="context"><small>CONTEXTO ATIVO</small><strong id="ctxTitle">Vitrine</strong><span id="ctxText">Posso ajudar a escolher o que faz mais sentido.</span></div><div class="messages" id="messages"><p>Estou vendo a mesma página que você. Posso explicar, adaptar ou ajudar a aplicar.</p></div><div class="chips"><button>O que você recomenda?</button><button>Por onde começo?</button><button>Isso serve para mim?</button></div><form id="markForm"><textarea id="markInput" placeholder="Pergunte ao MARK..."></textarea><button>Enviar</button></form></aside>
 
 
@@ -319,5 +332,5 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=13.47"></script>
+<script src="app.js?v=14.0"></script>
 </body></html>

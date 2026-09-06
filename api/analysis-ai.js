@@ -49,16 +49,17 @@ module.exports=async function handler(req,res){
       '3. Priorize no máximo 5 ações, em ordem lógica de execução.',
       '4. As recomendações devem considerar equipe, orçamento, estágio e limitações informadas.',
       '5. Não alegue revisão humana. A análise representa metodologia + IA aplicada aos dados fornecidos.',
-      '6. Retorne SOMENTE JSON válido, sem markdown, com as chaves: summary, score_interpretation, strengths, bottlenecks, priorities, next_steps, watchouts.',
-      '7. strengths, bottlenecks, priorities, next_steps e watchouts devem ser arrays de strings. priorities deve ter entre 1 e 5 itens quando houver dados suficientes.',
+      '6. Retorne SOMENTE JSON válido, sem markdown, com as chaves: what_we_analyzed, what_we_found, facts, signals, hypotheses, what_it_reveals, strengths, bottlenecks, priorities, recommended_decision, next_steps, do_not_do_now, action_plan, review_in, watchouts, summary, score_interpretation.',
+      '7. Campos de lista devem ser arrays de strings. priorities deve ter entre 1 e 5 itens quando houver dados suficientes. action_plan deve ter passos curtos e executáveis.',
+      '8. Separe fatos observados de hipóteses. Não invente provas externas nem resultados que o usuário não informou.',
       '\nDADOS DA ANÁLISE',userData
     ].join('\n');
     let model=/^[a-zA-Z0-9._-]+$/.test(settings.model_name||'')?settings.model_name:'gemini-3.8-flash';if(model==='gemini-2.5-flash')model='gemini-3.8-flash';
-    const body={contents:[{role:'user',parts:[{text:'Gere a interpretação estruturada desta análise empresarial.'}]}],systemInstruction:{parts:[{text:system}]},generationConfig:{temperature:0.3,maxOutputTokens:2200,responseMimeType:'application/json'}};
+    const body={contents:[{role:'user',parts:[{text:'Gere a interpretação estruturada desta análise empresarial.'}]}],systemInstruction:{parts:[{text:system}]},generationConfig:{temperature:0.3,maxOutputTokens:3600,responseMimeType:'application/json'}};
     const gr=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,{method:'POST',headers:{'x-goog-api-key':gk,'Content-Type':'application/json'},body:JSON.stringify(body)});
     const gd=await gr.json().catch(()=>({}));if(!gr.ok){console.error('[ANALYSIS Gemini]',gr.status,JSON.stringify(gd).slice(0,1200));return send(res,502,{error:'Não foi possível gerar a interpretação inteligente agora.'});}
     const text=(gd.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').trim();const result=safeJson(text);if(!result)return send(res,502,{error:'A IA retornou uma análise em formato inesperado.'});
     const arr=k=>Array.isArray(result[k])?result[k].map(x=>clean(x,1200)).filter(Boolean).slice(0,8):[];
-    return send(res,200,{analysis:{summary:clean(result.summary,4000),score_interpretation:clean(result.score_interpretation,2500),strengths:arr('strengths'),bottlenecks:arr('bottlenecks'),priorities:arr('priorities').slice(0,5),next_steps:arr('next_steps').slice(0,6),watchouts:arr('watchouts').slice(0,6)},model});
+    return send(res,200,{analysis:{summary:clean(result.summary,4000),score_interpretation:clean(result.score_interpretation,2500),what_we_analyzed:arr('what_we_analyzed').slice(0,6),what_we_found:arr('what_we_found').slice(0,6),facts:arr('facts').slice(0,6),signals:arr('signals').slice(0,6),hypotheses:arr('hypotheses').slice(0,6),what_it_reveals:arr('what_it_reveals').slice(0,6),strengths:arr('strengths'),bottlenecks:arr('bottlenecks'),priorities:arr('priorities').slice(0,5),recommended_decision:arr('recommended_decision').slice(0,4),next_steps:arr('next_steps').slice(0,6),do_not_do_now:arr('do_not_do_now').slice(0,5),action_plan:arr('action_plan').slice(0,8),review_in:arr('review_in').slice(0,3),watchouts:arr('watchouts').slice(0,6)},model});
   }catch(e){console.error('[ANALYSIS.IA]',e);return send(res,500,{error:'Não foi possível gerar a análise inteligente agora.'});}
 };
