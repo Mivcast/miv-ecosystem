@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MIV Ecosystem — Vitrine Inteligente</title>
 <meta name="description" content="Ecossistema empresarial adaptável por nicho com estratégias, análises, ferramentas e inteligência artificial.">
-<link rel="stylesheet" href="styles.css?v=14.0">
+<link rel="stylesheet" href="styles.css?v=14.1">
 </head>
 <body data-theme="clean">
 <header class="floating-header">
@@ -147,15 +147,18 @@
     <div class="logo-marquee"><div class="logo-track" id="logoTrack"></div></div>
   </section>
 
-  <section class="wrap testimonials">
-    <span class="eyebrow center">APLICAÇÃO PRÁTICA</span>
-    <h2 class="center">Como o ecossistema ajuda a transformar diagnóstico em próximos passos.</h2>
-    <div class="testimonial-grid">
-      <article><div class="stars">★★★★★</div><blockquote>Organize a oferta antes de aumentar investimento em divulgação.</blockquote><div><strong>Clínicas e serviços</strong><b>Oferta clara</b></div></article>
-      <article><div class="stars">★★★★★</div><blockquote>Trabalhe ticket, recompra e combinação de produtos com mais intenção.</blockquote><div><strong>Comércios e varejo</strong><b>Vendas melhores</b></div></article>
-      <article><div class="stars">★★★★★</div><blockquote>Escolha o que fazer primeiro sem espalhar esforço em canais demais.</blockquote><div><strong>Negócios locais</strong><b>Prioridade</b></div></article>
+  <section class="wrap testimonials" id="depoimentos">
+    <span class="eyebrow center">RELATOS SIMULADOS DE USO</span>
+    <h2 class="center">Exemplos de como clientes de nichos diferentes poderiam perceber valor no ecossistema.</h2>
+    <p class="demo-note">Os relatos abaixo são exemplos fictícios para demonstrar o espaço de depoimentos. Substitua por depoimentos reais somente com autorização dos clientes.</p>
+    <div class="testimonial-toolbar">
+      <button class="active" data-testimonial-filter="Todos">Todos</button>
+      <button data-testimonial-filter="Marketing">Marketing</button>
+      <button data-testimonial-filter="Vendas">Vendas</button>
+      <button data-testimonial-filter="Marca">Marca</button>
+      <button data-testimonial-filter="Gestão">Gestão</button>
     </div>
-    <small class="prototype-warning">Depoimentos e resultados reais devem ser incluídos somente após validação e autorização.</small>
+    <div class="testimonial-grid" id="testimonialGrid"></div>
   </section>
 
   <section class="about-section">
@@ -330,7 +333,17 @@
     <div id="savedReportBody"></div>
   </div>
 </div>
+<div class="videoOverlay" id="videoOverlay"></div>
+<div class="videoModal" id="videoModal">
+  <div class="videoCard">
+    <button class="videoClose" id="closeVideoModal">×</button>
+    <span class="eyebrow" id="videoLabel">APRENDA & APLIQUE</span>
+    <h2 id="videoTitle">Aula MivCast</h2>
+    <div class="videoFrameWrap" id="videoFrameWrap"></div>
+    <p id="videoDesc"></p>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=14.0"></script>
+<script src="app.js?v=14.1"></script>
 </body></html>

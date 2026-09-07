@@ -46,13 +46,14 @@ const items=[
  {id:'financeiro',cat:'Ferramentas',format:'Sistema',access:'Pro',icon:'$',tag:'EM BREVE',title:'Sistema de Contas e Financeiro',desc:'Entradas, saídas, contas e visão financeira do negócio. Em fase final de desenvolvimento.',img:imgs.analytics,special:'notify'},
  {id:'orcamentos',cat:'Ferramentas',format:'Sistema',access:'Pro',icon:'▤',tag:'EM BREVE',title:'Sistema de Orçamentos',desc:'Crie, envie, acompanhe e organize propostas e orçamentos. Em fase final de desenvolvimento.',img:imgs.planning,special:'notify'},
 
- {id:'video-oferta',cat:'Aprender',format:'Vídeo',access:'Grátis',icon:'▶',tag:'VENDAS',title:'Oferta: pare de vender só preço',desc:'Aula rápida sobre valor, prova e decisão.',img:imgs.learning},
- {id:'guia-google',cat:'Aprender',format:'Guia',access:'Grátis',icon:'▤',tag:'LOCAL',title:'Guia prático para presença no Google',desc:'Checklist para melhorar descoberta, prova e contato.',img:imgs.learning},
- {id:'livro-marketing',cat:'Aprender',format:'Livro',access:'Pago',price:'R$ 39,90',icon:'▣',tag:'MARKETING',title:'Marketing para negócios reais',desc:'Livro prático para organizar marketing sem teoria solta.',img:imgs.learning},
- {id:'curso-vendas',cat:'Aprender',format:'Curso',access:'Pago',price:'R$ 79,90',icon:'▷',tag:'VENDAS',title:'Vendas consultivas para negócios reais',desc:'Da abordagem ao fechamento com aplicação prática.',img:imgs.learning},
- {id:'video-trafego',cat:'Aprender',format:'Vídeo',access:'Grátis',icon:'▶',tag:'TRÁFEGO',title:'Antes do tráfego: o que precisa estar pronto',desc:'Evite pagar para levar pessoas a uma estrutura que ainda não converte.',img:imgs.learning},
- {id:'guia-conteudo',cat:'Aprender',format:'Guia',access:'Grátis',icon:'▤',tag:'CONTEÚDO',title:'Conteúdo que atrai, prova e converte',desc:'Organize temas por função em vez de postar sem objetivo.',img:imgs.learning},
- {id:'ia-negocios',cat:'Aprender',format:'Curso',access:'Pro',icon:'◈',tag:'IA',title:'IA aplicada ao pequeno negócio',desc:'Use IA para acelerar trabalho mantendo contexto e critério.',img:imgs.learning},
+ {id:'livro-admin-sabedoria',cat:'Aprender',format:'Livro',access:'Pago',price:'R$ 39,90',icon:'▣',tag:'GESTÃO',title:'Como Administrar sua Empresa com Sabedoria',desc:'Livro para organizar decisões, prioridades, gestão e rotina empresarial com mais clareza.',img:imgs.learning,learningArea:'Gestão',learningLevel:'Intermediário',learningExternal:'https://www.mivcast.com.br/cursos_e_treinamentos_em_marketing.html',learningBody:'Use este material para revisar como a empresa decide, executa, acompanha indicadores e transforma problemas em plano de ação.'},
+ {id:'livro-branding-marketing',cat:'Aprender',format:'Livro',access:'Pago',price:'R$ 39,90',icon:'▣',tag:'BRANDING',title:'Consultoria Completa em Branding e Marketing',desc:'Livro para conectar posicionamento, identidade, canais, campanhas e vendas em uma estrutura coerente.',img:imgs.learning,learningArea:'Marca',learningLevel:'Intermediário',learningExternal:'https://www.mivcast.com.br/cursos_e_treinamentos_em_marketing.html',learningBody:'Use este material junto dos cards de Branding, Identidade Visual, Diferenciação, Canais e Oferta.'},
+ {id:'livro-digital-influencer',cat:'Aprender',format:'Livro',access:'Pago',price:'R$ 39,90',icon:'▣',tag:'INFLUÊNCIA',title:'Guia Completo do Digital Influencer',desc:'Livro para planejar posicionamento, conteúdo, autoridade, parcerias e monetização de influência.',img:imgs.learning,learningArea:'Marketing',learningLevel:'Intermediário',learningExternal:'https://www.mivcast.com.br/cursos_e_treinamentos_em_marketing.html',learningBody:'Use este material para estruturar presença humana, conteúdo, prova, comunidade, parcerias e canais de conversão.'},
+ {id:'livro-youtuber',cat:'Aprender',format:'Livro',access:'Pago',price:'R$ 39,90',icon:'▣',tag:'YOUTUBE',title:'Guia Completo do Youtuber',desc:'Livro para organizar canal, pauta, frequência, narrativa, autoridade e evolução de conteúdo em vídeo.',img:imgs.learning,learningArea:'Conteúdo',learningLevel:'Intermediário',learningExternal:'https://www.mivcast.com.br/cursos_e_treinamentos_em_marketing.html',learningBody:'Use este material para transformar ideias em quadros, roteiros, vídeos, calendário e indicadores de evolução.'},
+ {id:'video-marketing-base',cat:'Aprender',format:'Vídeo',access:'Grátis',icon:'▶',tag:'MARKETING',title:'Videoaulas MivCast sobre marketing aplicado',desc:'Acesse as aulas do canal MivCast e use o MARK para transformar o aprendizado em ações do seu nicho.',img:imgs.learning,learningArea:'Marketing',learningLevel:'Todos',learningExternal:'https://www.youtube.com/@mivcast',learningBody:'Player interno preparado para videoaulas cadastradas. Enquanto os links individuais não forem cadastrados, este card abre o canal oficial.'},
+ {id:'video-branding-base',cat:'Aprender',format:'Vídeo',access:'Grátis',icon:'▶',tag:'BRANDING',title:'Videoaulas MivCast sobre branding e identidade',desc:'Conteúdos para entender percepção, posicionamento, identidade e profissionalização da marca.',img:imgs.learning,learningArea:'Marca',learningLevel:'Todos',learningExternal:'https://www.youtube.com/@mivcast',learningBody:'Cadastre links específicos do YouTube no Admin/Supabase para abrir as aulas direto dentro do sistema.'},
+ {id:'video-vendas-base',cat:'Aprender',format:'Vídeo',access:'Grátis',icon:'▶',tag:'VENDAS',title:'Videoaulas MivCast sobre vendas e oferta',desc:'Aulas para melhorar proposta, atendimento, follow-up, oferta, ticket médio e recompra.',img:imgs.learning,learningArea:'Vendas',learningLevel:'Todos',learningExternal:'https://www.youtube.com/@mivcast',learningBody:'Use junto dos cards de Ticket, Follow-up, Oferta e WhatsApp para transformar conteúdo em execução.'},
+ {id:'video-conteudo-base',cat:'Aprender',format:'Vídeo',access:'Grátis',icon:'▶',tag:'CONTEÚDO',title:'Videoaulas MivCast sobre conteúdo e canais',desc:'Conteúdo para organizar Instagram, vídeos, calendário, campanhas e canais de comunicação.',img:imgs.learning,learningArea:'Conteúdo',learningLevel:'Todos',learningExternal:'https://www.youtube.com/@mivcast',learningBody:'O MARK pode adaptar qualquer aprendizado para o seu nicho, cidade, oferta e estágio atual.'},
 
  {id:'consult-markia',cat:'Consultoria',format:'Consultoria automática',access:'Pago',price:'R$ 49/mês',icon:'◈',tag:'MARK.IA',title:'MARK.IA Consultor Automático',desc:'Orientação contínua com IA contextual para ajudar a pensar, decidir e organizar os próximos passos do negócio.',img:imgs.analytics,special:'consult-sale'},
  {id:'mentoria-area',cat:'Consultoria',format:'Mentoria',access:'Pago',price:'R$ 299',icon:'◎',tag:'MENTORIA',title:'Mentoria de uma área específica',desc:'Uma orientação focada em um tema ou dificuldade específica do seu negócio.',img:imgs.team,special:'consult-sale'},
@@ -140,7 +141,7 @@ function applyTheme(niche,theme,scrollToCards=false){state.profile.niche=niche;s
 function renderNiches(){const dl=document.getElementById('nicheList');dl.innerHTML=Object.keys(niches).sort((a,b)=>a.localeCompare(b,'pt-BR')).map(n=>`<option value="${n}"></option>`).join('');document.getElementById('nicheGroups').innerHTML=groups.slice(0,8).map(g=>`<div class="niche-group"><strong>${g.name}</strong><div class="subchips">${g.subs.slice(0,6).map(s=>`<button data-niche="${s}">${s}</button>`).join('')}</div></div>`).join('');document.querySelectorAll('[data-niche]').forEach(b=>b.onclick=()=>{document.getElementById('nicheSearch').value=b.dataset.niche;applyTheme(b.dataset.niche,niches[b.dataset.niche].theme,true)})}
 function imgFor(item){return item.img}
 function card(item){const saved=state.favorites.includes(item.id);const unlocked=hasItemAccess(item);const lock=item.access==='Grátis'?`<span class="lock-badge free-badge">GRÁTIS</span>`:unlocked?`<span class="lock-badge free-badge">✓ LIBERADO</span>`:`<span class="lock-badge">🔒 PRO ${item.access==='Pago'?'· ou '+(item.price||'avulso'):''}</span>`;return `<article class="card"><div class="cardImg cardImgFallback"><div class="cardFallbackLabel"><span>${item.icon||'◆'}</span><small>${item.cat||'MIV ECOSYSTEM'}</small></div><img src="${imgFor(item)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">${lock}<button class="heart ${saved?'saved':''}" data-fav="${item.id}">${saved?'♥':'♡'}</button></div><div class="cardBody"><div class="meta"><span>${item.tag}</span><small>${item.format}</small></div><h3>${item.title}</h3><p>${item.desc}</p><button class="open" data-open="${item.id}">Abrir →</button></div></article>`}
-const bases={marketing:['calendario','canais','local','equipe-marketing','clientes-marketing','parcerias','identidade-marketing','brindes'],brand:['branding-fisico','branding-digital','identidade','diferenciacao'],sales:['ticket','followup','fidelizacao','whatsapp','oferta'],tools:['tool-calendario','markia-app','agendamentos','financeiro','orcamentos'],learn:['video-oferta','guia-google','livro-marketing','curso-vendas','video-trafego','guia-conteudo','ia-negocios'],consult:['consult-markia','mentoria-area','consult-setor','consult-completa','consult-acomp'],mivcast:['svc-logo','svc-vetor','svc-manual','svc-site','svc-loja','svc-lp','svc-market','svc-market40','svc-google','svc-instagram','svc-15artes','svc-facebook','svc-whatsapp','svc-link','svc-linkedin','svc-midiakit','svc-impressos','svc-arte','svc-video','svc-institucional']};
+const bases={marketing:['calendario','canais','local','equipe-marketing','clientes-marketing','parcerias','identidade-marketing','brindes'],brand:['branding-fisico','branding-digital','identidade','diferenciacao'],sales:['ticket','followup','fidelizacao','whatsapp','oferta'],tools:['tool-calendario','markia-app','agendamentos','financeiro','orcamentos'],learn:['livro-admin-sabedoria','livro-branding-marketing','livro-digital-influencer','livro-youtuber','video-marketing-base','video-branding-base','video-vendas-base','video-conteudo-base'],consult:['consult-markia','mentoria-area','consult-setor','consult-completa','consult-acomp'],mivcast:['svc-logo','svc-vetor','svc-manual','svc-site','svc-loja','svc-lp','svc-market','svc-market40','svc-google','svc-instagram','svc-15artes','svc-facebook','svc-whatsapp','svc-link','svc-linkedin','svc-midiakit','svc-impressos','svc-arte','svc-video','svc-institucional']};
 function recommended(){
  const t=state.profile.theme;
  const map={
@@ -457,6 +458,203 @@ const marketingStrategyDefinitions={
  }
 };
 
+function appendChecklistSection(map,id,name,points){
+ const def=map?.[id];if(!def)return;
+ def.sections.push({name,items:points.map((p,i)=>[`v2_${name.toLowerCase().replace(/\W+/g,'_')}_${i}`,p[0],p[1]])});
+}
+appendChecklistSection(marketingStrategyDefinitions,'calendario','Planejamento avançado',[
+ ['Classificar cada data pela função da campanha','Venda, relacionamento, autoridade, conscientização, lançamento, fidelização ou institucional.'],
+ ['Definir objetivo antes da campanha','Informe se quer movimento, lead, venda, recompra, reconhecimento ou outra meta.'],
+ ['Indicar público específico da campanha','Evite campanha genérica quando o público muda por data, canal ou oferta.'],
+ ['Escolher o canal mais apropriado','Instagram, WhatsApp, Google, loja, equipe, parceiros ou outro ponto de contato.'],
+ ['Planejar preparação antecipada','Defina quantos dias antes a campanha precisa começar para não sair em cima da hora.'],
+ ['Registrar resultado pós-campanha','Guarde o que funcionou para comparar datas e campanhas futuras.'],
+ ['Manter banco de campanhas anteriores','Reaproveite criativos, mensagens e ofertas que provaram resultado.'],
+ ['Separar calendário de lançamentos','Lançamentos precisam de cronograma próprio, não só datas comemorativas.'],
+ ['Mapear datas de conscientização legítimas','Use causas e temas apenas quando houver conexão real com marca e nicho.'],
+ ['Definir resultado esperado e métrica','Ex.: contatos, vendas, visitas, cliques, avaliações, recompra ou agendamentos.']
+]);
+appendChecklistSection(marketingStrategyDefinitions,'local','Pontos avançados',[
+ ['Usar a vitrine como ferramenta comercial','A frente da empresa deve chamar atenção, explicar e provocar entrada ou contato.'],
+ ['Medir fluxo de pessoas','Entenda dias, horários e pontos de maior circulação ao redor do negócio.'],
+ ['Revisar estacionamento e acesso','Facilidade de chegada pode ser decisiva para negócios locais.'],
+ ['Expor best-sellers estrategicamente','Produtos ou serviços mais fortes precisam aparecer melhor no ponto físico.'],
+ ['Criar lançamentos e novidades no PDV','Dê motivo para voltar, perguntar e perceber movimento.'],
+ ['Fazer eventos dentro da empresa','Experiências presenciais podem gerar conteúdo, relacionamento e vendas.'],
+ ['Integrar loja, WhatsApp e Instagram','O cliente deve conseguir continuar a jornada no canal mais conveniente.'],
+ ['Oferecer compra online e retirada','Quando aplicável, reduza atrito entre digital e físico.'],
+ ['Permitir compra na loja e entrega','Facilite decisão para quem viu presencialmente, mas não quer carregar ou esperar.'],
+ ['Usar QR Codes com propósito','Leve para catálogo, WhatsApp, avaliação, campanha ou conteúdo útil.'],
+ ['Explorar marketing sensorial','Iluminação, música, aroma, textura e experimentação também vendem percepção.'],
+ ['Capturar contatos no ponto físico','Crie motivo legítimo para continuar a conversa depois da visita.'],
+ ['Mensurar origem dos clientes locais','Pergunte e registre como as pessoas chegaram até a empresa.']
+]);
+appendChecklistSection(marketingStrategyDefinitions,'equipe-marketing','Pontos avançados',[
+ ['Avaliar clima e relacionamento interno','Ambiente interno ruim aparece no atendimento e na comunicação.'],
+ ['Estimular cooperação entre setores','Marketing, vendas, atendimento e operação precisam trocar informações.'],
+ ['Dar clareza de funções','Cada pessoa deve saber seu papel na experiência do cliente.'],
+ ['Definir metas individuais e coletivas','Metas precisam orientar comportamento sem criar conflito artificial.'],
+ ['Fazer treinamento recorrente','A equipe precisa revisar atendimento, objeções, produtos e promessas.'],
+ ['Programar reciclagens','O padrão melhora quando volta para revisão, não só quando há problema.'],
+ ['Criar política de comunicação','Deixe claro como falar com clientes em cada canal.'],
+ ['Criar política de atendimento','Padronize acolhimento, prazos, retorno e passagem de responsabilidade.'],
+ ['Definir tom de voz interno','A linguagem da equipe deve combinar com a marca.'],
+ ['Tratar conflitos com processo','Problemas internos precisam de caminho claro de resolução.'],
+ ['Coletar objeções relatadas pela equipe','Use dúvidas reais dos clientes para melhorar conteúdo, oferta e treinamento.'],
+ ['Acompanhar indicadores por equipe','Meça atendimento, conversão, retorno, satisfação e gargalos.']
+]);
+appendChecklistSection(marketingStrategyDefinitions,'clientes-marketing','Pontos avançados',[
+ ['Identificar ciclo de vida do cliente','Entenda quando ele compra, usa, renova, indica ou abandona.'],
+ ['Definir frequência ideal de contato','Contato demais cansa; contato de menos deixa a marca desaparecer.'],
+ ['Separar clientes por estágio','Novo, ativo, recorrente, VIP e inativo precisam de comunicação diferente.'],
+ ['Identificar nível de consciência','Adapte mensagem para quem ainda não sabe do problema, compara opções ou já quer comprar.'],
+ ['Criar comunicação por estágio','Boas-vindas, uso, recompra, reativação e indicação não devem receber a mesma mensagem.'],
+ ['Pesquisar motivo de abandono','Entenda por que o cliente parou antes de oferecer desconto.'],
+ ['Pesquisar motivo de recompra','Descubra o que realmente fez a pessoa voltar.'],
+ ['Medir LTV quando possível','Valor de vida do cliente ajuda a decidir investimento e relacionamento.'],
+ ['Reativar com contexto','Recupere clientes antigos com histórico, necessidade e motivo real, não promoção genérica.']
+]);
+appendChecklistSection(marketingStrategyDefinitions,'parcerias','Pontos avançados',[
+ ['Avaliar qualidade do público','Seguidores ou alcance só importam se combinarem com o cliente ideal.'],
+ ['Usar microcriadores para validação','Microcriadores podem testar mensagem, prova e aceitação em grupos menores.'],
+ ['Convidar especialistas validadores','Profissionais reconhecidos podem fortalecer confiança.'],
+ ['Mapear parceiros comerciais B2B','Empresas podem vender, indicar ou complementar sua solução.'],
+ ['Criar afiliados ou indicadores quando aplicável','Formalize indicação quando fizer sentido financeiro e ético.'],
+ ['Preparar material profissional para parceiros','Facilite como o parceiro apresenta sua empresa.'],
+ ['Criar página ou kit de parceiro','Centralize oferta, provas, orientações e materiais.'],
+ ['Separar parceria para conteúdo, evento, produto e venda','Cada tipo de parceria precisa de entrega e métrica próprias.']
+]);
+appendChecklistSection(marketingStrategyDefinitions,'identidade-marketing','Pontos avançados',[
+ ['Definir direção fotográfica','Fotos precisam combinar com percepção desejada, público e canal.'],
+ ['Produzir fotografia de produto','Imagem boa aumenta clareza, confiança e desejo.'],
+ ['Usar fotografia lifestyle quando fizer sentido','Mostre produto, serviço ou transformação no contexto de uso.'],
+ ['Definir estilo de vídeo','Cortes, ritmo, cenário e linguagem devem reforçar a marca.'],
+ ['Organizar iconografia','Ícones e sinais visuais ajudam a explicar sem poluir.'],
+ ['Aplicar identidade na ambientação','Ambiente físico também deve parecer a mesma marca.'],
+ ['Planejar vitrine e preço visual','Preço, ofertas e destaques precisam de apresentação profissional.'],
+ ['Criar materiais para parceiros','Parceiros precisam receber peças coerentes e fáceis de usar.'],
+ ['Padronizar apresentação comercial','Propostas e apresentações devem carregar a mesma percepção.'],
+ ['Criar padrão de anúncios','Anúncios precisam vender sem fugir da identidade.'],
+ ['Criar materiais institucionais','Apresentações, documentos e materiais internos também comunicam marca.']
+]);
+appendChecklistSection(marketingStrategyDefinitions,'brindes','Pontos avançados',[
+ ['Criar brinde para lançamento','Use bônus para ativar curiosidade e primeira experiência.'],
+ ['Elevar a experiência com brinde','O brinde deve aumentar percepção, não parecer sobra.'],
+ ['Oferecer bônus digital','Guias, checklists e aulas podem complementar produtos e serviços.'],
+ ['Criar benefício VIP','Clientes mais valiosos podem receber experiências especiais.'],
+ ['Usar benefício progressivo','Reconheça frequência, ticket ou indicação de forma sustentável.'],
+ ['Gerar surpresa pós-compra','Surpresas pequenas podem aumentar lembrança e indicação.'],
+ ['Usar amostras ou testes quando aplicável','Experimentação reduz risco percebido.'],
+ ['Medir impacto em recompra e indicação','Brinde bom precisa gerar comportamento, não só custo.']
+]);
+appendChecklistSection(businessChecklistDefinitions,'branding-fisico','Pontos avançados',[
+ ['Separar fachada e vitrine','A fachada identifica; a vitrine provoca interesse e venda.'],
+ ['Revisar circulação e disposição','O caminho do cliente no ambiente influencia decisão.'],
+ ['Trabalhar os cinco sentidos','Visão, som, aroma, toque e experiência podem reforçar posicionamento.'],
+ ['Pensar antes, durante e depois da compra','Branding físico começa antes da entrada e continua após a saída.'],
+ ['Conectar ticket e ambiente','Preço, experiência e percepção precisam conversar.'],
+ ['Expor produtos estratégicos','O ambiente deve ajudar a vender o que mais importa.'],
+ ['Tratar o ambiente como vendedor','Espaço físico precisa orientar, explicar e gerar confiança.'],
+ ['Conectar QR Codes e digital','Leve o cliente para WhatsApp, catálogo, avaliações e campanhas.'],
+ ['Padronizar atendimento presencial','A experiência humana é parte central da marca.']
+]);
+appendChecklistSection(businessChecklistDefinitions,'branding-digital','Pontos avançados',[
+ ['Aprofundar tom de voz','Defina como a marca fala, responde, orienta e vende.'],
+ ['Explicitar personalidade da marca','A comunicação precisa ter traços reconhecíveis.'],
+ ['Definir promessa central','Deixe claro o que a marca se compromete a entregar.'],
+ ['Ter mensagem principal','A ideia central deve aparecer nos principais canais.'],
+ ['Garantir consistência entre promessa e entrega','Não prometa uma experiência que o negócio não sustenta.'],
+ ['Mostrar fundador, equipe ou especialistas','Pessoas reais aumentam confiança quando coerentes com o nicho.'],
+ ['Criar biblioteca de provas','Avaliações, casos, resultados e bastidores legítimos precisam estar organizados.'],
+ ['Cuidar da reputação digital','Comentários, avaliações e buscas precisam ser acompanhados.'],
+ ['Usar mídia/imprensa quando existir','Menções externas podem reforçar autoridade.'],
+ ['Demonstrar autoridade técnica','Ensine, explique e prove conhecimento sem exagero.'],
+ ['Manter coerência digital completa','Site, redes, WhatsApp, anúncios e Google devem parecer parte da mesma marca.']
+]);
+appendChecklistSection(businessChecklistDefinitions,'identidade','Pontos avançados',[
+ ['Definir personalidade visual','A identidade deve transmitir sensações compatíveis com a marca.'],
+ ['Mapear percepção desejada','Clareza, sofisticação, proximidade, técnica ou velocidade mudam a estética.'],
+ ['Adequar ao público','Visual bonito mas desalinhado com o cliente perde força.'],
+ ['Adequar ao posicionamento','Identidade deve sustentar preço, promessa e categoria.'],
+ ['Aplicar em embalagem','Produto físico precisa continuar a marca na mão do cliente.'],
+ ['Definir fotografia e audiovisual','Imagem e vídeo também fazem parte da identidade.'],
+ ['Criar templates comerciais','Orçamentos, propostas e apresentações precisam de padrão.'],
+ ['Criar materiais internos','Equipe deve usar materiais coerentes no dia a dia.'],
+ ['Manter consistência em ambientes físicos','A loja, clínica ou escritório deve parecer a mesma marca.']
+]);
+appendChecklistSection(businessChecklistDefinitions,'diferenciacao','Pontos avançados',[
+ ['Separar atributo comum de diferencial real','Nem todo benefício básico pode ser vendido como diferencial.'],
+ ['Comparar o que cada concorrente domina','Entenda território, força e promessa de cada alternativa.'],
+ ['Identificar território livre','Procure uma posição que ninguém ocupa claramente.'],
+ ['Aprender com concorrentes sem copiar','Observe processos, canais e provas que funcionam.'],
+ ['Definir o que não copiar','Proteja autenticidade e posicionamento.'],
+ ['Transformar diferencial em processo','Diferencial forte aparece na entrega, não só na frase.'],
+ ['Criar razões para acreditar','Provas, método, bastidores e resultados sustentam a promessa.'],
+ ['Testar posicionamento','Valide a percepção antes de tratar como verdade definitiva.']
+]);
+appendChecklistSection(businessChecklistDefinitions,'ticket','Pontos avançados',[
+ ['Oferecer segunda unidade','Quando fizer sentido, facilite levar mais de uma unidade.'],
+ ['Criar assinatura ou recorrência','Transforme reposição ou acompanhamento em receita previsível.'],
+ ['Adicionar serviço complementar','Serviço pode elevar valor percebido e resultado.'],
+ ['Montar pacotes','Pacotes ajudam a organizar escolha e ticket.'],
+ ['Usar venda cruzada','Recomende itens que melhoram a experiência principal.'],
+ ['Criar benefício progressivo','Incentive ticket maior sem destruir margem.'],
+ ['Usar frete progressivo quando aplicável','Frete pode influenciar cesta e decisão.'],
+ ['Adaptar ticket por perfil','Clientes diferentes aceitam composições diferentes.'],
+ ['Proteger margem','Não aumente ticket com itens que reduzem lucro real.']
+]);
+appendChecklistSection(businessChecklistDefinitions,'followup','Pontos avançados',[
+ ['Definir cadência por estágio','Lead novo, orçamento enviado e quase fechamento pedem ritmos diferentes.'],
+ ['Registrar motivo de não fechamento','A causa da perda orienta melhoria de oferta e atendimento.'],
+ ['Criar retorno automático','Lembretes reduzem oportunidades esquecidas.'],
+ ['Separar reativação de follow-up','Reativar cliente antigo é diferente de acompanhar lead recente.'],
+ ['Combinar remarketing e follow-up','Anúncios e conversa podem trabalhar juntos.'],
+ ['Usar status comercial','Organize em novo, aguardando, negociando, perdido e vendido.'],
+ ['Definir próxima ação obrigatória','Toda oportunidade precisa ter um próximo passo.'],
+ ['Definir responsável','Sem dono, o lead some.'],
+ ['Medir valor potencial perdido','Ajuda a priorizar recuperação.'],
+ ['Medir taxa de recuperação','Acompanhe quanto o follow-up realmente salva.']
+]);
+appendChecklistSection(businessChecklistDefinitions,'fidelizacao','Pontos avançados',[
+ ['Mapear ciclo de renovação','Saiba quando o cliente deveria voltar.'],
+ ['Criar lembrete automático','Automação ajuda a aparecer no momento certo.'],
+ ['Montar clube de benefícios','Benefícios organizados aumentam recorrência.'],
+ ['Oferecer assinatura quando fizer sentido','Recorrência reduz dependência de venda avulsa.'],
+ ['Criar recompensa progressiva','Valorize frequência, ticket e indicação.'],
+ ['Identificar cliente VIP','Clientes melhores merecem experiência melhor.'],
+ ['Medir NPS ou satisfação','Pergunte antes de perder o cliente.'],
+ ['Registrar motivo de recompra','Descubra o que gera retorno.'],
+ ['Registrar motivo da perda','Use abandono como dado para melhorar.'],
+ ['Medir valor do cliente no tempo','LTV orienta investimento em relacionamento.']
+]);
+appendChecklistSection(businessChecklistDefinitions,'whatsapp','Pontos avançados',[
+ ['Identificar tipo de cliente','Novo, recorrente, indicação, orçamento ou suporte mudam a conversa.'],
+ ['Identificar nível de consciência','A abordagem muda conforme maturidade do comprador.'],
+ ['Registrar origem','Saiba se veio de Instagram, Google, indicação, campanha ou loja.'],
+ ['Diagnosticar necessidade','Entenda o problema antes de oferecer solução.'],
+ ['Criar roteiro por produto ou serviço','Scripts precisam refletir a oferta específica.'],
+ ['Preparar respostas às objeções','Preço, prazo, confiança e comparação devem ter resposta clara.'],
+ ['Manter biblioteca de respostas','Organize mensagens recorrentes e atualize com base nas dúvidas reais.'],
+ ['Criar script de follow-up','Acompanhe sem parecer insistente.'],
+ ['Criar script de reativação','Volte com contexto e motivo.'],
+ ['Criar script de pós-venda','Confirme satisfação, uso, suporte e próximos passos.'],
+ ['Criar script de indicação','Facilite o cliente indicar quando estiver satisfeito.'],
+ ['Criar script de renovação','Antecipe recompra ou continuidade.'],
+ ['Definir passagem para humano','Saiba quando automação ou roteiro deve virar atendimento humano.']
+]);
+appendChecklistSection(businessChecklistDefinitions,'oferta','Pontos avançados',[
+ ['Calcular custo e margem mínima','Oferta sustentável começa pela margem.'],
+ ['Comparar preço e valor com mercado','Entenda se o preço está caro, barato ou mal explicado.'],
+ ['Segmentar por público','Públicos diferentes podem precisar de versões diferentes da oferta.'],
+ ['Criar pacote, plano ou assinatura','Organize escolha e recorrência quando fizer sentido.'],
+ ['Adicionar cross-sell e upsell','Mostre complementos e upgrades úteis.'],
+ ['Explicar formas de pagamento','Pix, cartão, parcelamento e condições devem estar claros.'],
+ ['Explicar entrega e prazo','Reduza dúvidas que travam decisão.'],
+ ['Explicar política de troca, garantia ou suporte','Diminua risco percebido.'],
+ ['Criar oferta de entrada, principal e premium','Níveis de oferta ajudam diferentes momentos de compra.'],
+ ['Usar desconto só quando sustentável','Promoção precisa ter objetivo e margem.']
+]);
+
 function getCompanyProfile(){
   try{return JSON.parse(localStorage.getItem('mivCompanyProfile')||'{}')}catch(e){return{}}
 }
@@ -581,9 +779,94 @@ const channelDefinitions=[
   ['partners','Parceiros estratégicos foram mapeados','Busque negócios complementares e relações de benefício mútuo.'],
   ['after_sales','Existe comunicação de pós-venda','Mantenha relacionamento sem depender apenas de nova promoção.'],
   ['events','Eventos e networking são considerados','Avalie presença em eventos relevantes ao público/nicho.'],
-  ['service','Atendimento transmite o posicionamento','A experiência humana precisa combinar com a promessa da marca.']
+ ['service','Atendimento transmite o posicionamento','A experiência humana precisa combinar com a promessa da marca.']
  ]}
 ];
+
+function addChannelPoints(id,points){
+ const ch=channelDefinitions.find(x=>x.id===id);if(!ch)return;
+ ch.items.push(...points.map((p,i)=>[`v2_${id}_${i}`,p[0],p[1]]));
+}
+addChannelPoints('instagram',[
+ ['Conteúdo separado por função','Organize educação, autoridade, prova, relacionamento e venda.'],
+ ['Reels e vídeos são avaliados','O canal não deve ser medido apenas pela bio e feed estático.'],
+ ['Bastidores e presença humana aparecem quando ajudam','Pessoas reais aumentam confiança em muitos nichos.'],
+ ['Fundador, equipe ou especialistas aparecem quando faz sentido','Autoridade humana pode reduzir insegurança e aproximar a marca.'],
+ ['Dúvidas recorrentes viram conteúdo','FAQ do atendimento deve alimentar posts, stories, reels e destaques.'],
+ ['Resultados do canal são acompanhados','Observe alcance, clique, conversa, orçamento e venda.'],
+ ['Instagram leva ao canal de conversão','A pessoa precisa entender claramente como comprar, agendar ou pedir orçamento.']
+]);
+addChannelPoints('whatsapp',[
+ ['Biblioteca de respostas está organizada','Padronize respostas por dúvida, produto, objeção e estágio.'],
+ ['Lead é qualificado no início','Antes de preço, entenda perfil, necessidade, urgência e contexto.'],
+ ['Necessidade é identificada antes da oferta','Apresente a solução certa em vez de mandar catálogo genérico.'],
+ ['Existe transferência para atendimento humano','Defina quando a conversa precisa sair do roteiro.'],
+ ['Contatos são organizados por estágio comercial','Novo lead, orçamento, negociação, cliente, pós-venda e reativação.'],
+ ['Renovação ou recompra são lembradas','Quando aplicável, antecipe a próxima necessidade do cliente.'],
+ ['Clientes inativos têm reativação planejada','Volte com contexto, não só com promoção.'],
+ ['Origem do lead é registrada','Saiba se veio de Instagram, Google, indicação, site, loja ou anúncio.'],
+ ['Conversa, orçamento e venda são medidos','Acompanhe a taxa real de conversão do atendimento.']
+]);
+addChannelPoints('google',[
+ ['Produtos e serviços estão cadastrados','Ajude o público e o Google a entenderem o que você vende.'],
+ ['Perguntas e respostas são usadas','Antecipe dúvidas frequentes no próprio perfil.'],
+ ['Palavras-chave locais aparecem naturalmente','Serviço, nicho, bairro, cidade e região precisam estar claros.'],
+ ['Avaliações recebem resposta estratégica','Responda com cuidado, prova de atendimento e contexto.'],
+ ['Fotos têm qualidade e frequência','Fotos reais e atuais aumentam confiança e descoberta.'],
+ ['Concorrentes locais são comparados','Veja quem aparece melhor e por quê.'],
+ ['Ligações, rotas, cliques e contatos são acompanhados','Mensure o papel do Google no movimento e nas oportunidades.']
+]);
+addChannelPoints('site',[
+ ['Há páginas por grande necessidade do cliente','Páginas específicas convertem melhor do que uma página genérica.'],
+ ['Produtos são organizados por necessidade','Ajude o cliente a escolher pelo problema que quer resolver.'],
+ ['FAQ está presente','Responda dúvidas que travam compra ou contato.'],
+ ['Vídeos ajudam a explicar','Vídeo pode aumentar confiança e entendimento.'],
+ ['Depoimentos reais ou provas legítimas aparecem','Use prova social apenas quando verdadeira e autorizada.'],
+ ['Garantia e políticas estão claras','Reduza insegurança sobre troca, entrega, suporte e prazos.'],
+ ['Preço, Pix e parcelamento estão claros','Evite surpresa no fim da jornada.'],
+ ['Prazo e entrega são explicados','Clientes precisam saber o que acontece depois da compra.'],
+ ['Produtos relacionados e kits são sugeridos','Facilite segunda compra, cross-sell e composição de oferta.'],
+ ['Existe captura de lead para quem não compra','Nem todo visitante está pronto para comprar agora.'],
+ ['Abandono e remarketing são considerados','Crie caminhos para recuperar interesse.'],
+ ['SEO individual das páginas foi planejado','Cada página relevante precisa poder ser encontrada.']
+]);
+addChannelPoints('facebook',[
+ ['Avaliações e provas estão visíveis','Use prova real para aumentar confiança.'],
+ ['Comunidades ou grupos são considerados','Em alguns nichos, grupos podem gerar relacionamento e demanda.'],
+ ['Remarketing Meta está previsto','Facebook pode apoiar anúncios para quem já interagiu.'],
+ ['Instagram, Facebook e WhatsApp estão integrados','A jornada comercial precisa ficar conectada.']
+]);
+addChannelPoints('tiktok',[
+ ['Tendências compatíveis são filtradas','Use tendências apenas quando combinam com o nicho e a marca.'],
+ ['Vídeos educativos são planejados','Ensine algo útil para gerar descoberta e autoridade.'],
+ ['Prova social aparece no formato certo','Resultados e bastidores podem reforçar confiança.'],
+ ['Bastidores são explorados','Mostre processo, rotina, equipe e transformação.'],
+ ['Perguntas frequentes viram vídeos','Dúvidas reais costumam gerar bons conteúdos.'],
+ ['TikTok Analytics é acompanhado','Meça retenção, visualizações, perfil e cliques.'],
+ ['Retenção dos vídeos é analisada','O início e o ritmo precisam segurar atenção.']
+]);
+addChannelPoints('physical',[
+ ['Vitrine é planejada','A vitrine deve vender atenção, categoria, novidade e desejo.'],
+ ['Circulação e layout são revisados','O espaço precisa facilitar descoberta, escolha e atendimento.'],
+ ['Zonas quentes são aproveitadas','Coloque itens estratégicos onde o cliente realmente olha e passa.'],
+ ['Exposição dos produtos é intencional','Destaques, best-sellers e lançamentos precisam ter lugar.'],
+ ['Planograma simples existe quando aplicável','Organize disposição para reduzir bagunça e melhorar venda.'],
+ ['Iluminação reforça percepção','Luz comunica cuidado, valor e conforto.'],
+ ['Música e aroma são usados com critério','Sensorial ajuda quando combina com público e ambiente.'],
+ ['Textura, experimentação ou degustação são consideradas','Teste e contato reduzem risco quando aplicável.'],
+ ['Estacionamento, acesso e localização são comunicados','Facilite chegada e reduza dúvidas práticas.'],
+ ['QR Code conecta físico e digital','Use para catálogo, WhatsApp, avaliação, conteúdo ou campanha.']
+]);
+addChannelPoints('relationships',[
+ ['Parceiros B2B são mapeados','Empresas complementares podem gerar venda e indicação.'],
+ ['Prescritores e indicadores são considerados','Profissionais que influenciam decisão podem fortalecer aquisição.'],
+ ['Influenciadores e microinfluenciadores são avaliados','Priorize coerência e qualidade do público.'],
+ ['Clientes embaixadores são identificados','Clientes satisfeitos podem indicar, provar e defender a marca.'],
+ ['Fornecedores estratégicos são considerados','Alguns fornecedores ajudam com informação, co-marketing ou visibilidade.'],
+ ['Associações e comunidades são mapeadas','Grupos certos podem abrir relacionamento e autoridade.'],
+ ['Programa formal de indicação existe quando faz sentido','Deixe regra, benefício e rastreamento claros.'],
+ ['Origem das indicações é rastreada','Sem medir origem, a empresa não sabe quais relações funcionam.']
+]);
 
 function getChannelState(){try{return JSON.parse(localStorage.getItem('mivChannelChecklist')||'{}')}catch(e){return{}}}
 function setChannelState(data){localStorage.setItem('mivChannelChecklist',JSON.stringify(data));persistProgress('channels','canais',data)}
@@ -682,9 +965,17 @@ function renderCommercialPage(item,type){
 function showCommercialDetail(item,type){
  state.current=item;document.getElementById('detailVisual').style.backgroundImage=`url('${item.img}')`;document.getElementById('detailCat').textContent=type==='consult'?'CONSULTORIA & MENTORIA':'SERVIÇOS MIVCAST';document.getElementById('detailTitle').textContent=item.title;document.getElementById('detailDesc').textContent=item.desc;document.getElementById('favBtn').textContent=state.favorites.includes(item.id)?'♥ Salvo':'♡ Salvar';document.getElementById('useBtn').textContent=type==='consult'?'Contratar':'Solicitar serviço';document.getElementById('useBtn').onclick=()=>renderCommercialPage(item,type);renderCommercialPage(item,type);document.getElementById('related').innerHTML=`<div class="relatedItem"><strong>Quer entender melhor?</strong><span>Use “Saiba mais” ou fale com o especialista antes de contratar.</span></div><div class="relatedItem"><strong>Atendimento humano</strong><span>Esses itens serão executados fora do sistema pela MivCast/consultor.</span></div>`;addHistory(item);route('detail')
 }
+function showToolPreview(item){
+ state.current=item;document.getElementById('detailVisual').style.backgroundImage=`url('${item.img}')`;document.getElementById('detailCat').textContent='FERRAMENTA EM DESENVOLVIMENTO';document.getElementById('detailTitle').textContent=item.title;document.getElementById('detailDesc').textContent=item.desc;document.getElementById('favBtn').textContent=state.favorites.includes(item.id)?'♥ Salvo':'♡ Salvar';document.getElementById('useBtn').textContent='Quero ser avisado';document.getElementById('useBtn').onclick=()=>toast('Interesse registrado. Quando o recurso estiver pronto, ele poderá aparecer na sua Central.');
+ const benefits={'markia-app':['Consultor inteligente com contexto da empresa','Sugestões dentro dos cards, análises e relatórios','Histórico de conversas e decisões','Apoio contínuo para priorizar próximos passos'],'agendamentos':['Agenda de atendimentos e horários','Organização de clientes e retornos','Lembretes e visão da rotina','Integração futura com WhatsApp e Central'],'financeiro':['Entradas, saídas e contas em um só lugar','Visão simples de fluxo de caixa','Alertas para obrigações e recorrências','Conexão futura com metas e relatórios'],'orcamentos':['Criação de propostas e orçamentos','Acompanhamento de status comercial','Histórico por cliente','Base para follow-up e fechamento']}[item.id]||['Recurso conectado à Central','Uso integrado aos cards','Histórico e evolução','Apoio do MARK contextual'];
+ document.getElementById('detailBody').innerHTML=`<span class="eyebrow">SAIBA MAIS</span><h2>${markEsc(item.title)}</h2><p>${markEsc(item.desc)}</p><section class="commercialSection"><h3>O que este recurso deve resolver</h3><div class="benefitChecklist">${benefits.map(x=>`<div>✓ ${markEsc(x)}</div>`).join('')}</div></section><section class="commercialSection"><h3>Status</h3><p>Recurso em fase de preparação. Ele aparece na vitrine para o usuário entender o caminho do ecossistema e salvar interesse, sem prometer disponibilidade imediata.</p></section><div class="commercialCTAs"><button class="primary" data-tool-interest>Quero ser avisado</button><button class="outline" data-tool-mark>Perguntar ao MARK</button></div>`;
+ document.querySelector('[data-tool-interest]')?.addEventListener('click',()=>toast('Interesse registrado.'));
+ document.querySelector('[data-tool-mark]')?.addEventListener('click',()=>askMarkAboutPoint(item.title,'Quero entender como esta ferramenta pode ajudar meu negócio quando estiver disponível.'));
+ document.getElementById('related').innerHTML=`<div class="relatedItem"><strong>Salvar na Central</strong><span>Use o coração para guardar esta ferramenta e acompanhar depois.</span></div><div class="relatedItem"><strong>Contexto conectado</strong><span>Quando ficar pronta, poderá usar dados do Perfil da Empresa e relatórios.</span></div>`;addHistory(item);route('detail')
+}
 
-function openItem(id){const sp=getItem(id);if(!sp)return;const commercial=['consult-sale','service-sale','notify'].includes(sp.special);if(!commercial&&!hasItemAccess(sp)){openPaywall(sp);return}if(sp?.special==='calendar'){openCalendar();return}if(sp?.special==='channels'){showChannelsDetail(sp);return}if(sp?.special==='marketing-checklist'){showMarketingChecklist(sp);return}if(sp?.special==='business-checklist'){showBusinessChecklist(sp);return}if(sp?.special==='consult-sale'){showCommercialDetail(sp,'consult');return}if(sp?.special==='service-sale'){showCommercialDetail(sp,'service');return}if(sp?.special==='notify'){toast('Interesse registrado. A MivCast avisará quando este recurso estiver disponível.');return}const item=getItem(id);if(!item)return;state.current=item;showDetail(item)}
-function showDetail(item){state.current=item;if(item._learning){document.getElementById('useBtn').textContent=item.learningExternal?'Abrir material':'Marcar como aplicado';document.getElementById('useBtn').onclick=()=>{if(item.learningExternal)window.open(item.learningExternal,'_blank','noopener');else toast('Conteúdo marcado como aplicado no seu histórico.');};document.getElementById('detailVisual').style.backgroundImage=`url('${item.img}')`;document.getElementById('detailCat').textContent=`APRENDA & APLIQUE · ${String(item.format||'CONTEÚDO').toUpperCase()}`;document.getElementById('detailTitle').textContent=item.title;document.getElementById('detailDesc').textContent=item.desc;document.getElementById('favBtn').textContent=state.favorites.includes(item.id)?'♥ Salvo':'♡ Salvar';document.getElementById('detailBody').innerHTML=`<span class="eyebrow">${item.learningArea||'APRENDIZADO'}</span><h2>Aplicação prática</h2><div class="learningBody">${String(item.learningBody||item.desc||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</div>${item.learningExternal?`<a class="outline learningExternal" href="${item.learningExternal}" target="_blank" rel="noopener">Abrir material externo →</a>`:''}<h2>Use o MARK.IA</h2><p>Peça ao MARK para adaptar este conteúdo ao contexto da sua empresa e transformar o aprendizado em próximos passos.</p>`;document.getElementById('related').innerHTML=items.filter(x=>x._learning&&x.id!==item.id&&(x.learningArea===item.learningArea)).slice(0,5).map(x=>`<div class="relatedItem" data-related="${x.id}"><strong>${x.title}</strong><span>${x.format} · ${x.access}</span></div>`).join('');document.querySelectorAll('[data-related]').forEach(x=>x.onclick=()=>openItem(x.dataset.related));addHistory(item);route('detail');return;}document.getElementById('useBtn').textContent='Usar agora';document.getElementById('useBtn').onclick=()=>toast('Resultado salvo na sua Central.');document.getElementById('detailVisual').style.backgroundImage=`url('${item.img}')`;document.getElementById('detailCat').textContent=`${item.cat.toUpperCase()} · ${item.format.toUpperCase()}`;document.getElementById('detailTitle').textContent=item.title;document.getElementById('detailDesc').textContent=item.desc;document.getElementById('favBtn').textContent=state.favorites.includes(item.id)?'♥ Salvo':'♡ Salvar';document.getElementById('detailBody').innerHTML=`<span class="eyebrow">APLICAÇÃO DO CARD</span><h2>Conteúdo prático e conectado ao seu contexto</h2><p>Esta área combina orientação objetiva, exemplos específicos do nicho, checklist, ferramenta interativa ou resultado salvável conforme a finalidade do card.</p><h2>Aplicação sugerida</h2><ul><li>Entenda o objetivo desta solução.</li><li>Adapte ao contexto de <strong>${state.profile.niche}</strong>.</li><li>Escolha uma única ação prioritária.</li><li>Salve o resultado na sua Central.</li><li>Peça ao MARK para revisar ou transformar em plano.</li></ul><h2>MARK nesta página</h2><p>O MARK sabe que você está vendo <strong>${item.title}</strong> e pode responder considerando seu nicho atual.</p>`;const rel=items.filter(x=>x.id!==item.id&&(x.cat===item.cat||x.tag===item.tag)).slice(0,5);document.getElementById('related').innerHTML=rel.map(x=>`<div class="relatedItem" data-related="${x.id}"><strong>${x.title}</strong><span>${x.format} · ${x.access}</span></div>`).join('');document.querySelectorAll('[data-related]').forEach(x=>x.onclick=()=>openItem(x.dataset.related));addHistory(item);route('detail')}
+function openItem(id){const sp=getItem(id);if(!sp)return;const commercial=['consult-sale','service-sale','notify'].includes(sp.special);if(!commercial&&!hasItemAccess(sp)){openPaywall(sp);return}if(sp?.special==='calendar'){openCalendar();return}if(sp?.special==='channels'){showChannelsDetail(sp);return}if(sp?.special==='marketing-checklist'){showMarketingChecklist(sp);return}if(sp?.special==='business-checklist'){showBusinessChecklist(sp);return}if(sp?.special==='consult-sale'){showCommercialDetail(sp,'consult');return}if(sp?.special==='service-sale'){showCommercialDetail(sp,'service');return}if(sp?.special==='notify'){showToolPreview(sp);return}const item=getItem(id);if(!item)return;state.current=item;showDetail(item)}
+function showDetail(item){state.current=item;if(item._learning){document.getElementById('useBtn').textContent=item.learningVideoId?'Assistir no sistema':item.learningExternal?'Abrir material':'Marcar como aplicado';document.getElementById('useBtn').onclick=()=>{if(item.learningVideoId)openLearningVideo(item);else if(item.learningExternal)window.open(item.learningExternal,'_blank','noopener');else toast('Conteúdo marcado como aplicado no seu histórico.');};document.getElementById('detailVisual').style.backgroundImage=`url('${item.img}')`;document.getElementById('detailCat').textContent=`APRENDA & APLIQUE · ${String(item.format||'CONTEÚDO').toUpperCase()}`;document.getElementById('detailTitle').textContent=item.title;document.getElementById('detailDesc').textContent=item.desc;document.getElementById('favBtn').textContent=state.favorites.includes(item.id)?'♥ Salvo':'♡ Salvar';document.getElementById('detailBody').innerHTML=`<span class="eyebrow">${item.learningArea||'APRENDIZADO'}</span><h2>Aplicação prática</h2><div class="learningBody">${String(item.learningBody||item.desc||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</div>${item.learningVideoId?`<button class="primary learningExternal" data-watch-learning>Assistir aula no sistema</button>`:item.learningExternal?`<a class="outline learningExternal" href="${item.learningExternal}" target="_blank" rel="noopener">Abrir material externo →</a>`:''}<h2>Use o MARK.IA</h2><p>Peça ao MARK para adaptar este conteúdo ao contexto da sua empresa e transformar o aprendizado em próximos passos.</p>`;document.querySelector('[data-watch-learning]')?.addEventListener('click',()=>openLearningVideo(item));document.getElementById('related').innerHTML=items.filter(x=>x._learning&&x.id!==item.id&&(x.learningArea===item.learningArea)).slice(0,5).map(x=>`<div class="relatedItem" data-related="${x.id}"><strong>${x.title}</strong><span>${x.format} · ${x.access}</span></div>`).join('');document.querySelectorAll('[data-related]').forEach(x=>x.onclick=()=>openItem(x.dataset.related));addHistory(item);route('detail');return;}document.getElementById('useBtn').textContent='Usar agora';document.getElementById('useBtn').onclick=()=>toast('Resultado salvo na sua Central.');document.getElementById('detailVisual').style.backgroundImage=`url('${item.img}')`;document.getElementById('detailCat').textContent=`${item.cat.toUpperCase()} · ${item.format.toUpperCase()}`;document.getElementById('detailTitle').textContent=item.title;document.getElementById('detailDesc').textContent=item.desc;document.getElementById('favBtn').textContent=state.favorites.includes(item.id)?'♥ Salvo':'♡ Salvar';document.getElementById('detailBody').innerHTML=`<span class="eyebrow">APLICAÇÃO DO CARD</span><h2>Conteúdo prático e conectado ao seu contexto</h2><p>Esta área combina orientação objetiva, exemplos específicos do nicho, checklist, ferramenta interativa ou resultado salvável conforme a finalidade do card.</p><h2>Aplicação sugerida</h2><ul><li>Entenda o objetivo desta solução.</li><li>Adapte ao contexto de <strong>${state.profile.niche}</strong>.</li><li>Escolha uma única ação prioritária.</li><li>Salve o resultado na sua Central.</li><li>Peça ao MARK para revisar ou transformar em plano.</li></ul><h2>MARK nesta página</h2><p>O MARK sabe que você está vendo <strong>${item.title}</strong> e pode responder considerando seu nicho atual.</p>`;const rel=items.filter(x=>x.id!==item.id&&(x.cat===item.cat||x.tag===item.tag)).slice(0,5);document.getElementById('related').innerHTML=rel.map(x=>`<div class="relatedItem" data-related="${x.id}"><strong>${x.title}</strong><span>${x.format} · ${x.access}</span></div>`).join('');document.querySelectorAll('[data-related]').forEach(x=>x.onclick=()=>openItem(x.dataset.related));addHistory(item);route('detail')}
 function addHistory(item){if(!item)return;const existing=state.history.find(x=>x.id===item.id),entry={id:item.id,title:item.title,ts:new Date().toISOString()};if(existing){Object.assign(existing,entry);state.history=state.history.filter(x=>x.id!==item.id);state.history.unshift(existing)}else state.history.unshift(entry);save();if(mivUser&&mivSupabase)persistHistory(entry).catch(err=>console.warn('[MIV history]',err))}
 function openPaywall(item){state.current=item;document.getElementById('payTitle').textContent=item.title;document.getElementById('singlePrice').textContent=item.price||'Plano Pro';const cc=document.getElementById('couponCode');if(cc)cc.value='';const cf=document.getElementById('couponFeedback');if(cf){cf.style.display='none';cf.textContent=''};const bs=document.getElementById('buySingle');if(bs)bs.childNodes[0].textContent='Comprar este item ';document.getElementById('paywall').classList.add('show');document.getElementById('overlay').classList.add('show')}
 
@@ -749,6 +1040,32 @@ function analysisQuestions(id,sub=''){
 function analysisKey(id,sub=''){return 'mivAnalysis:'+id+':'+sub}
 function getAnalysisData(id,sub=''){try{return JSON.parse(localStorage.getItem(analysisKey(id,sub))||'{}')}catch(e){return{}}}
 function saveAnalysisData(id,sub,data){localStorage.setItem(analysisKey(id,sub),JSON.stringify(data));persistProgress('analysis',id+':'+sub,data)}
+const analysisDepthPoints={
+ 'Estrutura Ideal do Negócio':['Clareza de modelo de negócio','Prioridades por área','Oferta principal definida','Canais mais importantes','Rotina de acompanhamento','Pontos que dependem de dono, equipe ou processo'],
+ 'Equipe & Organização Ideal':['Funções e responsabilidades','Comunicação interna','Treinamento recorrente','Capacidade atual','Gargalos de execução','Indicadores por equipe'],
+ 'Processos & Produtividade':['Etapas repetitivas','Retrabalho','Prazos e responsáveis','Ferramentas usadas','Automação possível','Ponto onde o cliente espera mais'],
+ 'Tecnologia, IA & Automação':['Sistemas atuais','Dados que podem ser centralizados','Tarefas que podem virar automação','Uso de IA com contexto','Riscos de depender de processo manual','Próxima automação de maior impacto'],
+ 'Identidade & Apresentação da Marca':['Percepção desejada','Consistência visual','Tom de voz','Fotografia e vídeo','Materiais comerciais','Coerência físico/digital'],
+ 'Posicionamento & Diferenciação':['Promessa central','Diferencial real','Provas disponíveis','Território não ocupado','Concorrentes que dominam percepção','Mensagem que precisa ser testada'],
+ 'Autoridade, Confiança & Reputação':['Provas legítimas','Avaliações','Cases ou portfólio','Presença de especialistas','Resposta a dúvidas','Reputação em canais de busca'],
+ 'Mercado, Oportunidades & Validação':['Demanda percebida','Tendências do nicho','Oportunidades locais','Barreiras de compra','Validação de oferta','Riscos antes de investir'],
+ 'Público & Comportamento':['Perfil de cliente ideal','Nível de consciência','Motivos de compra','Objeções','Canais usados','Momento de decisão'],
+ 'Concorrência & Benchmarking':['Concorrentes diretos','Alternativas indiretas','O que cada concorrente domina','O que aprender','O que não copiar','Território livre'],
+ 'O que Posso Vender?':['Produto principal','Serviço complementar','Pacotes','Recorrência','Oferta de entrada','Oferta premium'],
+ 'Portfólio Estratégico & Performance':['Itens que vendem mais','Itens com melhor margem','Itens que atraem cliente','Itens que geram recompra','Itens que confundem o cliente','Ordem de exposição'],
+ 'Validação Individual de Produto/Serviço':['Problema resolvido','Público específico','Preço aceitável','Prova necessária','Canal ideal','Critério de manter, ajustar ou remover'],
+ 'Preço, Valor & Oferta':['Custo e margem','Valor percebido','Comparação com mercado','Condições de pagamento','Desconto sustentável','Argumentos de valor'],
+ 'Presença Física Ideal':['Fachada','Vitrine','Circulação','Sensorial','Atendimento','Integração com digital'],
+ 'Presença Digital Ideal':['Site','Instagram','WhatsApp','Google','Provas','Caminho de conversão'],
+ 'Integração Físico + Digital / Omnichannel':['Loja para WhatsApp','WhatsApp para compra','QR Codes','Retirada e entrega','Histórico do cliente','Mensuração de origem'],
+ 'Estratégia de Divulgação':['Objetivo da campanha','Público','Canal','Mensagem','Orçamento','Métrica'],
+ 'Conteúdo & Comunicação':['Educação','Autoridade','Prova','Relacionamento','Venda','Bastidores'],
+ 'Orgânico & Descoberta':['SEO','Google','Redes sociais','Indicação','Comunidades','Conteúdo evergreen'],
+ 'Tráfego Pago':['Oferta pronta','Página de destino','Público','Criativo','Verba','Métrica de conversão'],
+ 'Campanhas & Criativos':['Tema','Canal','Criativo','CTA','Antecedência','Resultado esperado'],
+ 'Mensuração & Otimização':['Origem dos leads','Conversão por canal','Custo por oportunidade','Taxa de fechamento','Recompra','Ajustes por evidência']
+};
+function detailedAnalysisPoints(basePoints,sub){const extra=analysisDepthPoints[sub]||[];return [...basePoints,...extra.filter(x=>!basePoints.includes(x))]}
 function analysisSpecialistView(score,priorities){
  let intro=score>=75
   ?'A base desta área está relativamente organizada. Agora vale concentrar energia nos poucos pontos que ainda limitam o resultado.'
@@ -767,7 +1084,7 @@ function toggleAnalysisFavorite(id){
 function renderAnalysisDetail(id,sub=''){
  const a=analyses.find(x=>x[0]===id);
  if(!a)return;
- const data=getAnalysisData(id,sub),points=sub?[sub]:a[4],qs=analysisQuestions(id,sub),pct=companyProfileCompletion(),body=document.getElementById('detailBody');
+ const data=getAnalysisData(id,sub),basePoints=sub?[sub]:a[4],points=detailedAnalysisPoints(basePoints,sub),qs=analysisQuestions(id,sub),pct=companyProfileCompletion(),body=document.getElementById('detailBody');
  body.innerHTML=`<div class="profileNotice"><div><span class="eyebrow">PARA UMA ANÁLISE MAIS PRECISA</span><strong>Seu Perfil da Empresa está ${pct}% preenchido.</strong><p>O sistema usa esses dados automaticamente. Complete apenas se quiser aumentar ainda mais a precisão.</p></div><button class="outline" data-analysis-profile>Completar informações →</button></div>
  <span class="eyebrow">ANÁLISE EMPRESARIAL</span><h2>${sub||a[2]}</h2><p>Responda as perguntas específicas desta análise. Elas serão combinadas com as informações já salvas sobre sua empresa.</p>
  <div class="analysisBrief">${qs.map((q,i)=>`<label>${q}<textarea data-analysis-answer="${i}" placeholder="Digite sua resposta...">${data['q'+i]||''}</textarea></label>`).join('')}</div>
@@ -821,6 +1138,64 @@ function openAnalysisDetail(id,sub=''){
 }
 
 function startAnalysis(id,sub=''){if(id==='completa'&&!hasProAccess()){openPlanPaywall('Análise Empresarial Completa');return}openAnalysisDetail(id,sub)}
+
+const testimonialExamples=[
+ ['Clínica de estética','Marketing','O calendário deixou minhas campanhas menos improvisadas e me ajudou a planejar datas com objetivo, público e canal.','Calendário inteligente'],
+ ['Loja de roupas','Vendas','O card de ticket médio me fez enxergar combos, segunda peça e benefício progressivo sem depender só de desconto.','Ticket médio'],
+ ['Consultório odontológico','Marca','O branding digital mostrou que meu site, Instagram e WhatsApp não pareciam a mesma clínica. Ficou muito claro o que ajustar.','Branding digital'],
+ ['Restaurante delivery','Marketing','A parte de Google e WhatsApp ajudou a organizar fotos, avaliações, cardápio e atendimento para transformar busca em pedido.','Canais'],
+ ['Academia','Gestão','As análises deram uma visão mais prática dos gargalos de equipe, recorrência e retenção de alunos.','Análises'],
+ ['Advocacia empresarial','Marca','O checklist de autoridade e reputação digital ajudou a deixar a comunicação mais sóbria e confiável.','Autoridade'],
+ ['Pet shop','Vendas','O card de fidelização abriu ideias simples de recompra, lembrete e indicação para clientes recorrentes.','Fidelização'],
+ ['Padaria','Marketing','O marketing local conectou vitrine, fluxo de pessoas, Google e campanhas do bairro em uma lógica só.','Marketing local'],
+ ['Escola de idiomas','Gestão','A Central ficou útil para salvar ideias, relatórios e pontos que eu queria revisar depois com calma.','Minha Central'],
+ ['Imobiliária','Vendas','O follow-up ficou muito mais organizado por estágio, responsável e próxima ação.','Follow-up'],
+ ['Salão de beleza','Marketing','O Instagram saiu de “postar qualquer coisa” para educação, prova, relacionamento e venda.','Instagram'],
+ ['Software house','Gestão','A análise de tecnologia, processos e produtividade ajudou a separar problema técnico de problema de gestão.','Análise empresarial'],
+ ['Loja de móveis','Marca','A identidade aplicada ao marketing mostrou onde a marca precisava aparecer melhor: vitrine, preço, fotos e proposta.','Identidade visual'],
+ ['Hamburgueria','Vendas','O montador de oferta ajudou a pensar combos, adicionais, entrega e margem antes da campanha.','Oferta'],
+ ['Clínica médica','Marketing','O sistema deixou mais evidente quais informações precisavam estar no Google e no site para gerar confiança.','Google e site'],
+ ['Contabilidade','Marca','A diferenciação competitiva ajudou a parar de falar só “atendimento personalizado” e pensar em prova e processo.','Diferenciação'],
+ ['Barbearia','Marketing','A comunicação física ganhou importância: fachada, vitrine, aroma, música e experiência começaram a fazer parte do plano.','Branding físico'],
+ ['Loja de cosméticos','Vendas','Os brindes passaram a ter objetivo: lançamento, recompra, VIP e indicação, sem virar custo solto.','Brindes'],
+ ['Corretor de seguros','Vendas','O WhatsApp ficou mais consultivo, com perguntas, objeções e retorno planejado.','Script de WhatsApp'],
+ ['Cafeteria','Marketing','Gostei de enxergar datas, lançamentos e ações locais junto com posts e campanhas.','Calendário'],
+ ['Fisioterapeuta','Marca','O posicionamento ficou mais claro para não parecer genérico em um mercado cheio de opções parecidas.','Posicionamento'],
+ ['Boutique','Marketing','A parte de conteúdo me ajudou a separar vitrine, prova social, bastidores e venda.','Conteúdo'],
+ ['Construtora','Marca','O card de prova e reputação mostrou que portfólio, fotos e apresentação comercial precisavam conversar melhor.','Marca'],
+ ['Marmitaria','Vendas','Compreendi melhor como organizar recompra semanal, assinatura e relacionamento com cliente recorrente.','Recorrência'],
+ ['Designer freelancer','Gestão','O sistema ajudou a transformar diagnóstico em prioridade e não em uma lista infinita de coisas soltas.','Prioridades'],
+ ['Ótica','Marketing','O marketing local destacou Google, avaliações, vitrine, fluxo e parcerias do entorno.','Marketing local'],
+ ['Escola infantil','Marca','A comunicação ficou mais coerente entre confiança, acolhimento, prova e rotina.','Branding digital'],
+ ['Oficina mecânica','Vendas','O follow-up de orçamento virou processo, com motivo de perda e valor potencial.','Follow-up'],
+ ['Nutricionista','Marketing','As ideias de conteúdo ficaram mais conectadas com dúvidas reais dos pacientes.','Conteúdo e autoridade'],
+ ['Arquiteta','Marca','A identidade visual aplicada mostrou como proposta, portfólio, Instagram e apresentação precisam ter o mesmo nível.','Identidade'],
+ ['Loja de presentes','Vendas','O card de oferta ajudou a montar kits e benefícios por ocasião sem bagunçar preço.','Oferta'],
+ ['Psicóloga','Marca','A parte de reputação e tom de voz ajudou a equilibrar autoridade com cuidado.','Tom de voz'],
+ ['Pizzaria','Marketing','A integração loja, WhatsApp e Instagram ficou muito mais fácil de visualizar.','Canais'],
+ ['Curso livre','Gestão','O Aprenda & Aplique virou uma área boa para estudar e transformar em ação com o MARK.','Aprenda & Aplique'],
+ ['Energia solar','Vendas','O script de WhatsApp ajudou a diagnosticar necessidade antes de apresentar proposta.','WhatsApp'],
+ ['Supermercado','Marketing','Datas, campanhas, lançamentos e ações de relacionamento ficaram mais fáceis de organizar.','Calendário'],
+ ['Estúdio de pilates','Clientes','O pós-venda e a reativação ficaram mais claros para alunos inativos.','Clientes'],
+ ['Fotógrafa','Marketing','A direção fotográfica e o estilo visual entraram como parte real da estratégia.','Identidade aplicada'],
+ ['Auto elétrica','Marca','O Google Perfil da Empresa apareceu como prioridade para descoberta local e confiança.','Google'],
+ ['Doceria','Vendas','O ticket médio ajudou a pensar kits, segunda compra, encomendas e datas especiais.','Ticket'],
+ ['Mentor de carreira','Marca','A diferenciação ficou menos abstrata e mais ligada a método, prova e entrega.','Diferenciação'],
+ ['Loja de calçados','Marketing','A vitrine, os best-sellers e o WhatsApp passaram a trabalhar juntos.','Marketing físico'],
+ ['Produtora de vídeo','Gestão','As análises ajudaram a enxergar capacidade, gargalos e prioridades de crescimento.','Análises'],
+ ['Jardim e paisagismo','Vendas','A oferta ficou mais clara com prazo, entrega, escopo e próximos passos.','Oferta'],
+ ['Clínica veterinária','Clientes','O ciclo de vida do cliente ajudou a pensar lembretes, retornos e cuidados contínuos.','Fidelização'],
+ ['Papelaria','Marketing','O calendário de datas e campanhas locais deu ideias práticas para movimento na loja.','Calendário'],
+ ['Consultoria B2B','Vendas','O funil de conversa, proposta e follow-up ficou mais objetivo.','Vendas'],
+ ['Maquiadora','Marketing','A presença humana, bastidores e prova social ficaram mais estratégicos.','Instagram'],
+ ['Administração de condomínios','Gestão','A análise de processos separou gargalos de comunicação, equipe e tecnologia.','Gestão'],
+ ['E-commerce artesanal','Vendas','O site passou a precisar de FAQ, políticas, kits, produtos relacionados e recuperação de abandono.','Site']
+].map((x,i)=>({id:i+1,niche:x[0],area:x[1],quote:x[2],card:x[3]}));
+function renderTestimonials(filter='Todos'){
+ const grid=document.getElementById('testimonialGrid');if(!grid)return;
+ const rows=testimonialExamples.filter(x=>filter==='Todos'||x.area===filter);
+ grid.innerHTML=rows.map(t=>`<article><div class="stars">★★★★★</div><blockquote>${markEsc(t.quote)}</blockquote><div><strong>${markEsc(t.niche)}</strong><b>${markEsc(t.card)}</b></div><small>Relato simulado ${String(t.id).padStart(2,'0')}</small></article>`).join('');
+}
 
 function renderLogos(){
   const track=document.getElementById('logoTrack');
@@ -956,6 +1331,7 @@ function initEcosystem(){
   try{renderNiches()}catch(e){console.warn('Niches init',e)}
   try{renderAnalyses()}catch(e){console.warn('Analyses init',e)}
   try{renderLogos()}catch(e){console.warn('Logos init',e)}
+  try{renderTestimonials()}catch(e){console.warn('Testimonials init',e)}
   document.body.dataset.theme=state.profile.theme||'clean';
   try{applyTheme(state.profile.niche,state.profile.theme)}catch(e){
     console.warn('Theme init',e);
@@ -970,6 +1346,8 @@ if(document.readyState==='loading'){
 
 document.getElementById('applyNiche').onclick=()=>{const v=document.getElementById('nicheSearch').value.trim();if(!v)return toast('Digite ou escolha um nicho.');const hit=Object.keys(niches).find(n=>n.toLowerCase()===v.toLowerCase());applyTheme(hit||v,hit?niches[hit].theme:'clean',true)};document.getElementById('focusNiche').onclick=()=>document.getElementById('nicho').scrollIntoView({behavior:'smooth'});document.getElementById('editProfile').onclick=()=>route('home');document.getElementById('favBtn').onclick=()=>state.current&&toggleFav(state.current.id);document.getElementById('useBtn').onclick=()=>toast('Use o botão desta página para iniciar a ferramenta.');
 document.querySelectorAll('[data-route]').forEach(b=>b.onclick=()=>{document.body.classList.remove('menu-open');document.getElementById('mobileMenu')?.setAttribute('aria-expanded','false');route(b.dataset.route)});document.querySelectorAll('[data-scroll]').forEach(b=>b.onclick=()=>{document.body.classList.remove('menu-open');document.getElementById('mobileMenu')?.setAttribute('aria-expanded','false');route('home');setTimeout(()=>document.getElementById(b.dataset.scroll)?.scrollIntoView({behavior:'smooth'}),60)});document.getElementById('mobileMenu')?.addEventListener('click',()=>{const open=document.body.classList.toggle('menu-open');document.getElementById('mobileMenu')?.setAttribute('aria-expanded',open?'true':'false')});document.querySelectorAll('[data-prev]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.prev).scrollBy({left:-580,behavior:'smooth'}));document.querySelectorAll('[data-next]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.next).scrollBy({left:580,behavior:'smooth'}));document.querySelectorAll('[data-tool-filter]').forEach(b=>b.onclick=()=>{state.toolFilter=b.dataset.toolFilter;document.querySelectorAll('[data-tool-filter]').forEach(x=>x.classList.toggle('active',x===b));renderTools()});document.querySelectorAll('[data-learn-filter]').forEach(b=>b.onclick=()=>{state.learnFilter=b.dataset.learnFilter;document.querySelectorAll('[data-learn-filter]').forEach(x=>x.classList.toggle('active',x===b));renderLearn()});
+document.querySelectorAll('[data-testimonial-filter]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-testimonial-filter]').forEach(x=>x.classList.toggle('active',x===b));renderTestimonials(b.dataset.testimonialFilter)});
+document.getElementById('closeVideoModal')?.addEventListener('click',closeLearningVideo);document.getElementById('videoOverlay')?.addEventListener('click',closeLearningVideo);
 const mark=document.getElementById('mark'),overlay=document.getElementById('overlay');document.getElementById('markFab').onclick=()=>{mark.classList.add('open');overlay.classList.add('show');updateMark()};function closeMark(){mark.classList.remove('open');if(!document.getElementById('paywall').classList.contains('show'))overlay.classList.remove('show')}document.getElementById('closeMark').onclick=closeMark;document.getElementById('closePaywall').onclick=closePaywall;overlay.onclick=()=>{closeMark();closePaywall()};document.getElementById('buySingle').onclick=startMercadoPagoSinglePurchase;document.getElementById('applyCoupon').onclick=applyCouponPreview;document.getElementById('couponCode').addEventListener('input',()=>{const f=document.getElementById('couponFeedback');if(f){f.style.display='none';f.textContent=''};if(state.current)document.getElementById('singlePrice').textContent=state.current.price||'Plano Pro'});document.getElementById('goPlans').onclick=()=>{closePaywall();route('home');setTimeout(()=>document.getElementById('planos').scrollIntoView({behavior:'smooth'}),80)};
 let markConversation=[];
 function markEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -1206,6 +1584,16 @@ async function loadDynamicCatalog(){
 }
 
 let learningRows=[],learningTracksRows=[],centralExtras={ideas:[],purchases:[],progress:[]};
+function youtubeIdFromUrl(url){const s=String(url||'');const m=s.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/);return m?m[1]:''}
+function openLearningVideo(item){
+ const modal=document.getElementById('videoModal'),overlay=document.getElementById('videoOverlay'),wrap=document.getElementById('videoFrameWrap');if(!modal||!overlay||!wrap)return;
+ document.getElementById('videoTitle').textContent=item.title||'Aula MivCast';
+ document.getElementById('videoDesc').textContent=item.desc||'';
+ document.getElementById('videoLabel').textContent=`APRENDA & APLIQUE · ${String(item.format||'VÍDEO').toUpperCase()}`;
+ wrap.innerHTML=item.learningVideoId?`<iframe src="https://www.youtube.com/embed/${item.learningVideoId}?autoplay=1" title="${markEsc(item.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`:`<div class="videoFallback"><div><strong>Vídeo individual ainda não cadastrado.</strong><br><a href="${markEsc(item.learningExternal||'https://www.youtube.com/@mivcast')}" target="_blank" rel="noopener">Abrir canal MivCast</a></div></div>`;
+ modal.classList.add('show');overlay.classList.add('show');
+}
+function closeLearningVideo(){document.getElementById('videoModal')?.classList.remove('show');document.getElementById('videoOverlay')?.classList.remove('show');const wrap=document.getElementById('videoFrameWrap');if(wrap)wrap.innerHTML=''}
 async function loadLearningContent(){
  if(!mivSupabase)return;
  try{
@@ -1216,7 +1604,7 @@ async function loadLearningContent(){
   if(cr.error)throw cr.error;if(tr.error)throw tr.error;learningRows=cr.data||[];learningTracksRows=tr.data||[];
   const existing=new Map(items.map(x=>[x.id,x]));
   learningRows.forEach(r=>{
-   const data={id:'learn-'+r.slug,cat:r.area||'Aprenda & Aplique',format:r.format||'Conteúdo',access:r.access_level||'Grátis',price:r.price_label||'',icon:'◆',tag:r.area||'Aprendizado',title:r.title,desc:r.excerpt||'',img:r.image_url||imgs.learn,special:null,learningBody:r.body||'',learningExternal:r.external_url||'',learningArea:r.area||'',learningLevel:r.level||'Todos',learningNiche:r.niche||'Todos',_learning:true};
+   const data={id:'learn-'+r.slug,cat:r.area||'Aprenda & Aplique',format:r.format||'Conteúdo',access:r.access_level||'Grátis',price:r.price_label||'',icon:'◆',tag:r.area||'Aprendizado',title:r.title,desc:r.excerpt||'',img:r.image_url||imgs.learning,special:null,learningBody:r.body||'',learningExternal:r.external_url||'',learningVideoId:youtubeIdFromUrl(r.external_url),learningArea:r.area||'',learningLevel:r.level||'Todos',learningNiche:r.niche||'Todos',_learning:true};
    const target=existing.get(data.id);if(target)Object.assign(target,data);else{items.push(data);existing.set(data.id,data)}
   });
   const dynamicIds=learningRows.map(r=>'learn-'+r.slug);bases.learn.splice(0,bases.learn.length,...[...bases.learn.filter(id=>!String(id).startsWith('learn-')),...dynamicIds]);
