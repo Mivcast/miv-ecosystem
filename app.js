@@ -18,6 +18,40 @@ const groups=[
 ];
 const niches={};groups.forEach(g=>{niches[g.name]={theme:g.theme,group:g.name};g.subs.forEach(s=>niches[s]={theme:g.theme,group:g.name})});
 const themeCopy={clean:['Tudo para profissionalizar, divulgar, vender e fazer seu negócio crescer.','Estratégias, ferramentas, análises, conteúdos e inteligência reunidos em um só lugar.'],agency:['Estratégia, criatividade e dados para fazer marcas e clientes crescerem.','Uma vitrine de diagnóstico, marketing, vendas, ferramentas e conhecimento com atmosfera de agência.'],fitness:['Performance para o seu negócio — da autoridade ao próximo aluno.','Estratégias e ferramentas para posicionamento, conteúdo, captação, retenção e crescimento no universo fitness.'],medical:['Mais autoridade, confiança e uma jornada melhor para o paciente.','Marketing, reputação, experiência, análises e ferramentas organizados para profissionais e negócios da saúde.'],health:['Uma presença mais humana, profissional e fácil de encontrar.','Conteúdo, posicionamento, confiança, agenda e relacionamento para bem-estar e terapias.'],beauty:['Transforme técnica em desejo, confiança e recorrência.','Marca, experiência, conteúdo, agenda e vendas para negócios de beleza e estética.'],food:['Faça sua marca abrir o apetite antes mesmo do primeiro pedido.','Cardápio, campanhas, Google, delivery, ticket e fidelização organizados em uma única vitrine.'],retail:['Mais desejo, movimento, ticket e clientes voltando para comprar.','Vitrine, marca, campanhas, WhatsApp e fidelização para comércio e varejo.'],legal:['Autoridade, clareza e confiança para uma marca profissional.','Posicionamento, conteúdo, captação e relacionamento com uma estética mais sóbria.'],construction:['Mais confiança, prova e oportunidades para quem entrega no mundo real.','Portfólio, presença local, proposta, atendimento e marketing para construção e serviços técnicos.'],auto:['Potência para sua marca, sua oficina e suas vendas.','Reputação, Google, conteúdo, atendimento e campanhas com uma identidade mais automotiva.']};
+let nicheHeroRows=[];
+function assetSlug(value){return String(value||'visao-geral').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'visao-geral'}
+function cssUrl(value){return String(value||'').replace(/\\/g,'/').replace(/'/g,'%27').replace(/\)/g,'%29')}
+function localNicheHeroPath(niche){return `assets/nichos/${assetSlug(niche)}.webp`}
+function findNicheHero(niche){
+ const group=niches[niche]?.group||'',theme=niches[niche]?.theme||state.profile.theme||'clean';
+ return nicheHeroRows.find(x=>x.active!==false&&x.niche_name===niche)
+  ||nicheHeroRows.find(x=>x.active!==false&&group&&x.niche_name===group)
+  ||nicheHeroRows.find(x=>x.active!==false&&theme&&x.theme===theme)
+  ||null;
+}
+function setHeroBackground(url){
+ document.body.style.setProperty('--hero-image',url?`url('${cssUrl(url)}'), var(--theme-hero-image)`:'var(--theme-hero-image)');
+}
+function setCentralHeroBackground(url){
+ const centralHero=document.querySelector('.centralHero');if(!centralHero)return;
+ centralHero.style.backgroundImage=url?`linear-gradient(90deg,rgba(8,20,17,.78),rgba(8,20,17,.30)),url('${cssUrl(url)}')`:'';
+ centralHero.classList.toggle('hasNicheImage',!!url);
+}
+function applyLocalHeroIfExists(niche){
+ const candidates=[niche,niches[niche]?.group,'visao-geral'].filter(Boolean).map(localNicheHeroPath);
+ const tryImage=(index=0)=>{
+  if(index>=candidates.length)return;
+  const url=candidates[index],img=new Image();
+  img.onload=()=>{if(state.profile.niche===niche&&!findNicheHero(niche)?.image_url){setHeroBackground(url);if(state.route==='central')setCentralHeroBackground(url)}};
+  img.onerror=()=>tryImage(index+1);
+  img.src=url;
+ };
+ tryImage();
+}
+function activeHeroContent(niche){
+ const c=themeCopy[state.profile.theme]||themeCopy.clean,custom=findNicheHero(niche);
+ return {title:custom?.title||c[0],text:custom?.subtitle||c[1],centralTitle:custom?.central_title||`Sua Central · ${niche}`,centralText:custom?.central_text||'Tudo que você favoritou, usou, comprou ou analisou fica organizado aqui.',image:custom?.image_url||''};
+}
 const imgs={marketing:'https://picsum.photos/seed/digitalmarketing/700/430',brand:'https://picsum.photos/seed/branddesign/700/430',sales:'https://picsum.photos/seed/businessmeeting/700/430',content:'https://picsum.photos/seed/contentcreator/700/430',google:'https://picsum.photos/seed/localbusiness/700/430',store:'https://picsum.photos/seed/retailstore/700/430',clinic:'https://picsum.photos/seed/doctorclinic/700/430',food:'https://picsum.photos/seed/foodbusiness/700/430',planning:'https://picsum.photos/seed/businessplanning/700/430',analytics:'https://picsum.photos/seed/analyticsdashboard/700/430',learning:'https://picsum.photos/seed/onlinelearning/700/430',team:'https://picsum.photos/seed/teamworkoffice/700/430'};
 const items=[
  {id:'calendario',cat:'Marketing',format:'Estratégia + Ferramenta',access:'Grátis',icon:'◫',tag:'PLANEJAMENTO + CAMPANHAS',title:'Calendário inteligente de marketing',desc:'Veja as datas do mês atual, datas brasileiras, do seu nicho, cidade e empresa. As datas são grátis; ideias de criativos e campanhas são liberadas nos planos pagos.',img:imgs.planning,special:'calendar'},
@@ -137,7 +171,7 @@ function applySubTone(niche){
     document.body.style.setProperty('--accent-soft',`color-mix(in srgb, ${c} 11%, #ffffff)`);
   }
 }
-function applyTheme(niche,theme,scrollToCards=false){state.profile.niche=niche;state.profile.theme=theme||niches[niche]?.theme||'clean';document.body.dataset.theme=state.profile.theme;applySubTone(niche);const c=themeCopy[state.profile.theme]||themeCopy.clean;document.getElementById('heroTitle').textContent=c[0];document.getElementById('heroText').textContent=c[1];document.getElementById('currentNiche').innerHTML=`<span>Experiência atual</span><strong>${niche}</strong><small>${(niches[niche]?.group||'Negócios')} · tema ${state.profile.theme}</small>`;save();renderTracks();updateMark();if(scrollToCards)setTimeout(()=>document.getElementById('recomendados')?.scrollIntoView({behavior:'smooth',block:'start'}),80);toast('Vitrine adaptada para '+niche)}
+function applyTheme(niche,theme,scrollToCards=false){state.profile.niche=niche;state.profile.theme=theme||niches[niche]?.theme||'clean';document.body.dataset.theme=state.profile.theme;applySubTone(niche);const hero=activeHeroContent(niche);document.getElementById('heroTitle').textContent=hero.title;document.getElementById('heroText').textContent=hero.text;setHeroBackground(hero.image);if(!hero.image)applyLocalHeroIfExists(niche);document.getElementById('currentNiche').innerHTML=`<span>Experiência atual</span><strong>${niche}</strong><small>${(niches[niche]?.group||'Negócios')} · tema ${state.profile.theme}</small>`;save();renderTracks();if(state.route==='central')renderCentral();updateMark();if(scrollToCards)setTimeout(()=>document.getElementById('recomendados')?.scrollIntoView({behavior:'smooth',block:'start'}),80);toast('Vitrine adaptada para '+niche)}
 function renderNiches(){const dl=document.getElementById('nicheList');dl.innerHTML=Object.keys(niches).sort((a,b)=>a.localeCompare(b,'pt-BR')).map(n=>`<option value="${n}"></option>`).join('');document.getElementById('nicheGroups').innerHTML=groups.slice(0,8).map(g=>`<div class="niche-group"><strong>${g.name}</strong><div class="subchips">${g.subs.slice(0,6).map(s=>`<button data-niche="${s}">${s}</button>`).join('')}</div></div>`).join('');document.querySelectorAll('[data-niche]').forEach(b=>b.onclick=()=>{document.getElementById('nicheSearch').value=b.dataset.niche;applyTheme(b.dataset.niche,niches[b.dataset.niche].theme,true)})}
 function imgFor(item){return item.img}
 function card(item){const saved=state.favorites.includes(item.id);const unlocked=hasItemAccess(item);const lock=item.access==='Grátis'?`<span class="lock-badge free-badge">GRÁTIS</span>`:unlocked?`<span class="lock-badge free-badge">✓ LIBERADO</span>`:`<span class="lock-badge">🔒 PRO ${item.access==='Pago'?'· ou '+(item.price||'avulso'):''}</span>`;return `<article class="card"><div class="cardImg cardImgFallback"><div class="cardFallbackLabel"><span>${item.icon||'◆'}</span><small>${item.cat||'MIV ECOSYSTEM'}</small></div><img src="${imgFor(item)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">${lock}<button class="heart ${saved?'saved':''}" data-fav="${item.id}">${saved?'♥':'♡'}</button></div><div class="cardBody"><div class="meta"><span>${item.tag}</span><small>${item.format}</small></div><h3>${item.title}</h3><p>${item.desc}</p><button class="open" data-open="${item.id}">Abrir →</button></div></article>`}
@@ -1190,11 +1224,14 @@ const testimonialExamples=[
  ['Maquiadora','Marketing','A presença humana, bastidores e prova social ficaram mais estratégicos.','Instagram'],
  ['Administração de condomínios','Gestão','A análise de processos separou gargalos de comunicação, equipe e tecnologia.','Gestão'],
  ['E-commerce artesanal','Vendas','O site passou a precisar de FAQ, políticas, kits, produtos relacionados e recuperação de abandono.','Site']
-].map((x,i)=>({id:i+1,niche:x[0],area:x[1],quote:x[2],card:x[3]}));
+].map((x,i)=>{
+ const names=['Marina Costa','Rafael Lima','Camila Duarte','Bruno Teixeira','Aline Moraes','Eduardo Prado','Patricia Nunes','Lucas Ferreira','Bianca Rocha','Marcelo Alves','Renata Martins','Thiago Sousa','Juliana Castro','Felipe Ribeiro','Carolina Mendes','Daniel Pires','Fernanda Lopes','Gustavo Freitas','Larissa Vieira','Andre Moreira','Isabela Gomes','Rodrigo Barros','Natasha Almeida','Pedro Henrique','Helena Cardoso','Vinicius Araujo','Sofia Martins','Leonardo Campos','Ana Paula','Caio Oliveira','Priscila Ramos','Diego Batista','Manuela Reis','Igor Santana','Tatiane Melo','Matheus Borges','Leticia Farias','Victor Cunha','Gabriela Tavares','Murilo Pinto','Clara Rezende','Henrique Dias','Raquel Martins','Paulo Sergio','Nathalia Peixoto','Fabio Correa','Amanda Lopes','Joao Vitor','Simone Assis','Karen Carvalho'];
+ return {id:i+1,niche:x[0],area:x[1],quote:x[2],card:x[3],name:names[i]||`Cliente ${i+1}`,photo:`assets/depoimentos/depoimento-${String(i+1).padStart(2,'0')}.webp`};
+});
 function renderTestimonials(filter='Todos'){
  const grid=document.getElementById('testimonialGrid');if(!grid)return;
  const rows=testimonialExamples.filter(x=>filter==='Todos'||x.area===filter);
- grid.innerHTML=rows.map(t=>`<article><div class="stars">★★★★★</div><blockquote>${markEsc(t.quote)}</blockquote><div><strong>${markEsc(t.niche)}</strong><b>${markEsc(t.card)}</b></div><small>Relato simulado ${String(t.id).padStart(2,'0')}</small></article>`).join('');
+ grid.innerHTML=rows.map(t=>`<article><header><span class="testimonial-avatar"><img src="${t.photo}" alt="" loading="lazy" onerror="this.remove()"><b>${markEsc(t.name.split(' ').map(p=>p[0]).join('').slice(0,2))}</b></span><span><strong>${markEsc(t.name)}</strong><small>${markEsc(t.niche)}</small></span></header><div class="stars">★★★★★</div><blockquote>${markEsc(t.quote)}</blockquote><div><strong>${markEsc(t.card)}</strong><b>${markEsc(t.area)}</b></div><small>Relato simulado ${String(t.id).padStart(2,'0')}</small></article>`).join('');
 }
 
 function renderLogos(){
@@ -1221,7 +1258,7 @@ function route(name,options={}){
  window.scrollTo({top:0,behavior:options.instant?'auto':'smooth'});
  if(name==='central'){renderCentral();setTimeout(async()=>{try{await syncMySubscription();await loadAccessFromSupabase();if(state.route==='central')renderCentral()}catch(e){console.warn('[MIV central subscription refresh]',e)}},150)}updateMark();
 }
-function renderCentral(){renderAccessUI();fillCompanyProfileForm();document.getElementById('centralTitle').textContent=`Sua Central · ${state.profile.niche}`;document.getElementById('favCount').textContent=state.favorites.length+state.analysisFav.length;document.getElementById('usedCount').textContent=state.history.length;document.getElementById('repCount').textContent=state.reports.length;document.getElementById('progCount').textContent=Math.min(100,18+(state.favorites.length+state.analysisFav.length)*3+state.history.length*2+state.reports.length*5)+'%';const fs=state.favorites.map(getItem).filter(Boolean);const af=state.analysisFav.map(id=>id==='completa'?['completa','','Análise Empresarial Completa']:analyses.find(a=>a[0]===id)).filter(Boolean);document.getElementById('favorites').innerHTML=(fs.length||af.length)?fs.map(card).join('')+af.map(a=>`<article class="card centralAnalysisCard"><div class="cardBody"><div class="meta"><span>ANÁLISE FAVORITA</span><small>ANÁLISE</small></div><h3>${a[2]}</h3><p>Salva para você fazer depois.</p><button class="open" data-analysis-central="${a[0]}">Usar agora →</button></div></article>`).join(''):`<div class="empty">Use o ♡ em estratégias, ferramentas, conteúdos ou análises para montar sua biblioteca.</div>`;bindCards();document.querySelectorAll('[data-analysis-central]').forEach(x=>x.onclick=()=>startAnalysis(x.dataset.analysisCentral));const histItems=state.history.filter(Boolean).map(h=>getItem(h.id)).filter(Boolean);document.getElementById('history').innerHTML=histItems.length?`<div class="centralGrid">${histItems.map(card).join('')}</div>`:`<div class="empty">Seu histórico aparecerá conforme você explorar.</div>`;bindCards();const reports=(state.reports||[]).filter(Boolean);document.getElementById('reports').innerHTML=reports.length?reports.map((r,i)=>`<div class="centralItem reportCard"><small>${String(r.status||'Salvo').toUpperCase()}</small><h3>${r.name||'Relatório'}</h3><p>Iniciada em ${r.date||'—'}. O relatório está salvo na sua conta.</p><button class="outline centralUse" data-report-index="${i}">Ver relatório</button></div>`).join(''):`<div class="empty">Nenhuma análise iniciada.</div>`;document.querySelectorAll('[data-report-index]').forEach(btn=>btn.onclick=()=>openSavedReport(reports[Number(btn.dataset.reportIndex)]));renderCentralExtras()}
+function renderCentral(){renderAccessUI();fillCompanyProfileForm();const hero=activeHeroContent(state.profile.niche);setCentralHeroBackground(hero.image);if(!hero.image)applyLocalHeroIfExists(state.profile.niche);const centralTitle=document.getElementById('centralTitle');if(centralTitle)centralTitle.textContent=hero.centralTitle;const centralText=centralTitle?.nextElementSibling;if(centralText)centralText.textContent=hero.centralText;document.getElementById('favCount').textContent=state.favorites.length+state.analysisFav.length;document.getElementById('usedCount').textContent=state.history.length;document.getElementById('repCount').textContent=state.reports.length;document.getElementById('progCount').textContent=Math.min(100,18+(state.favorites.length+state.analysisFav.length)*3+state.history.length*2+state.reports.length*5)+'%';const fs=state.favorites.map(getItem).filter(Boolean);const af=state.analysisFav.map(id=>id==='completa'?['completa','','Análise Empresarial Completa']:analyses.find(a=>a[0]===id)).filter(Boolean);document.getElementById('favorites').innerHTML=(fs.length||af.length)?fs.map(card).join('')+af.map(a=>`<article class="card centralAnalysisCard"><div class="cardBody"><div class="meta"><span>ANÁLISE FAVORITA</span><small>ANÁLISE</small></div><h3>${a[2]}</h3><p>Salva para você fazer depois.</p><button class="open" data-analysis-central="${a[0]}">Usar agora →</button></div></article>`).join(''):`<div class="empty">Use o ♡ em estratégias, ferramentas, conteúdos ou análises para montar sua biblioteca.</div>`;bindCards();document.querySelectorAll('[data-analysis-central]').forEach(x=>x.onclick=()=>startAnalysis(x.dataset.analysisCentral));const histItems=state.history.filter(Boolean).map(h=>getItem(h.id)).filter(Boolean);document.getElementById('history').innerHTML=histItems.length?`<div class="centralGrid">${histItems.map(card).join('')}</div>`:`<div class="empty">Seu histórico aparecerá conforme você explorar.</div>`;bindCards();const reports=(state.reports||[]).filter(Boolean);document.getElementById('reports').innerHTML=reports.length?reports.map((r,i)=>`<div class="centralItem reportCard"><small>${String(r.status||'Salvo').toUpperCase()}</small><h3>${r.name||'Relatório'}</h3><p>Iniciada em ${r.date||'—'}. O relatório está salvo na sua conta.</p><button class="outline centralUse" data-report-index="${i}">Ver relatório</button></div>`).join(''):`<div class="empty">Nenhuma análise iniciada.</div>`;document.querySelectorAll('[data-report-index]').forEach(btn=>btn.onclick=()=>openSavedReport(reports[Number(btn.dataset.reportIndex)]));renderCentralExtras()}
 
 function reportMetricRows(meta={}){
  const rows=[];
@@ -1562,6 +1599,15 @@ let mivCompanySyncing=false;
 function authStatus(id,msg,type=''){const el=document.getElementById(id);if(!el)return;el.textContent=msg||'';el.className='authStatus '+type}
 function friendlyAuthError(err){const m=(err?.message||'').toLowerCase();if(m.includes('invalid login'))return 'E-mail ou senha incorretos.';if(m.includes('already registered'))return 'Este e-mail já possui uma conta.';if(m.includes('password'))return 'A senha precisa atender aos requisitos de segurança.';if(m.includes('email'))return 'Verifique o endereço de e-mail informado.';return err?.message||'Não foi possível concluir. Tente novamente.'}
 let dynamicCatalogReady=false;
+async function loadNicheHeros(){
+ if(!mivSupabase)return;
+ try{
+  const {data,error}=await mivSupabase.from('niche_heros').select('*').eq('active',true).order('sort_order');
+  if(error)throw error;
+  nicheHeroRows=data||[];
+  applyTheme(state.profile.niche,state.profile.theme);
+ }catch(e){console.warn('[MIV niche heros] fallback local',e)}
+}
 async function loadDynamicCatalog(){
  if(!mivSupabase)return false;
  try{
@@ -1639,6 +1685,7 @@ async function initSupabase(){
   if(!window.supabase?.createClient)throw new Error('Biblioteca Supabase não carregou.');
   mivSupabase=window.supabase.createClient(c.supabaseUrl,c.supabasePublishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   await loadDynamicCatalog();
+  await loadNicheHeros();
   await loadLearningContent();populateLearningAreas();
   const {data}=await mivSupabase.auth.getSession();await applyAuthSession(data.session);
   mivSupabase.auth.onAuthStateChange((_event,session)=>{if(session)closeAuth();setTimeout(()=>applyAuthSession(session),0)});
