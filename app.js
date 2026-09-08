@@ -1329,6 +1329,19 @@ function renderCentral(){
  reportsEl.classList.toggle('centralCarousel',reports.length>0);
  document.querySelectorAll('[data-report-index]').forEach(btn=>btn.onclick=()=>openSavedReport(reports[Number(btn.dataset.reportIndex)]));
  renderCentralExtras();
+ setupCentralCarouselControls();
+}
+function setupCentralCarouselControls(){
+ document.querySelectorAll('#view-central .centralSec').forEach(sec=>{
+  sec.querySelector('.centralCarouselActions')?.remove();
+  const rail=sec.querySelector('.centralCarousel');if(!rail||rail.children.length<2)return;
+  const controls=document.createElement('div');controls.className='centralCarouselActions';
+  controls.innerHTML='<button type="button" aria-label="Voltar carrossel">‹</button><button type="button" aria-label="Avançar carrossel">›</button>';
+  const [prev,next]=controls.querySelectorAll('button');
+  prev.onclick=()=>rail.scrollBy({left:-Math.max(280,rail.clientWidth*.72),behavior:'smooth'});
+  next.onclick=()=>rail.scrollBy({left:Math.max(280,rail.clientWidth*.72),behavior:'smooth'});
+  sec.appendChild(controls);
+ });
 }
 
 function reportMetricRows(meta={}){
