@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MIV Ecosystem — Vitrine Inteligente</title>
 <meta name="description" content="Ecossistema empresarial adaptável por nicho com estratégias, análises, ferramentas e inteligência artificial.">
-<link rel="stylesheet" href="styles.css?v=14.7">
+<link rel="stylesheet" href="styles.css?v=14.8">
 </head>
 <body data-theme="clean">
 <header class="floating-header">
@@ -210,8 +210,8 @@
     <div class="companyProfileGrid">
       <label>Nome da empresa<input id="cpBusiness" placeholder="Nome da empresa"></label>
       <label>Responsável<input id="cpOwner" placeholder="Seu nome"></label>
-      <label>Nicho<select id="cpNiche"></select></label>
-      <label>Subnicho<select id="cpSubniche"></select></label>
+      <label>Nicho<select id="cpNiche"></select><input id="cpOtherNiche" class="otherNicheInput" placeholder="Digite outro nicho" hidden></label>
+      <label>Subnicho<select id="cpSubniche"></select><input id="cpOtherSubniche" class="otherNicheInput" placeholder="Digite outro subnicho" hidden></label>
       <label>Cidade / UF<input id="cpCity" placeholder="Ex.: Votuporanga / SP"></label>
       <label>Área de atuação<input id="cpRegion" placeholder="Local, regional, nacional, online..."></label>
       <label class="wide">Produtos / serviços<textarea id="cpOffers" placeholder="Liste os principais produtos e serviços"></textarea></label>
@@ -262,6 +262,7 @@
     <div class="savedReportTopbar">
       <button class="back" data-route="central">← Voltar para Minha Central</button>
       <div class="savedReportShareActions">
+        <button class="outline" id="backToReportAnalysis">Voltar para análise</button>
         <button class="outline" id="printFullReport">🖨 Imprimir</button>
         <button class="outline" id="pdfFullReport">⇩ Salvar em PDF</button>
         <button class="outline" id="whatsappFullReport">WhatsApp</button>
@@ -281,7 +282,7 @@
   <div class="authBox">
     <button class="authClose" id="authClose" aria-label="Fechar">×</button>
     <section class="authPane active" id="authLogin"><span class="eyebrow">SUA CONTA</span><h2>Entrar no MIV Ecosystem</h2><p>Acesse sua Central e seus dados salvos.</p><label>E-mail</label><input id="loginEmail" type="email" autocomplete="email"><label>Senha</label><input id="loginPassword" type="password" autocomplete="current-password"><div class="authActions"><button class="primary" id="doLogin">Entrar</button></div><div class="authStatus" id="loginStatus"></div><button class="authLink" data-auth-switch="forgot">Esqueci minha senha</button><button class="authLink" data-auth-switch="register">Criar conta</button></section>
-    <section class="authPane" id="authRegister"><span class="eyebrow">NOVA CONTA</span><h2>Criar sua conta</h2><p>Comece sua Central com os dados básicos do negócio.</p><label>Seu nome</label><input id="regName"><label>E-mail</label><input id="regEmail" type="email" autocomplete="email"><label>Telefone</label><input id="regPhone"><label>Empresa</label><input id="regBusiness"><label>Nicho</label><input id="regNiche"><label>Cidade / UF</label><input id="regCity"><label>Senha</label><input id="regPass" type="password" autocomplete="new-password"><label>Repita a senha</label><input id="regPass2" type="password" autocomplete="new-password"><div class="authActions"><button class="primary" id="doRegister">Criar conta</button></div><div class="authStatus" id="registerStatus"></div><button class="authLink" data-auth-switch="login">Já tenho conta</button></section>
+    <section class="authPane" id="authRegister"><span class="eyebrow">NOVA CONTA</span><h2>Criar sua conta</h2><p>Comece sua Central com os dados básicos do negócio.</p><label>Seu nome</label><input id="regName"><label>E-mail</label><input id="regEmail" type="email" autocomplete="email"><label>Telefone</label><input id="regPhone"><label>Empresa</label><input id="regBusiness"><label>Nicho</label><select id="regNiche"></select><input id="regOtherNiche" class="otherNicheInput" placeholder="Digite outro nicho" hidden><label>Cidade / UF</label><input id="regCity"><label>Senha</label><input id="regPass" type="password" autocomplete="new-password"><label>Repita a senha</label><input id="regPass2" type="password" autocomplete="new-password"><div class="authActions"><button class="primary" id="doRegister">Criar conta</button></div><div class="authStatus" id="registerStatus"></div><button class="authLink" data-auth-switch="login">Já tenho conta</button></section>
     <section class="authPane" id="authForgot"><span class="eyebrow">RECUPERAR ACESSO</span><h2>Redefinir senha</h2><p>Enviaremos o processo de recuperação para seu e-mail.</p><label>E-mail</label><input id="forgotEmail" type="email" autocomplete="email"><div class="authActions"><button class="primary" id="doForgot">Enviar recuperação</button></div><div class="authStatus" id="forgotStatus"></div><button class="authLink" data-auth-switch="login">Voltar para entrar</button></section>
   </div>
 </div>
@@ -324,7 +325,8 @@
       <aside class="calAside">
         <h3>Personalize para sua realidade</h3>
         <label>Nicho / subnicho</label>
-        <input id="calNiche" placeholder="Nicho / subnicho">
+        <select id="calNiche"></select>
+        <input id="calOtherNiche" class="otherNicheInput" placeholder="Digite outro nicho / subnicho" hidden>
         <label>Cidade / UF <small>(opcional)</small></label>
         <input id="calCity" placeholder="Ex.: Votuporanga / SP">
         <label>Datas da empresa, equipe ou pessoais</label>
@@ -360,5 +362,5 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=14.7"></script>
+<script src="app.js?v=14.8"></script>
 </body></html>

@@ -89,7 +89,7 @@ body[data-theme="auto"]{--bg:#0f1215;--surface:#171c20;--surface2:#20272c;--text
 
 /* V13.4 — autenticação Supabase */
 .authModal{position:fixed;inset:0;background:rgba(13,24,20,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:10020;backdrop-filter:blur(8px)}
-.authModal.show{display:flex}.authBox{width:min(470px,100%);background:#fff;border-radius:24px;padding:28px;box-shadow:0 28px 80px rgba(0,0,0,.24);position:relative}.authClose{position:absolute;right:18px;top:14px;border:0;background:transparent;font-size:28px;cursor:pointer}.authPane{display:none}.authPane.active{display:block}.authPane h2{margin:6px 0 8px}.authPane>p{color:#63716b;margin:0 0 20px}.authPane label{display:block;font-size:13px;font-weight:700;margin:12px 0 5px}.authPane input{width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #d8e0dc;border-radius:12px;font:inherit}.authActions{display:flex;gap:10px;margin-top:18px;align-items:center}.authActions button{flex:1}.authLink{border:0;background:transparent;color:#247a58;cursor:pointer;padding:8px}.authStatus{min-height:20px;font-size:13px;margin-top:12px;color:#63716b}.authStatus.error{color:#b42318}.authStatus.ok{color:#18794e}.auth-header-btn.logged{color:#247a58;font-weight:800}
+.authModal.show{display:flex}.authBox{width:min(470px,100%);background:#fff;border-radius:24px;padding:28px;box-shadow:0 28px 80px rgba(0,0,0,.24);position:relative}.authClose{position:absolute;right:18px;top:14px;border:0;background:transparent;font-size:28px;cursor:pointer}.authPane{display:none}.authPane.active{display:block}.authPane h2{margin:6px 0 8px}.authPane>p{color:#63716b;margin:0 0 20px}.authPane label{display:block;font-size:13px;font-weight:700;margin:12px 0 5px}.authPane input,.authPane select{width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #d8e0dc;border-radius:12px;font:inherit;background:#fff}.authPane .otherNicheInput{margin-top:8px}.authActions{display:flex;gap:10px;margin-top:18px;align-items:center}.authActions button{flex:1}.authLink{border:0;background:transparent;color:#247a58;cursor:pointer;padding:8px}.authStatus{min-height:20px;font-size:13px;margin-top:12px;color:#63716b}.authStatus.error{color:#b42318}.authStatus.ok{color:#18794e}.auth-header-btn.logged{color:#247a58;font-weight:800}
 
 /* V13.5 — estado autenticado */
 .logout-header-btn{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer}.logout-header-btn[hidden]{display:none!important}.auth-header-btn.logged{max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -288,6 +288,8 @@ body[data-theme="clean"] #marketing,body[data-theme="clean"] #vendas,body[data-t
 #view-central .companyProfileHead:after{grid-column:2;align-self:center}
 #view-central .companyProfileDetails[open]>summary:after{content:"Ocultar informações"}
 #view-central .companyProfileGrid select{border:1px solid var(--line);border-radius:10px;background:var(--surface2);padding:10px;color:var(--text);font:inherit}
+.otherNicheInput[hidden]{display:none!important}.otherNicheInput{margin-top:6px}
+.calAside select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;margin:5px 0;background:#fff;color:var(--text)}
 #view-central .suggestionLabel{display:block;margin-top:5px;font-size:8px;font-weight:900;letter-spacing:.09em;color:var(--accent);text-transform:uppercase}
 #view-central .fieldSuggestions{display:flex;gap:6px;flex-wrap:wrap}
 #view-central .fieldSuggestions button{border:1px solid color-mix(in srgb,var(--accent) 22%,var(--line));background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:6px 9px;font-size:9px;font-weight:800}
@@ -321,6 +323,9 @@ body[data-theme="clean"] #marketing,body[data-theme="clean"] #vendas,body[data-t
 .reportFilterBar span{font-size:10px;font-weight:900;color:var(--muted);margin-right:4px}
 .reportFilterBar button{border:1px solid var(--line);background:var(--surface2);color:var(--muted);border-radius:999px;padding:8px 11px;font-size:9px;font-weight:850}
 .reportFilterBar button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.reportActionPanel{display:flex;align-items:center;gap:9px;flex-wrap:wrap;border:1px solid color-mix(in srgb,var(--accent) 22%,var(--line));border-radius:16px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent-soft) 80%,var(--surface)),var(--surface));padding:13px;margin:18px 0 8px}
+.reportActionPanel button{white-space:nowrap}
+.reportActionPanel .primary{margin-left:auto}
 .fullReportChecklist.grouped{display:grid;gap:16px}
 .fullReportChecklist.grouped>.fullReportChecklistGroup{display:block}
 .fullReportChecklistGroup{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--surface2);overflow:hidden}
@@ -334,5 +339,5 @@ body[data-theme="clean"] #marketing,body[data-theme="clean"] #vendas,body[data-t
 .fullReportChecklistGroup .report-status-pending{background:#f3f7fb;border-color:#d7e3ef}
 .reportEmptyFilter{margin:0;color:var(--muted);font-size:12px}
 @media(max-width:1180px){#view-central .centralAccessRow{grid-template-columns:1fr}#view-central .accountSecurityGrid{grid-template-columns:1fr 1fr}#view-central .accountSecurityGrid>div:first-child{grid-column:1/-1}}
-@media(max-width:700px){#view-central .companyProfileHead{grid-template-columns:1fr}#view-central .companyProfileDetails>summary:after{justify-self:start}#view-central .companyProfileGrid,#view-central .accountSecurityGrid{grid-template-columns:1fr}#view-central .centralCarousel>.card,#view-central .centralCarousel>.centralMiniCard,#view-central .centralCarousel>.centralItem{flex-basis:82vw}#view-central .centralTitleActions{padding-right:0}#view-central .centralCarouselActions{position:static;margin:8px 0 10px}.fullReportChecklistGroup>div{grid-template-columns:1fr}.fullReportChecklistGroup>div span{text-align:left}.reportFilterBar{align-items:stretch}.reportFilterBar button{flex:1 1 auto}}
-@media print{.reportFilterBar{display:none!important}.fullReportChecklistGroup>div{break-inside:avoid}}
+@media(max-width:700px){#view-central .companyProfileHead{grid-template-columns:1fr}#view-central .companyProfileDetails>summary:after{justify-self:start}#view-central .companyProfileGrid,#view-central .accountSecurityGrid{grid-template-columns:1fr}#view-central .centralCarousel>.card,#view-central .centralCarousel>.centralMiniCard,#view-central .centralCarousel>.centralItem{flex-basis:82vw}#view-central .centralTitleActions{padding-right:0}#view-central .centralCarouselActions{position:static;margin:8px 0 10px}.fullReportChecklistGroup>div{grid-template-columns:1fr}.fullReportChecklistGroup>div span{text-align:left}.reportFilterBar,.reportActionPanel{align-items:stretch}.reportFilterBar button,.reportActionPanel button{flex:1 1 auto}.reportActionPanel .primary{margin-left:0}}
+@media print{.reportFilterBar,.reportActionPanel{display:none!important}.fullReportChecklistGroup>div{break-inside:avoid}}
