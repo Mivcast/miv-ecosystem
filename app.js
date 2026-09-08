@@ -38,7 +38,8 @@ function setCentralHeroBackground(url){
  centralHero.classList.toggle('hasNicheImage',!!url);
 }
 function applyLocalHeroIfExists(niche){
- const candidates=[niche,niches[niche]?.group,'marketing-criativos'].filter(Boolean).flatMap(localNicheHeroPaths);
+ if(!niche||niche==='Visão geral para negócios')return;
+ const candidates=[niche,niches[niche]?.group].filter(Boolean).flatMap(localNicheHeroPaths);
  const tryImage=(index=0)=>{
   if(index>=candidates.length)return;
   const url=candidates[index],img=new Image();
