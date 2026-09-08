@@ -282,7 +282,10 @@ body[data-theme="clean"] #marketing,body[data-theme="clean"] #vendas,body[data-t
 #view-central .companyProfileDetails{margin-top:18px}
 #view-central .companyProfileDetails>summary{cursor:pointer;list-style:none}
 #view-central .companyProfileDetails>summary::-webkit-details-marker{display:none}
+#view-central .companyProfileHead{grid-template-columns:minmax(0,1fr) auto 120px;align-items:center}
+#view-central .companyProfileHead .profileCompletion{grid-column:3}
 #view-central .companyProfileDetails>summary:after{content:"Abrir informações";align-self:start;justify-self:end;border:1px solid var(--line);border-radius:999px;padding:8px 11px;font-size:9px;font-weight:900;color:var(--accent);background:var(--surface2)}
+#view-central .companyProfileHead:after{grid-column:2;align-self:center}
 #view-central .companyProfileDetails[open]>summary:after{content:"Ocultar informações"}
 #view-central .companyProfileGrid select{border:1px solid var(--line);border-radius:10px;background:var(--surface2);padding:10px;color:var(--text);font:inherit}
 #view-central .suggestionLabel{display:block;margin-top:5px;font-size:8px;font-weight:900;letter-spacing:.09em;color:var(--accent);text-transform:uppercase}
@@ -311,10 +314,25 @@ body[data-theme="clean"] #marketing,body[data-theme="clean"] #vendas,body[data-t
 #view-central .centralCarousel>.card,#view-central .centralCarousel>.centralMiniCard,#view-central .centralCarousel>.centralItem{flex:0 0 285px;scroll-snap-align:start}
 #view-central .centralCarousel>.centralMiniCard,#view-central .centralCarousel>.centralItem{min-height:205px;display:flex;flex-direction:column}
 #view-central .centralCarousel>.centralMiniCard button,#view-central .centralCarousel>.centralItem button{margin-top:auto;align-self:flex-start}
+#view-central .calendarEntryCard{border-color:color-mix(in srgb,var(--accent) 34%,var(--line));background:linear-gradient(145deg,color-mix(in srgb,var(--accent-soft) 78%,var(--surface)),var(--surface));box-shadow:0 18px 48px color-mix(in srgb,var(--accent) 14%,transparent)}
 .profileNotice.complete{background:linear-gradient(135deg,color-mix(in srgb,var(--accent-soft) 82%,var(--surface)),var(--surface));border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
 .profileNotice.complete strong{color:var(--accent)}
+.reportFilterBar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:12px;margin:18px 0}
+.reportFilterBar span{font-size:10px;font-weight:900;color:var(--muted);margin-right:4px}
+.reportFilterBar button{border:1px solid var(--line);background:var(--surface2);color:var(--muted);border-radius:999px;padding:8px 11px;font-size:9px;font-weight:850}
+.reportFilterBar button.active{background:var(--accent);border-color:var(--accent);color:#fff}
 .fullReportChecklist.grouped{display:grid;gap:16px}
-.fullReportChecklistGroup{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--surface2)}
+.fullReportChecklist.grouped>.fullReportChecklistGroup{display:block}
+.fullReportChecklistGroup{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--surface2);overflow:hidden}
 .fullReportChecklistGroup h3{margin:0 0 10px;font-size:14px}
+.fullReportChecklistGroup>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--surface);margin-top:8px}
+.fullReportChecklistGroup>div strong{font-size:11px;line-height:1.35;min-width:0}
+.fullReportChecklistGroup>div span{font-size:9px;font-weight:850;white-space:normal;text-align:right;color:var(--muted)}
+.fullReportChecklistGroup .report-status-correct{background:#edf9f1;border-color:#b8dfc5}
+.fullReportChecklistGroup .report-status-improve{background:#fff8df;border-color:#ead58c}
+.fullReportChecklistGroup .report-status-na{background:#fff0f0;border-color:#e3b6b6}
+.fullReportChecklistGroup .report-status-pending{background:#f3f7fb;border-color:#d7e3ef}
+.reportEmptyFilter{margin:0;color:var(--muted);font-size:12px}
 @media(max-width:1180px){#view-central .centralAccessRow{grid-template-columns:1fr}#view-central .accountSecurityGrid{grid-template-columns:1fr 1fr}#view-central .accountSecurityGrid>div:first-child{grid-column:1/-1}}
-@media(max-width:700px){#view-central .companyProfileHead{grid-template-columns:1fr}#view-central .companyProfileDetails>summary:after{justify-self:start}#view-central .companyProfileGrid,#view-central .accountSecurityGrid{grid-template-columns:1fr}#view-central .centralCarousel>.card,#view-central .centralCarousel>.centralMiniCard,#view-central .centralCarousel>.centralItem{flex-basis:82vw}#view-central .centralTitleActions{padding-right:0}#view-central .centralCarouselActions{position:static;margin:8px 0 10px}}
+@media(max-width:700px){#view-central .companyProfileHead{grid-template-columns:1fr}#view-central .companyProfileDetails>summary:after{justify-self:start}#view-central .companyProfileGrid,#view-central .accountSecurityGrid{grid-template-columns:1fr}#view-central .centralCarousel>.card,#view-central .centralCarousel>.centralMiniCard,#view-central .centralCarousel>.centralItem{flex-basis:82vw}#view-central .centralTitleActions{padding-right:0}#view-central .centralCarouselActions{position:static;margin:8px 0 10px}.fullReportChecklistGroup>div{grid-template-columns:1fr}.fullReportChecklistGroup>div span{text-align:left}.reportFilterBar{align-items:stretch}.reportFilterBar button{flex:1 1 auto}}
+@media print{.reportFilterBar{display:none!important}.fullReportChecklistGroup>div{break-inside:avoid}}

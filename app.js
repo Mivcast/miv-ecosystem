@@ -1387,27 +1387,46 @@ async function shareCurrentReport(){
   await navigator.clipboard.writeText(text+'\n'+location.href);toast('Resumo e link copiados para compartilhar.');
  }catch(e){if(e?.name!=='AbortError')toast('Não foi possível compartilhar agora.')}
 }
+let reportViewMode='all';
+function reportFilterLabel(mode){
+ return {all:'Completo',titles:'Só títulos',correct:'Já feito',improve:'A melhorar',na:'Precisa fazer',pending:'Pendentes'}[mode]||'Completo';
+}
+function filterReportChecklist(checklist=[]){
+ if(reportViewMode==='all'||reportViewMode==='titles')return checklist;
+ return checklist.filter(x=>(x.status||'pending')===reportViewMode);
+}
+function renderReportFilters(checklist=[]){
+ if(!checklist.length)return '';
+ const opts=[['all','Completo'],['titles','Só títulos'],['correct','Já feito'],['improve','A melhorar'],['na','Precisa fazer'],['pending','Pendentes']];
+ return `<div class="reportFilterBar"><span>Visualizar relatório:</span>${opts.map(([mode,label])=>`<button type="button" class="${reportViewMode===mode?'active':''}" data-report-filter="${mode}">${label}</button>`).join('')}</div>`;
+}
 function renderFullSavedReport(report){
  if(!report)return;
  const meta=report.meta||{}, rows=reportMetricRows(meta), body=document.getElementById('fullSavedReport');if(!body)return;
  const date=report.date||new Date(report.created_at||Date.now()).toLocaleDateString('pt-BR');
  const answers=Array.isArray(meta.answers)?meta.answers:[];
  const checklist=Array.isArray(meta.checklist)?meta.checklist:[];
+ const visibleChecklist=filterReportChecklist(checklist);
  const priorities=Array.isArray(meta.priorities)?meta.priorities:checklist.filter(x=>x.status==='improve').map(x=>x.point).slice(0,3);
  const hasDetails=answers.length||checklist.length||priorities.length;
- const groupChecklist=(status,title)=>{const items=checklist.filter(x=>(x.status||'pending')===status);return items.length?`<div class="fullReportChecklistGroup"><h3>${title}</h3>${items.map(x=>`<div class="report-status-${x.status||'pending'}"><strong>${x.point||'Ponto avaliado'}</strong><span>${reportStatusLabel(x.status)}</span></div>`).join('')}</div>`:''};
+ const itemRow=x=>`<div class="report-status-${x.status||'pending'}"><strong>${x.point||'Ponto avaliado'}</strong>${reportViewMode==='titles'?'':`<span>${reportStatusLabel(x.status)}</span>`}</div>`;
+ const groupChecklist=(status,title)=>{const items=visibleChecklist.filter(x=>(x.status||'pending')===status);return items.length?`<div class="fullReportChecklistGroup"><h3>${title}</h3>${items.map(itemRow).join('')}</div>`:''};
+ const flatChecklist=visibleChecklist.length?`<div class="fullReportChecklistGroup"><h3>${reportFilterLabel(reportViewMode)}</h3>${visibleChecklist.map(itemRow).join('')}</div>`:'<p class="reportEmptyFilter">Nenhum ponto encontrado neste filtro.</p>';
  body.innerHTML=`<header class="fullReportHeader"><span class="eyebrow">RELATÓRIO SALVO</span><h1>${report.name||'Relatório'}</h1><p>${String(report.status||'Salvo')} · ${date}</p></header>
+ ${renderReportFilters(checklist)}
  ${rows.length?`<section class="fullReportMetrics">${rows.map(([k,v])=>`<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</section>`:''}
  ${meta.score!=null?`<section class="fullReportSection"><span class="eyebrow">RESULTADO</span><h2>${meta.score}% de adequação inicial</h2><p>Este resultado representa o cenário registrado no momento em que a análise foi salva.</p></section>`:''}
  ${answers.length?`<section class="fullReportSection"><span class="eyebrow">RESPOSTAS DA ANÁLISE</span><h2>Contexto informado</h2><div class="fullReportAnswers">${answers.map((x,i)=>`<div><small>${x.question||`Pergunta ${i+1}`}</small><p>${x.answer||'Não respondido'}</p></div>`).join('')}</div></section>`:''}
- ${checklist.length?`<section class="fullReportSection"><span class="eyebrow">CHECKLIST</span><h2>Situação dos pontos avaliados</h2><div class="fullReportChecklist grouped">${groupChecklist('na','Precisa ser feito')}${groupChecklist('improve','Está pronto, mas precisa melhorar')}${groupChecklist('correct','Já está pronto')}${groupChecklist('pending','Ainda não respondido')}</div></section>`:''}
+ ${checklist.length?`<section class="fullReportSection"><span class="eyebrow">CHECKLIST</span><h2>Situação dos pontos avaliados</h2><div class="fullReportChecklist grouped">${reportViewMode==='all'?`${groupChecklist('na','Precisa ser feito')}${groupChecklist('improve','Está pronto, mas precisa melhorar')}${groupChecklist('correct','Já está pronto')}${groupChecklist('pending','Ainda não respondido')}`:flatChecklist}</div></section>`:''}
  ${priorities.length?`<section class="fullReportSection"><span class="eyebrow">PRIORIDADES</span><h2>O que merece atenção primeiro</h2><div class="analysisPriorities">${priorities.map((x,i)=>`<div><strong>${i+1}</strong><span>${x}</span></div>`).join('')}</div></section>`:''}
  ${meta.score!=null?`<section class="fullReportSection">${analysisSpecialistView(Number(meta.score)||0,priorities)}</section>`:''}
  ${!hasDetails?`<section class="fullReportSection legacyReport"><span class="eyebrow">RELATÓRIO HISTÓRICO</span><h2>Dados disponíveis deste relatório</h2><p>Este relatório foi criado antes de o sistema começar a armazenar o conteúdo completo das análises. Por isso, os indicadores acima foram preservados, mas respostas e checklist detalhado não estavam salvos. Os novos relatórios passarão a abrir completos nesta página.</p></section>`:''}`;
+ body.querySelectorAll('[data-report-filter]').forEach(btn=>btn.onclick=()=>{reportViewMode=btn.dataset.reportFilter||'all';renderFullSavedReport(report)});
 }
 function openSavedReport(report){
  if(!report)return;
  state.currentReport=report;
+ reportViewMode='all';
  renderFullSavedReport(report);
  route('report');
 }
@@ -1784,8 +1803,9 @@ function renderCentralExtras(){
  cont.classList.toggle('centralCarousel',progress.length>0);
  cont.querySelectorAll('[data-continue-analysis]').forEach(b=>b.onclick=()=>startAnalysis(b.dataset.continueAnalysis,b.dataset.continueSub||''));
  const ids=recommended().slice(0,4),cards=ids.map(getItem).filter(Boolean);rec.innerHTML=cards.length?cards.map(card).join(''):'<div class="empty">Complete o Perfil da Empresa para melhorar as recomendações.</div>';rec.classList.toggle('centralCarousel',cards.length>0);bindCards();
- ideas.innerHTML=centralExtras.ideas.length?centralExtras.ideas.slice(0,6).map(x=>`<article class="centralMiniCard"><small>${new Date(x.event_date+'T12:00:00').toLocaleDateString('pt-BR')}</small><h3>${x.event_name}</h3><p>${String(x.idea?.summary||x.idea?.strategy||'Ideia de campanha salva no calendário.').slice(0,180)}</p><button class="outline" data-open-calendar>Ver calendário →</button></article>`).join(''):'<div class="empty">Suas ideias salvas no Calendário de Marketing aparecerão aqui.</div>';
- ideas.classList.toggle('centralCarousel',centralExtras.ideas.length>0);
+ const calendarCard='<article class="centralMiniCard calendarEntryCard"><small>CALENDÁRIO INTELIGENTE</small><h3>Planejar próximas campanhas</h3><p>Abra o calendário para ver datas úteis, ideias sazonais e oportunidades de ação para o seu nicho.</p><button class="primary" data-open-calendar>Abrir calendário →</button></article>';
+ ideas.innerHTML=calendarCard+(centralExtras.ideas.length?centralExtras.ideas.slice(0,6).map(x=>`<article class="centralMiniCard"><small>${new Date(x.event_date+'T12:00:00').toLocaleDateString('pt-BR')}</small><h3>${x.event_name}</h3><p>${String(x.idea?.summary||x.idea?.strategy||'Ideia de campanha salva no calendário.').slice(0,180)}</p><button class="outline" data-open-calendar>Ver calendário →</button></article>`).join(''):'');
+ ideas.classList.add('centralCarousel');
  ideas.querySelectorAll('[data-open-calendar]').forEach(b=>b.onclick=openCalendar);
  purchasesEl.innerHTML=centralExtras.purchases.length?centralExtras.purchases.map(x=>{const it=getItem(normalizeAccessItemId(x.item_id));return `<article class="centralMiniCard"><small>LIBERADO</small><h3>${it?.title||x.item_id}</h3><p>${x.amount_cents!=null?'Compra de R$ '+(x.amount_cents/100).toFixed(2).replace('.',','):'Acesso liberado'} · ${new Date(x.purchased_at).toLocaleDateString('pt-BR')}</p>${it?`<button class="outline" data-open="${it.id}">Abrir →</button>`:''}</article>`}).join(''):'<div class="empty">Nenhuma compra avulsa registrada nesta conta.</div>';purchasesEl.classList.toggle('centralCarousel',centralExtras.purchases.length>0);bindCards();
 }

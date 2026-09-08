@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MIV Ecosystem — Vitrine Inteligente</title>
 <meta name="description" content="Ecossistema empresarial adaptável por nicho com estratégias, análises, ferramentas e inteligência artificial.">
-<link rel="stylesheet" href="styles.css?v=14.6">
+<link rel="stylesheet" href="styles.css?v=14.7">
 </head>
 <body data-theme="clean">
 <header class="floating-header">
@@ -200,28 +200,8 @@
   <div class="wrap detail"><button class="back" data-route="home">← Voltar para a vitrine</button><div class="detailHero" id="detailHero"><div class="detailVisual" id="detailVisual"></div><section><span class="eyebrow" id="detailCat">ESTRATÉGIA</span><h1 id="detailTitle"></h1><p id="detailDesc"></p><div><button class="primary" id="useBtn">Usar agora</button><button id="favBtn">♡ Salvar</button></div></section></div><div class="detailGrid"><article id="detailBody"></article><aside><span class="eyebrow">RELACIONADO AO SEU NEGÓCIO</span><div id="related"></div></aside></div></div>
 </section>
 
-<section id="view-central" class="view">
+  <section id="view-central" class="view">
   <div class="wrap centralHero"><div><span class="eyebrow">MINHA CENTRAL</span><h1 id="centralTitle">Seu espaço dentro do ecossistema.</h1><p>Tudo que você favoritou, usou, comprou ou analisou fica organizado aqui.</p></div><button id="editProfile" class="outline">Editar nicho</button></div>
-  <div class="wrap centralAccessRow">
-  <section class="accessPanel" id="accessPanel"><div><span class="eyebrow">PLANO & ACESSO</span><h2>Seu acesso ao MIV Ecosystem</h2><p id="centralPlanDesc">Carregando permissões da sua conta...</p><div class="accessHighlights"><span>Central salva</span><span>Histórico ativo</span><span>MARK contextual</span></div></div><div class="accessPlanRight"><span>PLANO ATUAL</span><strong id="centralPlanBadge">Grátis</strong><button class="outline" data-scroll="planos">Ver planos</button></div></section>
-  <section class="wrap subscriptionManager" id="subscriptionManager" hidden>
-    <div class="subscriptionManagerHead"><div><span class="eyebrow">MINHA ASSINATURA</span><h2>Gerencie seu plano</h2><p id="subscriptionManagerText">Carregando informações da assinatura...</p></div><span class="subscriptionStatus" id="subscriptionStatusBadge">Ativa</span></div>
-    <div class="subscriptionManagerGrid">
-      <div><small>PLANO</small><strong id="subscriptionPlanName">—</strong></div>
-      <div><small>VALOR</small><strong id="subscriptionPlanPrice">—</strong></div>
-      <div><small>PRÓXIMA COBRANÇA</small><strong id="subscriptionNextCharge">—</strong></div>
-      <div><small>STATUS</small><strong id="subscriptionHumanStatus">—</strong></div>
-    </div>
-    <div class="subscriptionNotice" id="subscriptionNotice" hidden></div>
-    <div class="subscriptionManagerActions">
-      <button class="primary" id="subscriptionUpgradeBtn" hidden>Fazer upgrade para Premium</button>
-      <button class="outline" id="subscriptionDowngradeBtn" hidden>Programar downgrade para PRO</button>
-      <button class="outline" id="subscriptionUndoDowngradeBtn" hidden>Cancelar downgrade programado</button>
-      <button class="outline dangerAction" id="subscriptionCancelBtn">Cancelar renovação</button>
-    </div>
-  </section>
-  <section class="centralSec centralPlanCompare"><span class="eyebrow">ESCOLHA O NÍVEL IDEAL</span><h2>Planos dentro da sua Central</h2><p>Assine ou faça upgrade sem sair da área da conta. O cupom é aplicado antes do Mercado Pago, então o checkout já abre com o valor final.</p><div class="centralGrid centralPlanCards"><div class="centralItem"><small>GRÁTIS</small><h3>Experimentar</h3><p>Cards selecionados, prévias e relatórios resumidos.</p><b>5 MARK.IA/mês</b></div><div class="centralItem"><small>PRO · <span id="centralProPrice">R$ 47,90/mês</span></small><h3>Resolver</h3><p>Todos os cards PRO, análises, relatórios, calendário e conteúdos completos.</p><details class="planCouponInline"><summary>Tenho cupom</summary><input data-plan-coupon-input="pro" placeholder="Cupom opcional"></details><button class="primary full" id="centralPlanProBtn">Quero acesso Pro</button></div><div class="centralItem"><small>PREMIUM · <span id="centralPremiumPrice">R$ 97,90/mês</span></small><h3>Aprofundar</h3><p>Tudo do PRO + uso muito maior do MARK e inteligência cruzada do negócio.</p><details class="planCouponInline"><summary>Tenho cupom</summary><input data-plan-coupon-input="premium" placeholder="Cupom opcional"></details><button class="outline full" id="centralPlanPremiumBtn">Quero acesso Premium</button></div></div></section>
-  </div>
   <details class="wrap companyProfilePanel companyProfileDetails" id="companyProfilePanel">
     <summary class="companyProfileHead">
       <div><span class="eyebrow">INFORMAÇÕES DA EMPRESA</span><h2>Quanto mais o sistema conhece seu negócio, melhores ficam as respostas.</h2><p>Essas informações poderão ser reutilizadas pelo MARK e pelos cards para evitar perguntas repetidas e personalizar sugestões, análises e relatórios.</p></div>
@@ -246,15 +226,35 @@
     </div>
     <div class="companyProfileActions"><button class="primary" id="saveCompanyProfile">Salvar informações da empresa</button><span id="companyProfileStatus"></span></div>
   </details>
-  <section class="wrap accountSecurityPanel centralSec"><span class="eyebrow">CONTA & SEGURANÇA</span><div class="accountSecurityGrid"><div><h2>Seu acesso</h2><p>Altere a senha da conta quando precisar. O e-mail atual fica registrado para login e recuperação.</p><small id="accountEmail">—</small></div><label>Nova senha<input id="accountNewPassword" type="password" autocomplete="new-password" placeholder="Digite uma nova senha"></label><label>Confirmar senha<input id="accountConfirmPassword" type="password" autocomplete="new-password" placeholder="Repita a nova senha"></label><button class="primary" id="updateAccountPassword">Atualizar senha</button></div><div class="authStatus" id="accountStatus"></div></section>
   <div class="wrap stats"><div><span>Favoritos</span><strong id="favCount">0</strong><small>Sua biblioteca está nascendo.</small></div><div><span>Conteúdos usados</span><strong id="usedCount">0</strong><small>Volte ao que já começou.</small></div><div><span>Análises</span><strong id="repCount">0</strong><small>Transforme diagnóstico em ação.</small></div><div><span>Progresso</span><strong id="progCount">18%</strong><small>Cada passo melhora o contexto.</small></div></div>
   <section class="wrap centralSec"><span class="eyebrow">CONTINUE DE ONDE PAROU</span><h2>Em andamento</h2><div class="centralGrid" id="centralContinue"></div></section>
   <section class="wrap centralSec"><span class="eyebrow">RECOMENDADO PARA SUA EMPRESA</span><div class="centralTitleActions"><h2>Próximos passos sugeridos</h2><button class="outline" id="centralAskMark">Perguntar ao MARK.IA</button></div><div class="centralGrid" id="centralRecommendations"></div></section>
   <section class="wrap centralSec"><span class="eyebrow">CALENDÁRIO</span><h2>Ideias de marketing salvas</h2><div class="centralGrid" id="centralCalendarIdeas"></div></section>
-  <section class="wrap centralSec"><span class="eyebrow">SEUS ACESSOS</span><h2>Compras e liberações</h2><div class="centralGrid" id="centralPurchases"></div></section>
   <section class="wrap centralSec"><span class="eyebrow">SALVOS POR VOCÊ</span><h2>Favoritos</h2><div class="centralGrid" id="favorites"></div></section>
   <section class="wrap centralSec"><span class="eyebrow">SEU HISTÓRICO</span><h2>O que você já usou</h2><div id="history"></div></section>
   <section class="wrap centralSec"><span class="eyebrow">ANÁLISES</span><h2>Relatórios e diagnósticos</h2><div class="centralGrid" id="reports"></div></section>
+  <section class="wrap centralSec"><span class="eyebrow">SEUS ACESSOS</span><h2>Compras e liberações</h2><div class="centralGrid" id="centralPurchases"></div></section>
+  <div class="wrap centralAccessRow">
+  <section class="accessPanel" id="accessPanel"><div><span class="eyebrow">PLANO & ACESSO</span><h2>Seu acesso ao MIV Ecosystem</h2><p id="centralPlanDesc">Carregando permissões da sua conta...</p><div class="accessHighlights"><span>Central salva</span><span>Histórico ativo</span><span>MARK contextual</span></div></div><div class="accessPlanRight"><span>PLANO ATUAL</span><strong id="centralPlanBadge">Grátis</strong><button class="outline" data-scroll="planos">Ver planos</button></div></section>
+  <section class="wrap subscriptionManager" id="subscriptionManager" hidden>
+    <div class="subscriptionManagerHead"><div><span class="eyebrow">MINHA ASSINATURA</span><h2>Gerencie seu plano</h2><p id="subscriptionManagerText">Carregando informações da assinatura...</p></div><span class="subscriptionStatus" id="subscriptionStatusBadge">Ativa</span></div>
+    <div class="subscriptionManagerGrid">
+      <div><small>PLANO</small><strong id="subscriptionPlanName">—</strong></div>
+      <div><small>VALOR</small><strong id="subscriptionPlanPrice">—</strong></div>
+      <div><small>PRÓXIMA COBRANÇA</small><strong id="subscriptionNextCharge">—</strong></div>
+      <div><small>STATUS</small><strong id="subscriptionHumanStatus">—</strong></div>
+    </div>
+    <div class="subscriptionNotice" id="subscriptionNotice" hidden></div>
+    <div class="subscriptionManagerActions">
+      <button class="primary" id="subscriptionUpgradeBtn" hidden>Fazer upgrade para Premium</button>
+      <button class="outline" id="subscriptionDowngradeBtn" hidden>Programar downgrade para PRO</button>
+      <button class="outline" id="subscriptionUndoDowngradeBtn" hidden>Cancelar downgrade programado</button>
+      <button class="outline dangerAction" id="subscriptionCancelBtn">Cancelar renovação</button>
+    </div>
+  </section>
+  <section class="centralSec centralPlanCompare"><span class="eyebrow">ESCOLHA O NÍVEL IDEAL</span><h2>Planos dentro da sua Central</h2><p>Assine ou faça upgrade sem sair da área da conta. O cupom é aplicado antes do Mercado Pago, então o checkout já abre com o valor final.</p><div class="centralGrid centralPlanCards"><div class="centralItem"><small>GRÁTIS</small><h3>Experimentar</h3><p>Cards selecionados, prévias e relatórios resumidos.</p><b>5 MARK.IA/mês</b></div><div class="centralItem"><small>PRO · <span id="centralProPrice">R$ 47,90/mês</span></small><h3>Resolver</h3><p>Todos os cards PRO, análises, relatórios, calendário e conteúdos completos.</p><details class="planCouponInline"><summary>Tenho cupom</summary><input data-plan-coupon-input="pro" placeholder="Cupom opcional"></details><button class="primary full" id="centralPlanProBtn">Quero acesso Pro</button></div><div class="centralItem"><small>PREMIUM · <span id="centralPremiumPrice">R$ 97,90/mês</span></small><h3>Aprofundar</h3><p>Tudo do PRO + uso muito maior do MARK e inteligência cruzada do negócio.</p><details class="planCouponInline"><summary>Tenho cupom</summary><input data-plan-coupon-input="premium" placeholder="Cupom opcional"></details><button class="outline full" id="centralPlanPremiumBtn">Quero acesso Premium</button></div></div></section>
+  </div>
+  <section class="wrap accountSecurityPanel centralSec"><span class="eyebrow">CONTA & SEGURANÇA</span><div class="accountSecurityGrid"><div><h2>Seu acesso</h2><p>Altere a senha da conta quando precisar. O e-mail atual fica registrado para login e recuperação.</p><small id="accountEmail">—</small></div><label>Nova senha<input id="accountNewPassword" type="password" autocomplete="new-password" placeholder="Digite uma nova senha"></label><label>Confirmar senha<input id="accountConfirmPassword" type="password" autocomplete="new-password" placeholder="Repita a nova senha"></label><button class="primary" id="updateAccountPassword">Atualizar senha</button></div><div class="authStatus" id="accountStatus"></div></section>
 </section>
 
 <section id="view-report" class="view">
@@ -360,5 +360,5 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=14.6"></script>
+<script src="app.js?v=14.7"></script>
 </body></html>
