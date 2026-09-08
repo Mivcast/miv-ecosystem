@@ -127,3 +127,11 @@ on conflict (niche_name) do update set
   active = coalesce(public.niche_heros.active, excluded.active),
   theme = coalesce(public.niche_heros.theme, excluded.theme),
   updated_at = now();
+
+update public.niche_heros
+set
+  image_url = 'assets/nichos/' || slug || '.jpg',
+  updated_at = now()
+where image_url is null
+  and hero_type <> 'principal'
+  and slug is not null;

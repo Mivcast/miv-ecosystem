@@ -6,7 +6,7 @@ Resolucao ideal: 1920x1080 px, proporcao 16:9, em WebP ou JPG. Se quiser ainda m
 
 A migracao `SUPABASE_V13_49_ALL_NICHE_HEROS.sql` cria a biblioteca completa com 110 cards no Admin: visao geral, nichos principais e subnichos. Depois disso, voce pode editar cada card em `Nichos & Heros` e apontar para a imagem daqui.
 
-Nomeie os arquivos com o nome do nicho em minusculo, sem acento e separado por hifen:
+Nomeie os arquivos com o nome do nicho em minusculo, sem acento e separado por hifen. O sistema procura automaticamente `.webp`, `.jpg` e `.jpeg`.
 
 - `restaurante.webp`
 - `academia.webp`
