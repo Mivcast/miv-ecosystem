@@ -21,7 +21,7 @@ const themeCopy={clean:['Tudo para profissionalizar, divulgar, vender e fazer se
 let nicheHeroRows=[];
 function assetSlug(value){return String(value||'visao-geral').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'visao-geral'}
 function cssUrl(value){return String(value||'').replace(/\\/g,'/').replace(/'/g,'%27').replace(/\)/g,'%29')}
-function localNicheHeroPath(niche){return `assets/nichos/${assetSlug(niche)}.webp`}
+function localNicheHeroPaths(niche){const slug=assetSlug(niche);return [`assets/nichos/${slug}.webp`,`assets/nichos/${slug}.jpg`,`assets/nichos/${slug}.jpeg`]}
 function findNicheHero(niche){
  const group=niches[niche]?.group||'',theme=niches[niche]?.theme||state.profile.theme||'clean';
  return nicheHeroRows.find(x=>x.active!==false&&x.niche_name===niche)
@@ -38,7 +38,7 @@ function setCentralHeroBackground(url){
  centralHero.classList.toggle('hasNicheImage',!!url);
 }
 function applyLocalHeroIfExists(niche){
- const candidates=[niche,niches[niche]?.group,'visao-geral'].filter(Boolean).map(localNicheHeroPath);
+ const candidates=[niche,niches[niche]?.group,'visao-geral'].filter(Boolean).flatMap(localNicheHeroPaths);
  const tryImage=(index=0)=>{
   if(index>=candidates.length)return;
   const url=candidates[index],img=new Image();
