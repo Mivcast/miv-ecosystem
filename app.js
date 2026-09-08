@@ -17,6 +17,39 @@ const groups=[
  {name:'Tecnologia',theme:'agency',subs:['Software House','SaaS','Suporte de TI','Automação','Desenvolvedor','Consultoria de Tecnologia']}
 ];
 const niches={};groups.forEach(g=>{niches[g.name]={theme:g.theme,group:g.name};g.subs.forEach(s=>niches[s]={theme:g.theme,group:g.name})});
+const companyFieldSuggestions={
+ cpGoals:['Aumentar vendas','Atrair mais clientes qualificados','Melhorar presença digital','Profissionalizar atendimento','Aumentar recompra','Organizar processos','Melhorar posicionamento','Vender mais pelo WhatsApp','Fortalecer marca','Criar rotina de marketing'],
+ cpProblems:['Poucos clientes novos','Baixa conversão','Falta de tempo para marketing','Atendimento sem padrão','Poucas indicações','Preço muito questionado','Instagram parado','Google desatualizado','Equipe sem processo','Dificuldade para diferenciar a oferta'],
+ cpChannels:['Instagram','WhatsApp','Google Meu Negócio','Site','Loja física','Indicação','Tráfego pago','TikTok','Facebook','E-mail','Marketplace','Delivery']
+};
+function fillSelectOptions(select,values,placeholder,value=''){
+ if(!select)return;
+ const current=value||select.value||'';
+ select.innerHTML=`<option value="">${placeholder}</option>`+values.map(v=>`<option value="${v}">${v}</option>`).join('');
+ if(values.includes(current))select.value=current;
+}
+function renderCompanyNicheSelects(profile={}){
+ const nicheSel=document.getElementById('cpNiche'),subSel=document.getElementById('cpSubniche');
+ if(!nicheSel||!subSel)return;
+ const currentNiche=profile.niche||nicheSel.value||'',currentSub=profile.subniche||subSel.value||'';
+ fillSelectOptions(nicheSel,groups.map(g=>g.name),'Selecione o nicho',niches[currentNiche]?.group||currentNiche);
+ const group=groups.find(g=>g.name===nicheSel.value)||groups.find(g=>g.name===niches[currentNiche]?.group);
+ fillSelectOptions(subSel,group?.subs||[],'Selecione o subnicho',currentSub);
+ subSel.disabled=!group;
+}
+function renderCompanySuggestions(){
+ Object.entries(companyFieldSuggestions).forEach(([id,items])=>{
+  const box=document.querySelector(`[data-suggest-for="${id}"]`);if(!box)return;
+  box.innerHTML=items.map(x=>`<button type="button" data-suggestion-target="${id}" data-suggestion="${x}">${x}</button>`).join('');
+ });
+}
+function appendSuggestionToField(id,value){
+ const el=document.getElementById(id);if(!el)return;
+ const parts=el.value.split(/[,;\n]/).map(x=>x.trim()).filter(Boolean);
+ if(!parts.some(x=>x.toLowerCase()===value.toLowerCase()))parts.push(value);
+ el.value=parts.join(', ');
+ el.dispatchEvent(new Event('change',{bubbles:true}));
+}
 const themeCopy={clean:['Tudo para profissionalizar, divulgar, vender e fazer seu negócio crescer.','Estratégias, ferramentas, análises, conteúdos e inteligência reunidos em um só lugar.'],agency:['Estratégia, criatividade e dados para fazer marcas e clientes crescerem.','Uma vitrine de diagnóstico, marketing, vendas, ferramentas e conhecimento com atmosfera de agência.'],fitness:['Performance para o seu negócio — da autoridade ao próximo aluno.','Estratégias e ferramentas para posicionamento, conteúdo, captação, retenção e crescimento no universo fitness.'],medical:['Mais autoridade, confiança e uma jornada melhor para o paciente.','Marketing, reputação, experiência, análises e ferramentas organizados para profissionais e negócios da saúde.'],health:['Uma presença mais humana, profissional e fácil de encontrar.','Conteúdo, posicionamento, confiança, agenda e relacionamento para bem-estar e terapias.'],beauty:['Transforme técnica em desejo, confiança e recorrência.','Marca, experiência, conteúdo, agenda e vendas para negócios de beleza e estética.'],food:['Faça sua marca abrir o apetite antes mesmo do primeiro pedido.','Cardápio, campanhas, Google, delivery, ticket e fidelização organizados em uma única vitrine.'],retail:['Mais desejo, movimento, ticket e clientes voltando para comprar.','Vitrine, marca, campanhas, WhatsApp e fidelização para comércio e varejo.'],legal:['Autoridade, clareza e confiança para uma marca profissional.','Posicionamento, conteúdo, captação e relacionamento com uma estética mais sóbria.'],construction:['Mais confiança, prova e oportunidades para quem entrega no mundo real.','Portfólio, presença local, proposta, atendimento e marketing para construção e serviços técnicos.'],auto:['Potência para sua marca, sua oficina e suas vendas.','Reputação, Google, conteúdo, atendimento e campanhas com uma identidade mais automotiva.']};
 let nicheHeroRows=[];
 function assetSlug(value){return String(value||'visao-geral').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'visao-geral'}
@@ -714,10 +747,11 @@ function companyContextText(){
 }
 function profileNotice(){
  const pct=companyProfileCompletion();
- return `<div class="profileNotice"><div><span class="eyebrow">RESPOSTAS MAIS PERSONALIZADAS</span><strong>Seu perfil empresarial está ${pct}% preenchido.</strong><p>Complete informações úteis da empresa para receber sugestões mais específicas neste card e no MARK.</p></div><button class="outline" data-company-profile>Completar informações →</button></div>`;
+ const done=pct>=100;
+ return `<div class="profileNotice ${done?'complete':''}"><div><span class="eyebrow">RESPOSTAS MAIS PERSONALIZADAS</span><strong>Seu perfil empresarial está ${pct}% preenchido.</strong><p>${done?'Perfil completo. Esses dados ajudam o sistema e o MARK a deixar respostas, sugestões e relatórios mais precisos.':'Complete informações úteis da empresa para receber sugestões mais específicas neste card e no MARK.'}</p></div><button class="outline" data-company-profile>${done?'Rever / atualizar informações':'Completar informações'} →</button></div>`;
 }
 function goCompanyProfile(){
- route('central');setTimeout(()=>document.getElementById('companyProfilePanel')?.scrollIntoView({behavior:'smooth',block:'start'}),80);
+ route('central');setTimeout(()=>{const panel=document.getElementById('companyProfilePanel');if(panel)panel.open=true;panel?.scrollIntoView({behavior:'smooth',block:'start'})},80);
 }
 function prototypeSuggestion(title,guidance){
   const ctx=companyContextText();
@@ -916,7 +950,7 @@ function getChannelState(){try{return JSON.parse(localStorage.getItem('mivChanne
 function setChannelState(data){localStorage.setItem('mivChannelChecklist',JSON.stringify(data));persistProgress('channels','canais',data)}
 function channelProgress(ch,stateMap){const vals=ch.items.map(i=>stateMap[`${ch.id}:${i[0]}`]).filter(Boolean);const correct=vals.filter(v=>v==='correct').length;const applicable=ch.items.length-vals.filter(v=>v==='na').length;return applicable?Math.round(correct/applicable*100):0}
 function renderChannelSection(ch,stateMap){const p=channelProgress(ch,stateMap);return `<section class="channelSection" id="channel-${ch.id}"><div class="channelSectionHead"><div><span>${ch.group} · ${ch.importance}</span><h3>${ch.name}</h3><p>${ch.intro}</p></div><div class="channelScore"><strong>${p}%</strong><small>estrutura pronta</small></div></div><div class="channelItems">${ch.items.map(item=>{const key=`${ch.id}:${item[0]}`,v=stateMap[key]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-channel-key="${key}"><div class="channelCheckText"><strong>${item[1]}</strong><p>${item[2]}</p></div><div class="channelStates"><button class="${v==='correct'?'active ok':''}" data-check-value="correct">✓ Já está OK</button><button class="${v==='improve'?'active improve':''}" data-check-value="improve">○ Está feito, mas precisa melhorar</button><button class="${v==='na'?'active na':''}" data-check-value="na">× Não fiz, preciso fazer</button></div><div class="pointActions"><button class="paidAction" data-point-suggest data-title="${encodeURIComponent(item[1])}" data-guidance="${encodeURIComponent(item[2])}">🔒 Sugestão para este ponto</button><button class="paidAction" data-point-mark data-title="${encodeURIComponent(item[1])}" data-guidance="${encodeURIComponent(item[2])}">🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div></section>`}
-function renderChannelsModule(){const body=document.getElementById('detailBody'),stateMap=getChannelState();body.innerHTML=`${profileNotice()}<span class="eyebrow">CHECKLIST DE PROFISSIONALIZAÇÃO</span><h2>Como estão seus canais de comunicação?</h2><p>Revise cada canal, marque o que já está certo e acompanhe o que falta melhorar. Seu progresso fica salvo e pode aparecer nos relatórios da sua Central.</p><div class="channelSummary">${channelDefinitions.map(ch=>`<button class="channelJump" data-channel-jump="${ch.id}"><span>${ch.group}</span><strong>${ch.name}</strong><small>${channelProgress(ch,stateMap)}% concluído</small></button>`).join('')}</div><div id="channelChecklist">${channelDefinitions.map(ch=>renderChannelSection(ch,stateMap)).join('')}</div><div class="channelReportActions"><button class="primary" id="channelSaveReport">Salvar progresso / relatório</button><button class="outline" id="channelPrint">Imprimir relatório</button></div>`;bindChannelChecklist()}
+function renderChannelsModule(){const body=document.getElementById('detailBody'),stateMap=getChannelState();body.innerHTML=`${profileNotice()}<span class="eyebrow">CHECKLIST DE PROFISSIONALIZAÇÃO</span><h2>Como estão seus canais de comunicação?</h2><p>Revise cada canal, marque o que já está certo e acompanhe o que falta melhorar. Seu progresso fica salvo e pode aparecer nos relatórios da sua Central.</p><div class="channelSummary">${channelDefinitions.map(ch=>`<button class="channelJump" data-channel-jump="${ch.id}"><span>${ch.group}</span><strong>${ch.name}</strong><small>${channelProgress(ch,stateMap)}% concluído</small></button>`).join('')}</div><div id="channelChecklist">${channelDefinitions.map(ch=>renderChannelSection(ch,stateMap)).join('')}</div><div class="channelReportActions"><button class="primary" id="channelSaveReport">Salvar relatório</button><button class="outline" id="channelPrint">Imprimir relatório</button></div>`;bindChannelChecklist()}
 function bindChannelChecklist(){
  document.querySelectorAll('[data-company-profile]').forEach(b=>b.onclick=goCompanyProfile);
  document.querySelectorAll('[data-channel-jump]').forEach(b=>b.onclick=()=>document.getElementById('channel-'+b.dataset.channelJump)?.scrollIntoView({behavior:'smooth',block:'start'}));
@@ -932,9 +966,9 @@ function bindChannelChecklist(){
  document.querySelectorAll('[data-point-mark]').forEach(b=>b.onclick=()=>{if(!hasProAccess()){openPlanPaywall('MARK.IA contextual');return}askMarkAboutPoint(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance))});
  document.getElementById('channelSaveReport')?.addEventListener('click',()=>{
    const data=getChannelState(),total=channelDefinitions.reduce((n,c)=>n+c.items.length,0),answered=Object.keys(data).length,correct=Object.values(data).filter(v=>v==='correct').length;
-   addReport({name:'Relatório · Canais de Comunicação',date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'channels',answered,correct,total,progress:total?Math.round(correct/Math.max(1,total-Object.values(data).filter(v=>v==='na').length)*100):0,checklist:flattenChannelChecklist(data)}});toast('Relatório salvo na sua Central.');
+   saveAndOpenReport({name:'Relatório · Canais de Comunicação',date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'channels',answered,correct,total,progress:total?Math.round(correct/Math.max(1,total-Object.values(data).filter(v=>v==='na').length)*100):0,checklist:flattenChannelChecklist(data)}});
  });
- document.getElementById('channelPrint')?.addEventListener('click',()=>window.print())
+ document.getElementById('channelPrint')?.addEventListener('click',()=>{const data=getChannelState(),total=channelDefinitions.reduce((n,c)=>n+c.items.length,0),answered=Object.keys(data).length,correct=Object.values(data).filter(v=>v==='correct').length;saveAndOpenReport({name:'Relatório · Canais de Comunicação',date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'channels',answered,correct,total,progress:total?Math.round(correct/Math.max(1,total-Object.values(data).filter(v=>v==='na').length)*100):0,checklist:flattenChannelChecklist(data)}},true)})
 }
 function showChannelsDetail(item){state.current=item;document.getElementById('detailVisual').style.backgroundImage=`url('${item.img}')`;document.getElementById('detailCat').textContent='MARKETING · CHECKLIST PROFISSIONAL';document.getElementById('detailTitle').textContent=item.title;document.getElementById('detailDesc').textContent='Revise seus canais físicos e digitais, marque o que já está adequado e veja exatamente o que falta profissionalizar.';document.getElementById('favBtn').textContent=state.favorites.includes(item.id)?'♥ Salvo':'♡ Salvar';document.getElementById('useBtn').textContent='Iniciar checklist';document.getElementById('useBtn').onclick=()=>{renderChannelsModule();document.getElementById('detailBody')?.scrollIntoView({behavior:'smooth',block:'start'})};renderChannelsModule();document.getElementById('related').innerHTML=`<div class="relatedItem"><strong>Seu progresso fica salvo</strong><span>Na produção, será sincronizado com Supabase e aparecerá em relatórios.</span></div><div class="relatedItem"><strong>MARK por canal</strong><span>Depois poderá sugerir bio, destaques, estrutura, mensagens e correções específicas.</span></div>`;addHistory(item);route('detail')}
 
@@ -948,13 +982,13 @@ function businessChecklistProgress(def,data){
 }
 function renderBusinessChecklist(item){
  const def=businessChecklistDefinitions[item.id],body=document.getElementById('detailBody'),data=getBusinessChecklistState(item.id),pct=businessChecklistProgress(def,data);
-  body.innerHTML=`${profileNotice()}<span class="eyebrow">${def.category} · CHECKLIST</span><h2>${def.title}</h2><p>${def.intro}</p><div class="strategyProgress"><div><strong>${pct}%</strong><span>estrutura pronta</span></div><div class="strategyProgressBar"><i style="width:${pct}%"></i></div></div>${def.sections.map((sec,si)=>`<section class="strategySection"><span class="eyebrow">${sec.name.toUpperCase()}</span><div class="channelItems">${sec.items.map(it=>{const key=`${si}:${it[0]}`,v=data[key]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-business-key="${key}"><div class="channelCheckText"><strong>${it[1]}</strong><p>${it[2]}</p></div><div class="channelStates"><button class="${v==='correct'?'active ok':''}" data-business-value="correct">✓ Já está OK</button><button class="${v==='improve'?'active improve':''}" data-business-value="improve">○ Está feito, mas precisa melhorar</button><button class="${v==='na'?'active na':''}" data-business-value="na">× Não fiz, preciso fazer</button></div><div class="pointActions"><button class="paidAction" data-point-suggest data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Sugestão para este ponto</button><button class="paidAction" data-point-mark data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div></section>`).join('')}<div class="channelReportActions"><button class="primary" id="businessSaveReport">Salvar progresso / relatório</button><button class="outline" id="businessPrint">Imprimir relatório</button></div>`;
+  body.innerHTML=`${profileNotice()}<span class="eyebrow">${def.category} · CHECKLIST</span><h2>${def.title}</h2><p>${def.intro}</p><div class="strategyProgress"><div><strong>${pct}%</strong><span>estrutura pronta</span></div><div class="strategyProgressBar"><i style="width:${pct}%"></i></div></div>${def.sections.map((sec,si)=>`<section class="strategySection"><span class="eyebrow">${sec.name.toUpperCase()}</span><div class="channelItems">${sec.items.map(it=>{const key=`${si}:${it[0]}`,v=data[key]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-business-key="${key}"><div class="channelCheckText"><strong>${it[1]}</strong><p>${it[2]}</p></div><div class="channelStates"><button class="${v==='correct'?'active ok':''}" data-business-value="correct">✓ Já está OK</button><button class="${v==='improve'?'active improve':''}" data-business-value="improve">○ Está feito, mas precisa melhorar</button><button class="${v==='na'?'active na':''}" data-business-value="na">× Não fiz, preciso fazer</button></div><div class="pointActions"><button class="paidAction" data-point-suggest data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Sugestão para este ponto</button><button class="paidAction" data-point-mark data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div></section>`).join('')}<div class="channelReportActions"><button class="primary" id="businessSaveReport">Salvar relatório</button><button class="outline" id="businessPrint">Imprimir relatório</button></div>`;
  document.querySelectorAll('[data-company-profile]').forEach(b=>b.onclick=goCompanyProfile);
  document.querySelectorAll('[data-business-value]').forEach(b=>b.onclick=()=>{const row=b.closest('[data-business-key]'),d=getBusinessChecklistState(item.id);d[row.dataset.businessKey]=b.dataset.businessValue;setBusinessChecklistState(item.id,d);renderBusinessChecklist(item);toast('Progresso salvo.')});
   document.querySelectorAll('[data-point-suggest]').forEach(b=>b.onclick=()=>{if(!hasProAccess()){openPlanPaywall('Sugestões personalizadas');return}const row=b.closest('.channelCheckItem');renderPointSuggestion(row,decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance),'ponto do checklist')});
  document.querySelectorAll('[data-point-mark]').forEach(b=>b.onclick=()=>{if(!hasProAccess()){openPlanPaywall('MARK.IA contextual');return}askMarkAboutPoint(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance))});
- document.getElementById('businessSaveReport')?.addEventListener('click',()=>{const d=getBusinessChecklistState(item.id);addReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'business',progress:businessChecklistProgress(def,d),checklist:flattenSectionChecklist(def,d)}});toast('Relatório salvo na sua Central.')});
- document.getElementById('businessPrint')?.addEventListener('click',()=>window.print());
+ document.getElementById('businessSaveReport')?.addEventListener('click',()=>{const d=getBusinessChecklistState(item.id);saveAndOpenReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'business',progress:businessChecklistProgress(def,d),checklist:flattenSectionChecklist(def,d)}})});
+ document.getElementById('businessPrint')?.addEventListener('click',()=>{const d=getBusinessChecklistState(item.id);saveAndOpenReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'business',progress:businessChecklistProgress(def,d),checklist:flattenSectionChecklist(def,d)}},true)});
 }
 function showBusinessChecklist(item){
  const def=businessChecklistDefinitions[item.id];state.current=item;document.getElementById('detailVisual').style.backgroundImage=`url('${item.img}')`;document.getElementById('detailCat').textContent=def.category;document.getElementById('detailTitle').textContent=item.title;document.getElementById('detailDesc').textContent=def.intro;document.getElementById('favBtn').textContent=state.favorites.includes(item.id)?'♥ Salvo':'♡ Salvar';document.getElementById('useBtn').textContent='Iniciar checklist';document.getElementById('useBtn').onclick=()=>{renderBusinessChecklist(item);document.getElementById('detailBody')?.scrollIntoView({behavior:'smooth',block:'start'})};renderBusinessChecklist(item);document.getElementById('related').innerHTML=`<div class="relatedItem"><strong>Progresso persistente</strong><span>O checklist alimenta relatórios e prioridades.</span></div><div class="relatedItem"><strong>Ajuda contextual</strong><span>Planos pagos podem gerar sugestões e conversar com o MARK sobre qualquer ponto.</span></div>`;addHistory(item);route('detail')
@@ -968,13 +1002,13 @@ function marketingChecklistProgress(def,data){
 }
 function renderMarketingChecklist(item){
  const def=marketingStrategyDefinitions[item.id],body=document.getElementById('detailBody'),data=getMarketingChecklistState(item.id),pct=marketingChecklistProgress(def,data);
-  body.innerHTML=`${profileNotice()}<span class="eyebrow">ESTRATÉGIA + CHECKLIST</span><h2>${def.title}</h2><p>${def.intro}</p><div class="strategyProgress"><div><strong>${pct}%</strong><span>estrutura pronta</span></div><div class="strategyProgressBar"><i style="width:${pct}%"></i></div></div>${def.sections.map((sec,si)=>`<section class="strategySection"><span class="eyebrow">${sec.name.toUpperCase()}</span><div class="channelItems">${sec.items.map(it=>{const key=`${si}:${it[0]}`,v=data[key]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-marketing-key="${key}"><div class="channelCheckText"><strong>${it[1]}</strong><p>${it[2]}</p></div><div class="channelStates"><button class="${v==='correct'?'active ok':''}" data-mkt-value="correct">✓ Já está OK</button><button class="${v==='improve'?'active improve':''}" data-mkt-value="improve">○ Está feito, mas precisa melhorar</button><button class="${v==='na'?'active na':''}" data-mkt-value="na">× Não fiz, preciso fazer</button></div><div class="pointActions"><button class="paidAction" data-point-suggest data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Sugestão para este ponto</button><button class="paidAction" data-point-mark data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div></section>`).join('')}<div class="channelReportActions"><button class="primary" id="mktSaveReport">Salvar progresso / relatório</button><button class="outline" id="mktPrint">Imprimir relatório</button></div>`;
+  body.innerHTML=`${profileNotice()}<span class="eyebrow">ESTRATÉGIA + CHECKLIST</span><h2>${def.title}</h2><p>${def.intro}</p><div class="strategyProgress"><div><strong>${pct}%</strong><span>estrutura pronta</span></div><div class="strategyProgressBar"><i style="width:${pct}%"></i></div></div>${def.sections.map((sec,si)=>`<section class="strategySection"><span class="eyebrow">${sec.name.toUpperCase()}</span><div class="channelItems">${sec.items.map(it=>{const key=`${si}:${it[0]}`,v=data[key]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-marketing-key="${key}"><div class="channelCheckText"><strong>${it[1]}</strong><p>${it[2]}</p></div><div class="channelStates"><button class="${v==='correct'?'active ok':''}" data-mkt-value="correct">✓ Já está OK</button><button class="${v==='improve'?'active improve':''}" data-mkt-value="improve">○ Está feito, mas precisa melhorar</button><button class="${v==='na'?'active na':''}" data-mkt-value="na">× Não fiz, preciso fazer</button></div><div class="pointActions"><button class="paidAction" data-point-suggest data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Sugestão para este ponto</button><button class="paidAction" data-point-mark data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div></section>`).join('')}<div class="channelReportActions"><button class="primary" id="mktSaveReport">Salvar relatório</button><button class="outline" id="mktPrint">Imprimir relatório</button></div>`;
  document.querySelectorAll('[data-company-profile]').forEach(b=>b.onclick=goCompanyProfile);
  document.querySelectorAll('[data-mkt-value]').forEach(b=>b.onclick=()=>{const row=b.closest('[data-marketing-key]'),d=getMarketingChecklistState(item.id);d[row.dataset.marketingKey]=b.dataset.mktValue;setMarketingChecklistState(item.id,d);renderMarketingChecklist(item);toast('Progresso salvo.')});
   document.querySelectorAll('[data-point-suggest]').forEach(b=>b.onclick=()=>{if(!hasProAccess()){openPlanPaywall('Sugestões personalizadas');return}const row=b.closest('.channelCheckItem');renderPointSuggestion(row,decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance),'ponto da estratégia')});
  document.querySelectorAll('[data-point-mark]').forEach(b=>b.onclick=()=>{if(!hasProAccess()){openPlanPaywall('MARK.IA contextual');return}askMarkAboutPoint(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance))});
- document.getElementById('mktSaveReport')?.addEventListener('click',()=>{const d=getMarketingChecklistState(item.id);addReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'marketing',progress:marketingChecklistProgress(def,d),checklist:flattenSectionChecklist(def,d)}});toast('Relatório salvo na sua Central.')});
- document.getElementById('mktPrint')?.addEventListener('click',()=>window.print());
+ document.getElementById('mktSaveReport')?.addEventListener('click',()=>{const d=getMarketingChecklistState(item.id);saveAndOpenReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'marketing',progress:marketingChecklistProgress(def,d),checklist:flattenSectionChecklist(def,d)}})});
+ document.getElementById('mktPrint')?.addEventListener('click',()=>{const d=getMarketingChecklistState(item.id);saveAndOpenReport({name:`Relatório · ${item.title}`,date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'marketing',progress:marketingChecklistProgress(def,d),checklist:flattenSectionChecklist(def,d)}},true)});
 }
 function showMarketingChecklist(item){
  state.current=item;document.getElementById('detailVisual').style.backgroundImage=`url('${item.img}')`;document.getElementById('detailCat').textContent='ESTRATÉGIAS DE MARKETING';document.getElementById('detailTitle').textContent=item.title;document.getElementById('detailDesc').textContent=marketingStrategyDefinitions[item.id].intro;document.getElementById('favBtn').textContent=state.favorites.includes(item.id)?'♥ Salvo':'♡ Salvar';document.getElementById('useBtn').textContent='Iniciar checklist';document.getElementById('useBtn').onclick=()=>{renderMarketingChecklist(item);document.getElementById('detailBody')?.scrollIntoView({behavior:'smooth',block:'start'})};renderMarketingChecklist(item);document.getElementById('related').innerHTML=`<div class="relatedItem"><strong>Checklist persistente</strong><span>Seu progresso fica salvo e alimentará o relatório.</span></div><div class="relatedItem"><strong>Sugestões contextualizadas</strong><span>Nos planos pagos, o sistema usará o Perfil Mestre da Empresa para gerar recomendações específicas.</span></div>`;addHistory(item);route('detail')
@@ -1052,7 +1086,8 @@ function bindAnalysisFav(){document.querySelectorAll('[data-analysis-fav]').forE
 
 function analysisProfileNotice(){
  const pct=companyProfileCompletion();
- return `<div class="profileNotice analysisProfileNotice"><div><span class="eyebrow">ANTES DE ANALISAR</span><strong>Perfil empresarial ${pct}% preenchido</strong><p>Quanto mais informações da empresa estiverem completas, mais precisa ficará a análise.</p></div><button class="outline" data-analysis-profile>Completar perfil →</button></div>`;
+ const done=pct>=100;
+ return `<div class="profileNotice analysisProfileNotice ${done?'complete':''}"><div><span class="eyebrow">ANTES DE ANALISAR</span><strong>Perfil empresarial ${pct}% preenchido</strong><p>${done?'Perfil completo. A análise já pode usar o contexto da empresa para orientar melhor as prioridades.':'Quanto mais informações da empresa estiverem completas, mais precisa ficará a análise.'}</p></div><button class="outline" data-analysis-profile>${done?'Rever / atualizar perfil':'Completar perfil'} →</button></div>`;
 }
 function specialistOpinion(areaTitle,score){
  let msg=score>=75?'Seu cenário já tem uma base relativamente organizada. Priorize os poucos pontos de maior impacto antes de abrir novas frentes.':score>=45?'Há uma base funcionando, mas existem gargalos suficientes para dispersar resultado. Priorize correções estruturais antes de ampliar investimento.':'Há sinais de que a prioridade deve ser organização básica e clareza antes de buscar crescimento acelerado.';
@@ -1128,8 +1163,8 @@ function toggleAnalysisFavorite(id){
 function renderAnalysisDetail(id,sub=''){
  const a=analyses.find(x=>x[0]===id);
  if(!a)return;
- const data=getAnalysisData(id,sub),basePoints=sub?[sub]:a[4],points=detailedAnalysisPoints(basePoints,sub),qs=analysisQuestions(id,sub),pct=companyProfileCompletion(),body=document.getElementById('detailBody');
- body.innerHTML=`<div class="profileNotice"><div><span class="eyebrow">PARA UMA ANÁLISE MAIS PRECISA</span><strong>Seu Perfil da Empresa está ${pct}% preenchido.</strong><p>O sistema usa esses dados automaticamente. Complete apenas se quiser aumentar ainda mais a precisão.</p></div><button class="outline" data-analysis-profile>Completar informações →</button></div>
+ const data=getAnalysisData(id,sub),basePoints=sub?[sub]:a[4],points=detailedAnalysisPoints(basePoints,sub),qs=analysisQuestions(id,sub),body=document.getElementById('detailBody');
+ body.innerHTML=`${analysisProfileNotice()}
  <span class="eyebrow">ANÁLISE EMPRESARIAL</span><h2>${sub||a[2]}</h2><p>Responda as perguntas específicas desta análise. Elas serão combinadas com as informações já salvas sobre sua empresa.</p>
  <div class="analysisBrief">${qs.map((q,i)=>`<label>${q}<textarea data-analysis-answer="${i}" placeholder="Digite sua resposta...">${data['q'+i]||''}</textarea></label>`).join('')}</div>
  <h3>Checklist da análise</h3><div class="analysisChecklist">${points.map((p,i)=>{const v=data['s'+i]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-analysis-row="${i}"><div class="channelCheckText"><strong>${p}</strong><p>Avalie como este ponto está hoje na sua empresa.</p></div><div class="channelStates"><button class="${v==='correct'?'active ok':''}" data-analysis-status="correct">✓ Já está OK</button><button class="${v==='improve'?'active improve':''}" data-analysis-status="improve">○ Está feito, mas precisa melhorar</button><button class="${v==='na'?'active na':''}" data-analysis-status="na">× Não fiz, preciso fazer</button></div><div class="pointActions"><button class="paidAction" data-analysis-suggest>🔒 Sugestão para este ponto</button><button class="paidAction" data-analysis-mark>🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div>
@@ -1268,7 +1303,33 @@ function route(name,options={}){
  window.scrollTo({top:0,behavior:options.instant?'auto':'smooth'});
  if(name==='central'){renderCentral();setTimeout(async()=>{try{await syncMySubscription();await loadAccessFromSupabase();if(state.route==='central')renderCentral()}catch(e){console.warn('[MIV central subscription refresh]',e)}},150)}updateMark();
 }
-function renderCentral(){renderAccessUI();fillCompanyProfileForm();const hero=activeHeroContent(state.profile.niche);setCentralHeroBackground(hero.image);if(!hero.image)applyLocalHeroIfExists(state.profile.niche);const centralTitle=document.getElementById('centralTitle');if(centralTitle)centralTitle.textContent=hero.centralTitle;const centralText=centralTitle?.nextElementSibling;if(centralText)centralText.textContent=hero.centralText;document.getElementById('favCount').textContent=state.favorites.length+state.analysisFav.length;document.getElementById('usedCount').textContent=state.history.length;document.getElementById('repCount').textContent=state.reports.length;document.getElementById('progCount').textContent=Math.min(100,18+(state.favorites.length+state.analysisFav.length)*3+state.history.length*2+state.reports.length*5)+'%';const fs=state.favorites.map(getItem).filter(Boolean);const af=state.analysisFav.map(id=>id==='completa'?['completa','','Análise Empresarial Completa']:analyses.find(a=>a[0]===id)).filter(Boolean);document.getElementById('favorites').innerHTML=(fs.length||af.length)?fs.map(card).join('')+af.map(a=>`<article class="card centralAnalysisCard"><div class="cardBody"><div class="meta"><span>ANÁLISE FAVORITA</span><small>ANÁLISE</small></div><h3>${a[2]}</h3><p>Salva para você fazer depois.</p><button class="open" data-analysis-central="${a[0]}">Usar agora →</button></div></article>`).join(''):`<div class="empty">Use o ♡ em estratégias, ferramentas, conteúdos ou análises para montar sua biblioteca.</div>`;bindCards();document.querySelectorAll('[data-analysis-central]').forEach(x=>x.onclick=()=>startAnalysis(x.dataset.analysisCentral));const histItems=state.history.filter(Boolean).map(h=>getItem(h.id)).filter(Boolean);document.getElementById('history').innerHTML=histItems.length?`<div class="centralGrid">${histItems.map(card).join('')}</div>`:`<div class="empty">Seu histórico aparecerá conforme você explorar.</div>`;bindCards();const reports=(state.reports||[]).filter(Boolean);document.getElementById('reports').innerHTML=reports.length?reports.map((r,i)=>`<div class="centralItem reportCard"><small>${String(r.status||'Salvo').toUpperCase()}</small><h3>${r.name||'Relatório'}</h3><p>Iniciada em ${r.date||'—'}. O relatório está salvo na sua conta.</p><button class="outline centralUse" data-report-index="${i}">Ver relatório</button></div>`).join(''):`<div class="empty">Nenhuma análise iniciada.</div>`;document.querySelectorAll('[data-report-index]').forEach(btn=>btn.onclick=()=>openSavedReport(reports[Number(btn.dataset.reportIndex)]));renderCentralExtras()}
+function renderCentral(){
+ renderAccessUI();fillCompanyProfileForm();renderCompanySuggestions();
+ const hero=activeHeroContent(state.profile.niche);setCentralHeroBackground(hero.image);if(!hero.image)applyLocalHeroIfExists(state.profile.niche);
+ const centralTitle=document.getElementById('centralTitle');if(centralTitle)centralTitle.textContent=hero.centralTitle;
+ const centralText=centralTitle?.nextElementSibling;if(centralText)centralText.textContent=hero.centralText;
+ const favoriteCount=state.favorites.length+state.analysisFav.length,usedCount=state.history.length,reportCount=state.reports.length,progress=Math.min(100,18+favoriteCount*3+usedCount*2+reportCount*5);
+ const setStat=(id,value,hint)=>{const el=document.getElementById(id);if(el){el.textContent=value;const small=el.nextElementSibling;if(small)small.textContent=hint}};
+ setStat('favCount',favoriteCount,favoriteCount?'Revise sua biblioteca e escolha o próximo passo.':'Salve cards para montar sua biblioteca.');
+ setStat('usedCount',usedCount,usedCount?'Continue pelos itens recentes.':'Abra um card e comece seu histórico.');
+ setStat('repCount',reportCount,reportCount?'Use os relatórios para decidir prioridades.':'Preencha um checklist para gerar seu primeiro relatório.');
+ setStat('progCount',progress+'%',progress>=80?'Sua Central já tem um contexto forte.':'Cada resposta deixa o MARK mais preciso.');
+ const email=document.getElementById('accountEmail');if(email)email.textContent=mivUser?.email||'Entre na conta para ver seu e-mail.';
+ const fs=state.favorites.map(getItem).filter(Boolean);
+ const af=state.analysisFav.map(id=>id==='completa'?['completa','','Análise Empresarial Completa']:analyses.find(a=>a[0]===id)).filter(Boolean);
+ const favEl=document.getElementById('favorites');
+ favEl.innerHTML=(fs.length||af.length)?fs.map(card).join('')+af.map(a=>`<article class="card centralAnalysisCard"><div class="cardBody"><div class="meta"><span>ANÁLISE FAVORITA</span><small>ANÁLISE</small></div><h3>${a[2]}</h3><p>Salva para você fazer depois.</p><button class="open" data-analysis-central="${a[0]}">Usar agora →</button></div></article>`).join(''):`<div class="empty">Use o ♡ em estratégias, ferramentas, conteúdos ou análises para montar sua biblioteca.</div>`;
+ favEl.classList.toggle('centralCarousel',fs.length+af.length>0);
+ bindCards();document.querySelectorAll('[data-analysis-central]').forEach(x=>x.onclick=()=>startAnalysis(x.dataset.analysisCentral));
+ const histItems=state.history.filter(Boolean).map(h=>getItem(h.id)).filter(Boolean);
+ document.getElementById('history').innerHTML=histItems.length?`<div class="centralGrid centralCarousel">${histItems.map(card).join('')}</div>`:`<div class="empty">Seu histórico aparecerá conforme você explorar.</div>`;
+ bindCards();
+ const reports=(state.reports||[]).filter(Boolean),reportsEl=document.getElementById('reports');
+ reportsEl.innerHTML=reports.length?reports.map((r,i)=>`<div class="centralItem reportCard"><small>${String(r.status||'Salvo').toUpperCase()}</small><h3>${r.name||'Relatório'}</h3><p>Iniciada em ${r.date||'—'}. O relatório está salvo na sua conta.</p><button class="outline centralUse" data-report-index="${i}">Ver relatório</button></div>`).join(''):`<div class="empty">Nenhuma análise iniciada.</div>`;
+ reportsEl.classList.toggle('centralCarousel',reports.length>0);
+ document.querySelectorAll('[data-report-index]').forEach(btn=>btn.onclick=()=>openSavedReport(reports[Number(btn.dataset.reportIndex)]));
+ renderCentralExtras();
+}
 
 function reportMetricRows(meta={}){
  const rows=[];
@@ -1285,6 +1346,13 @@ function flattenSectionChecklist(def,data={}){
 }
 function flattenChannelChecklist(data={}){
  return channelDefinitions.flatMap(ch=>(Array.isArray(ch.items)?ch.items:[]).map(it=>({point:`${ch.name} · ${it?.[1]||it?.[0]||'Ponto avaliado'}`,status:data[`${ch.id}:${it?.[0]}`]||'pending'})));
+}
+function saveAndOpenReport(report,shouldPrint=false){
+ const row=addReport(report);
+ toast(shouldPrint?'Relatório aberto para impressão.':'Relatório salvo na sua Central.');
+ openSavedReport(row);
+ if(shouldPrint)setTimeout(()=>window.print(),350);
+ return row;
 }
 function currentReportShareText(){
  const r=state.currentReport||{};const m=r.meta||{};let parts=[r.name||'Relatório MIV Ecosystem'];
@@ -1314,11 +1382,12 @@ function renderFullSavedReport(report){
  const checklist=Array.isArray(meta.checklist)?meta.checklist:[];
  const priorities=Array.isArray(meta.priorities)?meta.priorities:checklist.filter(x=>x.status==='improve').map(x=>x.point).slice(0,3);
  const hasDetails=answers.length||checklist.length||priorities.length;
+ const groupChecklist=(status,title)=>{const items=checklist.filter(x=>(x.status||'pending')===status);return items.length?`<div class="fullReportChecklistGroup"><h3>${title}</h3>${items.map(x=>`<div class="report-status-${x.status||'pending'}"><strong>${x.point||'Ponto avaliado'}</strong><span>${reportStatusLabel(x.status)}</span></div>`).join('')}</div>`:''};
  body.innerHTML=`<header class="fullReportHeader"><span class="eyebrow">RELATÓRIO SALVO</span><h1>${report.name||'Relatório'}</h1><p>${String(report.status||'Salvo')} · ${date}</p></header>
  ${rows.length?`<section class="fullReportMetrics">${rows.map(([k,v])=>`<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</section>`:''}
  ${meta.score!=null?`<section class="fullReportSection"><span class="eyebrow">RESULTADO</span><h2>${meta.score}% de adequação inicial</h2><p>Este resultado representa o cenário registrado no momento em que a análise foi salva.</p></section>`:''}
  ${answers.length?`<section class="fullReportSection"><span class="eyebrow">RESPOSTAS DA ANÁLISE</span><h2>Contexto informado</h2><div class="fullReportAnswers">${answers.map((x,i)=>`<div><small>${x.question||`Pergunta ${i+1}`}</small><p>${x.answer||'Não respondido'}</p></div>`).join('')}</div></section>`:''}
- ${checklist.length?`<section class="fullReportSection"><span class="eyebrow">CHECKLIST</span><h2>Situação dos pontos avaliados</h2><div class="fullReportChecklist">${checklist.map(x=>`<div class="report-status-${x.status||'pending'}"><strong>${x.point||'Ponto avaliado'}</strong><span>${reportStatusLabel(x.status)}</span></div>`).join('')}</div></section>`:''}
+ ${checklist.length?`<section class="fullReportSection"><span class="eyebrow">CHECKLIST</span><h2>Situação dos pontos avaliados</h2><div class="fullReportChecklist grouped">${groupChecklist('na','Precisa ser feito')}${groupChecklist('improve','Está pronto, mas precisa melhorar')}${groupChecklist('correct','Já está pronto')}${groupChecklist('pending','Ainda não respondido')}</div></section>`:''}
  ${priorities.length?`<section class="fullReportSection"><span class="eyebrow">PRIORIDADES</span><h2>O que merece atenção primeiro</h2><div class="analysisPriorities">${priorities.map((x,i)=>`<div><strong>${i+1}</strong><span>${x}</span></div>`).join('')}</div></section>`:''}
  ${meta.score!=null?`<section class="fullReportSection">${analysisSpecialistView(Number(meta.score)||0,priorities)}</section>`:''}
  ${!hasDetails?`<section class="fullReportSection legacyReport"><span class="eyebrow">RELATÓRIO HISTÓRICO</span><h2>Dados disponíveis deste relatório</h2><p>Este relatório foi criado antes de o sistema começar a armazenar o conteúdo completo das análises. Por isso, os indicadores acima foram preservados, mas respostas e checklist detalhado não estavam salvos. Os novos relatórios passarão a abrir completos nesta página.</p></section>`:''}`;
@@ -1342,7 +1411,9 @@ const companyProfileFields={
 };
 function fillCompanyProfileForm(){
  const p=getCompanyProfile();
+ renderCompanyNicheSelects(p);
  Object.entries(companyProfileFields).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.value=p[key]||''});
+ renderCompanyNicheSelects(p);
  const pct=companyProfileCompletion(),pctEl=document.getElementById('companyProfilePct');if(pctEl)pctEl.textContent=pct+'%';
  const st=document.getElementById('companyProfileStatus');if(st)st.textContent=p.savedAt?`Última atualização: ${new Date(p.savedAt).toLocaleString('pt-BR')}`:'';
 }
@@ -1366,13 +1437,29 @@ async function saveCompanyProfileForm(){
   const {error:profileError}=await mivSupabase.from('company_profiles').upsert(detail,{onConflict:'company_id'});
   if(profileError)throw profileError;
   p.savedAt=new Date().toISOString();mirrorCompanyProfile(p);
-  if(p.niche){state.profile.niche=p.niche;save()}
+  if(p.subniche||p.niche){state.profile.niche=p.subniche||p.niche;state.profile.theme=niches[state.profile.niche]?.theme||niches[p.niche]?.theme||state.profile.theme;save()}
   fillCompanyProfileForm();toast('Informações da empresa salvas no Supabase.');
   if(status)status.textContent='Salvo na sua conta · disponível em qualquer navegador';
  }catch(err){console.error('[MIV company save]',err);toast('Erro ao salvar a empresa.');if(status)status.textContent='Não foi possível salvar. Tente novamente.'}
  finally{if(btn){btn.disabled=false;btn.textContent='Salvar informações da empresa'}}
 }
 document.getElementById('saveCompanyProfile')?.addEventListener('click',saveCompanyProfileForm);
+document.getElementById('cpNiche')?.addEventListener('change',e=>{renderCompanyNicheSelects({niche:e.target.value,subniche:''});const sub=document.getElementById('cpSubniche');if(sub)sub.value=''});
+document.addEventListener('click',e=>{const btn=e.target.closest('[data-suggestion-target]');if(btn)appendSuggestionToField(btn.dataset.suggestionTarget,btn.dataset.suggestion)});
+async function updateAccountPassword(){
+ const status=document.getElementById('accountStatus'),pass=document.getElementById('accountNewPassword')?.value||'',confirm=document.getElementById('accountConfirmPassword')?.value||'';
+ if(!mivUser||!mivSupabase){openAuth('login');toast('Entre na sua conta para alterar a senha.');return}
+ if(pass.length<6){if(status)authStatus('accountStatus','Digite uma senha com pelo menos 6 caracteres.','error');return}
+ if(pass!==confirm){if(status)authStatus('accountStatus','As senhas não coincidem.','error');return}
+ const btn=document.getElementById('updateAccountPassword');if(btn){btn.disabled=true;btn.textContent='Atualizando...'}authStatus('accountStatus','Atualizando senha...');
+ try{
+  const {error}=await mivSupabase.auth.updateUser({password:pass});if(error)throw error;
+  document.getElementById('accountNewPassword').value='';document.getElementById('accountConfirmPassword').value='';
+  authStatus('accountStatus','Senha atualizada com sucesso.','ok');toast('Senha atualizada.');
+ }catch(err){authStatus('accountStatus',friendlyAuthError(err),'error')}
+ finally{if(btn){btn.disabled=false;btn.textContent='Atualizar senha'}}
+}
+document.getElementById('updateAccountPassword')?.addEventListener('click',updateAccountPassword);
 
 function initEcosystem(){
   try{renderNiches()}catch(e){console.warn('Niches init',e)}
@@ -1681,11 +1768,13 @@ function renderCentralExtras(){
  const cont=document.getElementById('centralContinue'),rec=document.getElementById('centralRecommendations'),ideas=document.getElementById('centralCalendarIdeas'),purchasesEl=document.getElementById('centralPurchases');if(!cont)return;
  const progress=centralExtras.progress.filter(x=>x.progress_type==='analysis').slice(0,6);
  cont.innerHTML=progress.length?progress.map(x=>{const [id,sub='']=String(x.item_id||'').split(':');const a=analyses.find(z=>z[0]===id);return `<article class="centralMiniCard"><small>ANÁLISE EM ANDAMENTO</small><h3>${a?.[2]||id}${sub?' · '+sub:''}</h3><p>Última atualização: ${new Date(x.updated_at).toLocaleDateString('pt-BR')}</p><button class="outline" data-continue-analysis="${id}" data-continue-sub="${sub}">Continuar análise →</button></article>`}).join(''):'<div class="empty">Quando você iniciar uma análise, ela aparecerá aqui para continuar depois.</div>';
+ cont.classList.toggle('centralCarousel',progress.length>0);
  cont.querySelectorAll('[data-continue-analysis]').forEach(b=>b.onclick=()=>startAnalysis(b.dataset.continueAnalysis,b.dataset.continueSub||''));
- const ids=recommended().slice(0,4),cards=ids.map(getItem).filter(Boolean);rec.innerHTML=cards.length?cards.map(card).join(''):'<div class="empty">Complete o Perfil da Empresa para melhorar as recomendações.</div>';bindCards();
+ const ids=recommended().slice(0,4),cards=ids.map(getItem).filter(Boolean);rec.innerHTML=cards.length?cards.map(card).join(''):'<div class="empty">Complete o Perfil da Empresa para melhorar as recomendações.</div>';rec.classList.toggle('centralCarousel',cards.length>0);bindCards();
  ideas.innerHTML=centralExtras.ideas.length?centralExtras.ideas.slice(0,6).map(x=>`<article class="centralMiniCard"><small>${new Date(x.event_date+'T12:00:00').toLocaleDateString('pt-BR')}</small><h3>${x.event_name}</h3><p>${String(x.idea?.summary||x.idea?.strategy||'Ideia de campanha salva no calendário.').slice(0,180)}</p><button class="outline" data-open-calendar>Ver calendário →</button></article>`).join(''):'<div class="empty">Suas ideias salvas no Calendário de Marketing aparecerão aqui.</div>';
+ ideas.classList.toggle('centralCarousel',centralExtras.ideas.length>0);
  ideas.querySelectorAll('[data-open-calendar]').forEach(b=>b.onclick=openCalendar);
- purchasesEl.innerHTML=centralExtras.purchases.length?centralExtras.purchases.map(x=>{const it=getItem(normalizeAccessItemId(x.item_id));return `<article class="centralMiniCard"><small>LIBERADO</small><h3>${it?.title||x.item_id}</h3><p>${x.amount_cents!=null?'Compra de R$ '+(x.amount_cents/100).toFixed(2).replace('.',','):'Acesso liberado'} · ${new Date(x.purchased_at).toLocaleDateString('pt-BR')}</p>${it?`<button class="outline" data-open="${it.id}">Abrir →</button>`:''}</article>`}).join(''):'<div class="empty">Nenhuma compra avulsa registrada nesta conta.</div>';bindCards();
+ purchasesEl.innerHTML=centralExtras.purchases.length?centralExtras.purchases.map(x=>{const it=getItem(normalizeAccessItemId(x.item_id));return `<article class="centralMiniCard"><small>LIBERADO</small><h3>${it?.title||x.item_id}</h3><p>${x.amount_cents!=null?'Compra de R$ '+(x.amount_cents/100).toFixed(2).replace('.',','):'Acesso liberado'} · ${new Date(x.purchased_at).toLocaleDateString('pt-BR')}</p>${it?`<button class="outline" data-open="${it.id}">Abrir →</button>`:''}</article>`}).join(''):'<div class="empty">Nenhuma compra avulsa registrada nesta conta.</div>';purchasesEl.classList.toggle('centralCarousel',centralExtras.purchases.length>0);bindCards();
 }
 
 async function initSupabase(){
@@ -1796,7 +1885,7 @@ async function loadCompanyFromSupabase(){
    savedAt:detail?.updated_at||company?.updated_at||new Date().toISOString()
   };
   mirrorCompanyProfile(p);
-  if(p.niche){state.profile.niche=p.niche;save()}
+  if(p.subniche||p.niche){state.profile.niche=p.subniche||p.niche;state.profile.theme=niches[state.profile.niche]?.theme||niches[p.niche]?.theme||state.profile.theme;save()}
   if(state.route==='central')renderCentral();
   return p;
  }catch(err){console.error('[MIV company load]',err);toast('Não foi possível carregar os dados da empresa.');return null}
