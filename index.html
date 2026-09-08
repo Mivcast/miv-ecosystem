@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MIV Ecosystem — Vitrine Inteligente</title>
 <meta name="description" content="Ecossistema empresarial adaptável por nicho com estratégias, análises, ferramentas e inteligência artificial.">
-<link rel="stylesheet" href="styles.css?v=14.8">
+<link rel="stylesheet" href="styles.css?v=14.9">
 </head>
 <body data-theme="clean">
 <header class="floating-header">
@@ -205,6 +205,7 @@
   <details class="wrap companyProfilePanel companyProfileDetails" id="companyProfilePanel">
     <summary class="companyProfileHead">
       <div><span class="eyebrow">INFORMAÇÕES DA EMPRESA</span><h2>Quanto mais o sistema conhece seu negócio, melhores ficam as respostas.</h2><p>Essas informações poderão ser reutilizadas pelo MARK e pelos cards para evitar perguntas repetidas e personalizar sugestões, análises e relatórios.</p></div>
+      <button class="outline companyProfileToggle" id="companyProfileToggle" type="button" aria-expanded="false">Abrir informações</button>
       <div class="profileCompletion"><strong id="companyProfilePct">0%</strong><small>perfil preenchido</small></div>
     </summary>
     <div class="companyProfileGrid">
@@ -336,7 +337,7 @@
         <div id="calSources" class="calSources"></div>
         <div class="calSavedStatus" id="calSavedStatus">Nenhuma personalização salva neste navegador.</div>
         <p><b>Grátis:</b> visualizar datas, relevância e oportunidades.</p>
-        <p>🔒 <b>Planos pagos:</b> ideias completas de criativos, campanhas, ofertas, mensagens e CTA para cada data.</p>
+        <p class="calPaidPrompt">🔒 <b>Planos pagos:</b> ideias completas de criativos, campanhas, ofertas, mensagens e CTA para cada data.<button type="button" data-scroll="planos">Ver planos</button></p>
         <small class="calPrototypeNote">Datas nacionais ficam disponíveis para todos. Ao atualizar, o MARK.IA pesquisa datas do nicho e eventos locais atuais. Eventos externos devem ser conferidos nas fontes apresentadas.</small>
       </aside>
     </div>
@@ -362,5 +363,5 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=14.8"></script>
+<script src="app.js?v=14.9"></script>
 </body></html>
