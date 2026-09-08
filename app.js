@@ -38,7 +38,7 @@ function setCentralHeroBackground(url){
  centralHero.classList.toggle('hasNicheImage',!!url);
 }
 function applyLocalHeroIfExists(niche){
- const candidates=[niche,niches[niche]?.group,'visao-geral'].filter(Boolean).flatMap(localNicheHeroPaths);
+ const candidates=[niche,niches[niche]?.group,'marketing-criativos'].filter(Boolean).flatMap(localNicheHeroPaths);
  const tryImage=(index=0)=>{
   if(index>=candidates.length)return;
   const url=candidates[index],img=new Image();
@@ -1240,13 +1240,13 @@ const testimonialExamples=[
 function renderTestimonials(filter='Todos'){
  const grid=document.getElementById('testimonialGrid');if(!grid)return;
  const rows=testimonialExamples.filter(x=>filter==='Todos'||x.area===filter);
- grid.innerHTML=rows.map(t=>`<article><header><span class="testimonial-avatar"><img src="${t.photo}" alt="" loading="lazy" onerror="this.remove()"><b>${markEsc(t.name.split(' ').map(p=>p[0]).join('').slice(0,2))}</b></span><span><strong>${markEsc(t.name)}</strong><small>${markEsc(t.niche)}</small></span></header><div class="stars">★★★★★</div><blockquote>${markEsc(t.quote)}</blockquote><div><strong>${markEsc(t.card)}</strong><b>${markEsc(t.area)}</b></div><small>Relato simulado ${String(t.id).padStart(2,'0')}</small></article>`).join('');
+ grid.innerHTML=rows.map(t=>`<article><header><span class="testimonial-avatar"><img src="${t.photo}" alt="" loading="lazy" onerror="this.remove()"><b>${markEsc(t.name.split(' ').map(p=>p[0]).join('').slice(0,2))}</b></span><span><strong>${markEsc(t.name)}</strong><small>${markEsc(t.niche)}</small></span></header><div class="stars">★★★★★</div><blockquote>${markEsc(t.quote)}</blockquote><div><strong>${markEsc(t.card)}</strong><b>${markEsc(t.area)}</b></div></article>`).join('');
 }
 
 function renderLogos(){
   const track=document.getElementById('logoTrack');
   if(!track)return;
-  const logos=['agatha.webp','alda.webp','aline2.webp','amanda.webp','andressa.webp','angelica.webp','bia.webp','bruna.webp','camila.webp','carol.webp','cris.webp','daniela.webp','dani.webp','eliane.webp','fernanda.webp','flavia.webp','gabriela.webp','giovana.webp','ingrid.webp','isabela.webp','jaqueline.webp','juliana.webp','karina.webp','larissa.webp','leticia.webp','luana.webp','mariana.webp','mayara.webp','nathalia.webp','patricia.webp','priscila.webp','renata.webp','simone.webp','tatiane.webp','vanessa.webp'];
+  const logos=['agatha.webp','alda.webp','aline2.webp','almac.webp','aluprime.webp','ana.webp','blublella.webp','cafe.webp','cleber.webp','clic.webp','corponamedida.webp','costurapaixao.webp','da.webp','dih.webp','drika.webp','dts.webp','ecovb2.webp','elisangela.webp','em.webp','higorbissoli.webp','honest.webp','hoop.webp','iedo.webp','italian.webp','ju.webp','karen.webp','kellyn8.webp','klc.webp','lahmoca.webp','laine.webp','larios.webp','leao.webp','logo bruno.webp','logoalianca.webp','logob1.webp','logob10.webp','logob11.webp','logob12.webp','logob13.webp','logob14.webp','logob15.webp','logob16.webp','logob17.webp','logob18.webp','logob2.webp','logob3.webp','logob4.webp','logob5.webp','logob6.webp','logob7.webp','logob8.webp','logob9.webp','logobabishoes.webp','logobrunaestevesstore.webp','logoellquadros.webp','logoemily.webp','logoglobal.webp','logomiv.webp','logop1.webp','logop10.webp','logop11.webp','logop12.webp','logop13.webp','logop14.webp','logop15.webp','logop16.webp','logop17.webp','logop18.webp','logop19.webp','logop2.webp','logop20.webp','logop21.webp','logop22.webp','logop23.webp','logop24.webp','logop25.webp','logop26.webp','logop27.webp','logop28.webp','logop29.webp','logop3.webp','logop30.webp','logop31.webp','logop33.webp','logop34.webp','logop35.webp','logop36.webp','logop37.webp','logop38.webp','logop39.webp','logop4.webp','logop5.webp','logop6.webp','logop7.webp','logop8.webp','logop9.webp','logopamela.webp','logopamplona.webp','logope.webp','logopetra.webp','lopes.webp','maldonado.webp','maya.webp','mb.webp','mef.webp','melissa.webp','miss.webp','miv.webp','moreti.webp','ms.webp','msm.webp','natalia2.webp','ns.webp','ns1.webp','nutri.webp','nvk.webp','orange.webp','paula.webp','pedropaixao.webp','planeta.webp','prime.webp','rampim.webp','rose.webp','sandra.webp','thais.webp','top.webp','trasnlider.webp','wellington.webp','you.webp','ziloa2.webp'];
   const chip=name=>`<div class="logo-chip logo-image-chip"><img src="assets/clientes/${name}" alt="${name.replace(/\.[^.]+$/,'')}" loading="lazy" onerror="this.closest('.logo-chip').classList.add('logo-missing');this.remove()"><span>${name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ')}</span></div>`;
   track.innerHTML=[...logos,...logos].map(chip).join('');
 }
