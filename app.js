@@ -419,7 +419,7 @@ const businessChecklistDefinitions={
     ['objections','Objeções comuns têm respostas preparadas','Preço, prazo, comparação e confiança devem ser tratados com clareza.']
    ]},
    {name:'Fechamento',items:[
-    ['cta','Existe CTA claro','Agendar, pagar, escolher opção ou enviar dados.'],
+    ['cta','Vocês dizem claramente qual ação a pessoa deve fazer agora (CTA)?','Ex.: agendar, pagar, escolher uma opção, enviar dados ou chamar no WhatsApp.'],
     ['followup','Existe continuidade quando a pessoa some','Use follow-up contextual.'],
     ['handoff','Equipe sabe quando escalar o atendimento','Algumas conversas precisam de humano ou especialista.'],
     ['record','Informações importantes são registradas','Evite pedir a mesma coisa várias vezes.']
@@ -491,7 +491,7 @@ const marketingStrategyDefinitions={
   intro:'Marketing não termina na venda. Estruture relacionamento, pós-venda, reativação, recompra, indicação e comunicação adequada ao estágio de cada cliente.',
   sections:[
    {name:'Depois da compra',items:[
-    ['welcome','Existe uma boa experiência logo após a compra','Confirmação, orientações e expectativas claras reduzem insegurança.'],
+    ['welcome','Existe uma boa experiência logo após a compra?','Confirmação, orientações e expectativas claras reduzem insegurança.'],
     ['post_sale','Existe acompanhamento pós-venda','Pergunte como foi a experiência e abra espaço para suporte.'],
     ['satisfaction','A satisfação é medida de alguma forma','Avaliações, pesquisa curta ou conversa ajudam a identificar melhorias.'],
     ['reviews','Clientes satisfeitos são convidados a avaliar','Peça avaliação no momento certo e de forma simples.']
@@ -975,6 +975,33 @@ addChannelPoints('relationships',[
  ['Origem das indicações é rastreada','Sem medir origem, a empresa não sabe quais relações funcionam.']
 ]);
 
+function plainChecklistTitle(title){
+ const raw=String(title||'').trim();
+ if(!raw)return 'Ponto avaliado';
+ if(raw.includes(' · ')){const parts=raw.split(' · '),last=parts.pop();return `${parts.join(' · ')} · ${plainChecklistTitle(last)}`}
+ const replacements={
+  'Existe CTA claro':'Vocês dizem claramente qual ação a pessoa deve fazer agora (CTA)?',
+  'Existe um CTA claro':'Vocês dizem claramente qual ação a pessoa deve fazer agora (CTA)?',
+  'CTA aparece nos pontos certos':'A chamada para ação aparece nos pontos certos?',
+  'Existe uma boa experiência logo após a compra':'Existe uma boa experiência logo após a compra?',
+  'Próximo passo é evidente':'O próximo passo para o cliente fica evidente?',
+  'Mensagem de saudação está adequada':'A mensagem de saudação está adequada?'
+ };
+ if(replacements[raw])return replacements[raw];
+ if(/[?？]$/.test(raw))return raw;
+ if(/^(Existe|Há|Tem|A empresa|O perfil|Google|Vocês|Você|As informações|Os links|A oferta|Os preços|A bio|O atendimento|A marca|O cliente|Clientes|Parceiros|Eventos|Localização|Fachada|Categorias|Fotos|Horários|Depoimentos|Avaliações|Campanhas|Conteúdos|Mensagem|Vitrine|Circulação|Zonas|Exposição|Planograma|Iluminação|Música|Textura|Estacionamento|QR Code|Prescritores|Influenciadores|Fornecedores|Associações|Programa|Origem|Registrar|Medir|Preparar|Manter|Criar|Definir|Calcular|Comparar|Segmentar|Adicionar|Explicar|Usar)/i.test(raw))return raw+'?';
+ return raw;
+}
+function plainChecklistDescription(text){
+ return String(text||'').replace(/\bCTA\b/g,'chamada para ação (CTA)');
+}
+function normalizeChecklistItems(items){
+ (items||[]).forEach(item=>{item[1]=plainChecklistTitle(item[1]);item[2]=plainChecklistDescription(item[2])});
+}
+Object.values(businessChecklistDefinitions||{}).forEach(def=>(def.sections||[]).forEach(sec=>normalizeChecklistItems(sec.items)));
+Object.values(marketingStrategyDefinitions||{}).forEach(def=>(def.sections||[]).forEach(sec=>normalizeChecklistItems(sec.items)));
+channelDefinitions.forEach(ch=>normalizeChecklistItems(ch.items));
+
 function getChannelState(){try{return JSON.parse(localStorage.getItem('mivChannelChecklist')||'{}')}catch(e){return{}}}
 function setChannelState(data){localStorage.setItem('mivChannelChecklist',JSON.stringify(data));persistProgress('channels','canais',data)}
 function channelProgress(ch,stateMap){const vals=ch.items.map(i=>stateMap[`${ch.id}:${i[0]}`]).filter(Boolean);const correct=vals.filter(v=>v==='correct').length;const applicable=ch.items.length-vals.filter(v=>v==='na').length;return applicable?Math.round(correct/applicable*100):0}
@@ -1391,10 +1418,10 @@ function reportMetricRows(meta={}){
 function reportStatusLabel(v){return v==='correct'?'Já está OK':v==='improve'?'Está feito, mas precisa melhorar':v==='na'?'Não fiz, preciso fazer':'Não respondido'}
 function flattenSectionChecklist(def,data={}){
  if(!def||!Array.isArray(def.sections))return [];
- return def.sections.flatMap((sec,si)=>(Array.isArray(sec.items)?sec.items:[]).map(it=>({point:it?.[1]||it?.[0]||'Ponto avaliado',status:data[`${si}:${it?.[0]}`]||'pending'})));
+ return def.sections.flatMap((sec,si)=>(Array.isArray(sec.items)?sec.items:[]).map(it=>({point:plainChecklistTitle(it?.[1]||it?.[0]||'Ponto avaliado'),status:data[`${si}:${it?.[0]}`]||'pending'})));
 }
 function flattenChannelChecklist(data={}){
- return channelDefinitions.flatMap(ch=>(Array.isArray(ch.items)?ch.items:[]).map(it=>({point:`${ch.name} · ${it?.[1]||it?.[0]||'Ponto avaliado'}`,status:data[`${ch.id}:${it?.[0]}`]||'pending'})));
+ return channelDefinitions.flatMap(ch=>(Array.isArray(ch.items)?ch.items:[]).map(it=>({point:`${ch.name} · ${plainChecklistTitle(it?.[1]||it?.[0]||'Ponto avaliado')}`,status:data[`${ch.id}:${it?.[0]}`]||'pending'})));
 }
 function saveAndOpenReport(report,shouldPrint=false){
  const row=addReport(report);
@@ -1451,7 +1478,7 @@ function renderFullSavedReport(report){
  const priorities=Array.isArray(meta.priorities)?meta.priorities:checklist.filter(x=>x.status==='improve').map(x=>x.point).slice(0,3);
  const hasDetails=answers.length||checklist.length||priorities.length;
  const actions=`<div class="reportActionPanel"><button type="button" class="outline" data-report-action="back-analysis">Voltar para análise</button><button type="button" class="outline" data-report-action="print">Imprimir relatório</button><button type="button" class="outline" data-report-action="pdf">Salvar como PDF</button><button type="button" class="primary" data-report-action="whatsapp">Enviar pelo WhatsApp</button></div>`;
- const itemRow=x=>`<div class="report-status-${x.status||'pending'}"><strong>${x.point||'Ponto avaliado'}</strong>${reportViewMode==='titles'?'':`<span>${reportStatusLabel(x.status)}</span>`}</div>`;
+ const itemRow=x=>`<div class="report-status-${x.status||'pending'}"><strong>${plainChecklistTitle(x.point||'Ponto avaliado')}</strong>${reportViewMode==='titles'?'':`<span>${reportStatusLabel(x.status)}</span>`}</div>`;
  const groupChecklist=(status,title)=>{const items=visibleChecklist.filter(x=>(x.status||'pending')===status);return items.length?`<div class="fullReportChecklistGroup"><h3>${title}</h3>${items.map(itemRow).join('')}</div>`:''};
  const flatChecklist=visibleChecklist.length?`<div class="fullReportChecklistGroup"><h3>${reportFilterLabel(reportViewMode)}</h3>${visibleChecklist.map(itemRow).join('')}</div>`:'<p class="reportEmptyFilter">Nenhum ponto encontrado neste filtro.</p>';
  body.innerHTML=`<header class="fullReportHeader"><span class="eyebrow">RELATÓRIO SALVO</span><h1>${report.name||'Relatório'}</h1><p>${String(report.status||'Salvo')} · ${date}</p></header>
@@ -1618,7 +1645,7 @@ function allEventsFor(month,day){const fixed=calEvents[`${month}-${day}`]||[],cu
 function relevanceFor(name,event){if(event?.relevance)return event.relevance;const niche=(selectedWithOther('calNiche')||state.profile.niche||'').toLowerCase(),n=String(name||'').toLowerCase();const maps={'nutri':['nutri','aliment','saúde','saude','fitness','personal','academia'],'psic':['psic','terap','saúde','saude'],'cardio':['méd','med','saúde','saude','fitness','personal','academia'],'cliente':['loja','comércio','comercio','serviço','servico','agência','agencia','empresa'],'marketing':['marketing','agência','agencia','social media','designer'],'trabalho':['empresa','negócio','negocio','comércio','comercio','serviço','servico'],'fotografia':['fotóg','fotog','marketing','designer','agência','agencia'],'saúde':['méd','med','nutri','psic','fisi','personal','academia','clínica','clinica','saúde','saude'],'mães':['loja','beleza','clínica','clinica','saúde','saude','fitness','aliment','comércio','comercio'],'pais':['loja','beleza','fitness','aliment','comércio','comercio']};for(const [key,terms] of Object.entries(maps))if(n.includes(key)&&terms.some(t=>niche.includes(t)))return'high';return'low'}
 function calTypeLabel(t){return t==='custom'?'◆':t==='city'?'●':t==='niche'?'▲':t==='sector'?'■':'●'}
 function renderCalendar(){const y=calDate.getFullYear(),m=calDate.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();document.getElementById('calHeading').textContent=`${calMonths[m]} de ${y}`;document.getElementById('calMonth').value=String(m);document.getElementById('calYear').value=String(y);let h=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map(x=>`<div class="calHead">${x}</div>`).join('');for(let i=0;i<first;i++)h+='<div class="calBlank" aria-hidden="true"></div>';for(let d=1;d<=days;d++){const es=allEventsFor(m+1,d),high=es.some(e=>relevanceFor(e.name,e)==='high');h+=`<button class="calDay ${high?'recommended':''}" data-calday="${d}"><b>${d}${high?'<em>★</em>':''}</b>${es.slice(0,4).map(e=>`<span class="calEvent ${e.type==='custom'?'custom':e.type==='city'?'city':e.type==='niche'?'niche':''}">${calTypeLabel(e.type)} ${calEsc(e.name)}</span>`).join('')}${es.length>4?`<span class="calMore">+${es.length-4}</span>`:''}</button>`}document.getElementById('calendarGrid').innerHTML=h;document.querySelectorAll('[data-calday]').forEach(el=>el.onclick=()=>showCalIdeas(+el.dataset.calday))}
-function suggestAngle(eventName,rel,event){const niche=selectedWithOther('calNiche')||state.profile.niche||'seu negócio';if(event?.reason)return event.reason;if(!eventName)return`Use este dia para uma ação própria da empresa, conteúdo planejado ou relacionamento com o público de ${niche}.`;if(rel==='high')return`Há conexão com ${niche}. Uma boa linha é criar conteúdo útil, valorizando a data e conectando-a naturalmente ao que sua empresa entrega.`;if(rel==='medium')return`Existe uma conexão indireta com ${niche}. Avalie conteúdo educativo, relacionamento ou posicionamento antes de pensar em oferta.`;return`A relação com ${niche} é baixa. Se quiser usar a data, prefira homenagem, reconhecimento ou conteúdo institucional — sem forçar uma promoção.`}
+function suggestAngle(eventName,rel,event){const niche=selectedWithOther('calNiche')||state.profile.niche||'seu negócio';if(event?.reason)return event.reason;if(!eventName)return`Use este dia para uma ação própria da empresa, conteúdo planejado ou relacionamento com o público de ${niche}.`;if(rel==='high')return`Essa data conversa bem com ${niche}. Use-a para criar conteúdo útil, lembrar uma dor real do cliente e conectar naturalmente com o que sua empresa entrega.`;if(rel==='medium')return`Essa data pode render um conteúdo leve para ${niche}. Você pode educar, contar uma história, reconhecer clientes ou parceiros e só depois pensar se existe uma oferta coerente.`;return`Mesmo não tendo uma ligação direta com ${niche}, a data ainda pode ser usada de forma humana: homenageie o profissional, reconheça clientes ou parceiros que tenham relação com o tema e, se fizer sentido, mande uma mensagem simples pelo WhatsApp. Só evite transformar tudo em promoção forçada.`}
 function calEventDate(d){return `${calDate.getFullYear()}-${String(calDate.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`}
 function showCalIdeas(d){const es=allEventsFor(calDate.getMonth()+1,d),events=es.length?es:[{name:'Sem data cadastrada — use uma oportunidade própria',type:'empty'}];const paid=hasProAccess()||accessState.purchases.has('calendario')||accessState.purchases.has('tool-calendario');const rows=events.map((e,i)=>{const rel=relevanceFor(e.name,e),label=rel==='high'?'★ Alta relação':rel==='medium'?'Relação média':'Relação baixa';return`<article class="calOpportunity"><div><span class="calSource">${calEsc(e.type==='custom'?'DATA PERSONALIZADA':e.type==='city'?'EVENTO LOCAL':e.type==='niche'?'DATA DO NICHO':e.type==='sector'?'DATA SETORIAL':'DATA DO CALENDÁRIO')}</span><h4>${calEsc(e.name)}</h4><p>${calEsc(suggestAngle(e.name,rel,e))}</p>${paid&&e.type!=='empty'?`<button class="calAiBtn" data-cal-ai="${i}" data-cal-day="${d}">✨ Gerar campanha com MARK.IA</button>`:''}</div><span class="relBadge ${rel}">${label}</span></article>`}).join('');document.getElementById('calIdeas').innerHTML=`<div class="calIdeaBox"><span class="eyebrow">${d} DE ${calMonths[calDate.getMonth()].toUpperCase()}</span><h3>Como aproveitar esta data</h3>${rows}${paid?'':'<div class="calLocked"><div>🔒 <b>Ideias de criativos</b><br><small>Planos pagos</small></div><div>🔒 <b>Campanha e mensagem</b><br><small>Planos pagos</small></div><div>🔒 <b>Oferta + CTA</b><br><small>Planos pagos</small></div><button type="button" class="primary" data-scroll="planos">Ver planos e liberar ideias</button></div>'}<div id="calGeneratedIdea"></div></div>`;document.querySelectorAll('[data-cal-ai]').forEach(btn=>btn.onclick=()=>generateCalendarIdeas(events[+btn.dataset.calAi],+btn.dataset.calDay,btn));document.getElementById('calIdeas').scrollIntoView({behavior:'smooth',block:'nearest'})}
 function renderCalSources(){const el=document.getElementById('calSources');if(!el)return;if(!calDynamicSources.length){el.innerHTML='';return}el.innerHTML=`<details><summary>Fontes das datas pesquisadas (${calDynamicSources.length})</summary>${calDynamicSources.map(s=>`<a href="${calEsc(s.url)}" target="_blank" rel="noopener">${calEsc(s.title||s.url)}</a>`).join('')}</details>`}
