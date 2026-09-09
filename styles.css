@@ -421,3 +421,61 @@ body[data-theme="auto"] .channelCheckItem.status-pending,
 body[data-theme="agency"] .fullReportChecklistGroup .report-status-pending,
 body[data-theme="fitness"] .fullReportChecklistGroup .report-status-pending,
 body[data-theme="auto"] .fullReportChecklistGroup .report-status-pending{background:color-mix(in srgb,var(--surface2) 88%,#fff 3%);border-color:color-mix(in srgb,var(--accent) 18%,var(--line))}
+
+/* V15.1 - index com nichos circulares e inteligencia de mercado */
+.hero-commerce{min-height:780px}
+.hero-inner{padding-top:190px;padding-bottom:110px}
+.help-bridge{text-align:left}
+.help-showcase{grid-template-columns:minmax(360px,.95fr) minmax(460px,1.05fr);gap:44px}
+.help-steps .eyebrow,.help-steps h2,.help-steps .help-intro{max-width:680px}
+.help-steps h2{margin:0 0 14px}
+.help-intro{color:var(--muted);font-size:15px;line-height:1.65;margin:0 0 10px}
+.help-visual img{object-fit:cover;object-position:center}
+.niche-groups{display:block;position:relative;margin-top:28px}
+.nicheCarouselActions{position:absolute;right:0;top:-48px;display:flex;gap:8px}
+.nicheCarouselActions button{width:40px;height:40px;border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:50%;background:linear-gradient(135deg,var(--surface),var(--accent-soft));color:var(--accent);font-size:23px;font-weight:900;box-shadow:0 12px 28px color-mix(in srgb,var(--accent) 12%,transparent)}
+.nicheCarouselActions button:hover{background:var(--accent);color:#fff}
+.niche-carousel{display:flex;gap:18px;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x proximity;scrollbar-width:none;padding:6px 2px 12px}
+.niche-carousel::-webkit-scrollbar{display:none}
+.niche-orbit{flex:0 0 172px;scroll-snap-align:start;text-align:center;border:1px solid color-mix(in srgb,var(--accent) 20%,var(--line));border-radius:18px;background:color-mix(in srgb,var(--surface) 82%,transparent);padding:14px 10px 13px;box-shadow:0 16px 38px color-mix(in srgb,var(--accent) 9%,transparent)}
+.niche-orbit-photo{width:136px;height:136px;border-radius:50%;padding:5px;margin:0 auto 12px;border:2px solid color-mix(in srgb,var(--accent) 64%,var(--line));background:var(--surface);overflow:hidden;display:block}
+.niche-orbit-photo img{width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;display:block}
+.niche-orbit strong{display:block;font-size:13px;line-height:1.2;margin:0 0 10px;color:var(--text)}
+.niche-orbit .subchips{justify-content:center;max-height:82px;overflow:hidden}
+.niche-orbit .subchips button{font-size:8px;padding:5px 7px}
+.marketPulse,.competitorSec{position:relative}
+.pulseActions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:-6px 0 16px}
+.pulseActions small,.competitorPanel small{color:var(--muted);font-size:10px}
+.competitorPanel{display:grid;grid-template-columns:minmax(320px,1fr) auto auto;gap:10px;align-items:stretch;margin:-4px 0 16px;border:1px solid color-mix(in srgb,var(--accent) 20%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--surface) 82%,transparent),color-mix(in srgb,var(--accent-soft) 58%,transparent));border-radius:18px;padding:14px;box-shadow:0 16px 42px color-mix(in srgb,var(--accent) 9%,transparent)}
+.competitorPanel textarea{border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--text);padding:12px;resize:vertical;min-height:76px}
+.market-card{flex:0 0 330px;position:relative;border:1px solid color-mix(in srgb,var(--accent) 22%,var(--line));border-radius:18px;background:linear-gradient(145deg,color-mix(in srgb,var(--surface) 88%,transparent),color-mix(in srgb,var(--accent-soft) 56%,transparent));box-shadow:0 18px 48px color-mix(in srgb,var(--accent) 10%,transparent);padding:16px;min-height:350px;overflow:hidden;display:flex;flex-direction:column}
+.market-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.market-card-top .heart{position:static;background:color-mix(in srgb,var(--accent-soft) 72%,var(--surface));color:var(--accent);border-color:color-mix(in srgb,var(--accent) 25%,var(--line))}
+.market-card-top .heart.saved{background:var(--accent);color:#fff}
+.market-stars{font-size:13px;color:#f0ad26;letter-spacing:1px;text-shadow:0 1px 0 rgba(255,255,255,.25)}
+.meta-pill{display:inline-flex;width:max-content;border-radius:999px;background:color-mix(in srgb,var(--accent) 13%,var(--surface));color:var(--accent);font-size:8px;font-weight:950;letter-spacing:.12em;padding:6px 9px;margin-bottom:10px}
+.market-card h3{font-size:18px;line-height:1.22;margin:0 0 10px;color:var(--text)}
+.market-card p{font-size:12px;line-height:1.55;color:var(--muted);margin:0 0 12px}
+.market-card strong{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:3px 0 7px}
+.source-link{margin-top:auto;color:var(--accent);font-size:10px;font-weight:850;text-decoration:none}
+.source-link:hover{text-decoration:underline}
+.market-card.locked:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.18),color-mix(in srgb,var(--surface) 74%,transparent));z-index:2}
+.market-card.locked .blurred{filter:blur(4px);opacity:.58}
+.market-lock{position:absolute;inset:auto 18px 18px;z-index:3;border:1px solid color-mix(in srgb,var(--accent) 28%,var(--line));background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(14px);border-radius:16px;padding:14px;box-shadow:0 18px 45px rgba(0,0,0,.12)}
+.market-lock b,.market-lock span{display:block}
+.market-lock b{font-size:15px;color:var(--text)}
+.market-lock span{font-size:11px;color:var(--muted);line-height:1.4;margin:5px 0 10px}
+body[data-theme="agency"] .market-card,
+body[data-theme="fitness"] .market-card,
+body[data-theme="auto"] .market-card,
+body[data-theme="agency"] .competitorPanel,
+body[data-theme="fitness"] .competitorPanel,
+body[data-theme="auto"] .competitorPanel{background:color-mix(in srgb,var(--surface2) 88%,#fff 2%);color:var(--text)}
+body[data-theme="agency"] .market-card p,
+body[data-theme="fitness"] .market-card p,
+body[data-theme="auto"] .market-card p{color:color-mix(in srgb,var(--text) 78%,var(--muted))}
+body[data-theme="agency"] .market-lock,
+body[data-theme="fitness"] .market-lock,
+body[data-theme="auto"] .market-lock{background:color-mix(in srgb,var(--surface) 94%,#fff 4%)}
+@media(max-width:980px){.hero-commerce{min-height:720px}.help-showcase{grid-template-columns:1fr}.competitorPanel{grid-template-columns:1fr}.nicheCarouselActions{position:static;margin-bottom:10px}.niche-orbit{flex-basis:158px}.niche-orbit-photo{width:122px;height:122px}}
+@media(max-width:700px){.hero-commerce{min-height:760px}.hero-inner{padding-top:150px;padding-bottom:72px}.market-card{flex-basis:82vw}.help-intro{font-size:13px}.niche-orbit{flex-basis:72vw}.niche-orbit-photo{width:150px;height:150px}.pulseActions .primary,.competitorPanel button{width:100%}}
