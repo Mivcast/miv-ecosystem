@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MIV Ecosystem — Vitrine Inteligente</title>
 <meta name="description" content="Ecossistema empresarial adaptável por nicho com estratégias, análises, ferramentas e inteligência artificial.">
-<link rel="stylesheet" href="styles.css?v=15.0">
+<link rel="stylesheet" href="styles.css?v=15.1">
 </head>
 <body data-theme="clean">
 <header class="floating-header">
@@ -38,16 +38,17 @@
   </section>
 
   <section class="wrap help-bridge" id="como-ajuda">
-    <span class="eyebrow center">COMO O MIV AJUDA</span>
-    <h2 class="center">Menos tentativa solta, mais clareza sobre o próximo passo.</h2>
     <div class="help-grid help-showcase">
       <div class="help-steps">
+        <span class="eyebrow">COMO O MIV AJUDA</span>
+        <h2>Menos tentativa solta, mais clareza sobre o próximo passo.</h2>
+        <p class="help-intro">O sistema cruza nicho, objetivos, canais, vendas, marca e estrutura para transformar dúvida em prioridade prática.</p>
         <article><strong>1</strong><h3>Entende seu contexto</h3><p>Você escolhe o nicho e completa o Perfil da Empresa para o sistema adaptar recomendações, análises e linguagem.</p></article>
         <article><strong>2</strong><h3>Organiza prioridades</h3><p>Cards, checklists e diagnósticos ajudam a separar o que já está OK do que precisa melhorar primeiro.</p></article>
         <article><strong>3</strong><h3>Transforma em ação</h3><p>O MARK.IA e os relatórios convertem dúvidas, gargalos e oportunidades em próximos passos aplicáveis.</p></article>
       </div>
       <aside class="help-visual" aria-label="Painel visual do ecossistema">
-        <img src="assets/cards/consult-acomp.jpg" alt="" loading="lazy">
+        <img src="assets/sections/como-miv-ajuda.png" alt="" loading="lazy">
         <div class="floating-score"><strong>82</strong><span>clareza geral</span></div>
         <div class="floating-path"><b>Próximo passo</b><span>Oferta antes do tráfego</span><span>WhatsApp antes da campanha</span><span>Relatório salvo na Central</span></div>
       </aside>
@@ -78,6 +79,22 @@
   <section class="wrap shelfSec" id="marketing">
     <div class="titleRow"><div><span class="eyebrow">ESTRATÉGIAS DE MARKETING</span><h2>Divulgação por objetivo, canal e momento.</h2><p>Da visibilidade à recompra: ideias para digital, físico, relacionamento e mídia.</p></div><div class="arrows"><button data-prev="marketingTrack">‹</button><button data-next="marketingTrack">›</button></div></div>
     <div class="shelf" id="marketingTrack"></div>
+  </section>
+
+  <section class="wrap shelfSec marketPulse" id="tendencias">
+    <div class="titleRow"><div><span class="eyebrow">TENDÊNCIAS DO SEU MERCADO</span><h2>Notícias e movimentos para transformar em ação.</h2><p>O MARK busca tendências atuais do seu nicho, avalia relevância e sugere como usar cada assunto no negócio.</p></div><div class="arrows"><button data-prev="trendsTrack">‹</button><button data-next="trendsTrack">›</button></div></div>
+    <div class="pulseActions"><button class="primary" id="refreshTrends">Atualizar tendências</button><small>5 grátis · até 15 no PRO · até 30 no Premium</small></div>
+    <div class="shelf" id="trendsTrack"></div>
+  </section>
+
+  <section class="wrap shelfSec competitorSec" id="concorrentes">
+    <div class="titleRow"><div><span class="eyebrow">ACOMPANHE SEUS CONCORRENTES</span><h2>Veja sinais do mercado para se inspirar com inteligência.</h2><p>Informe concorrentes ou deixe o MARK sugerir nomes e ideias de observação para o seu nicho.</p></div><div class="arrows"><button data-prev="competitorTrack">‹</button><button data-next="competitorTrack">›</button></div></div>
+    <div class="competitorPanel">
+      <textarea id="competitorNames" rows="3" placeholder="Digite até 10 concorrentes, um por linha. No grátis: 1 · PRO: 3 · Premium: 10"></textarea>
+      <button class="primary" id="refreshCompetitors">Buscar movimentos</button>
+      <button class="outline" id="suggestCompetitors">Sugerir concorrentes</button>
+    </div>
+    <div class="shelf" id="competitorTrack"></div>
   </section>
 
   <section class="wrap shelfSec" id="marca">
@@ -363,5 +380,5 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=15.0"></script>
+<script src="app.js?v=15.1"></script>
 </body></html>
