@@ -474,6 +474,10 @@ body[data-theme="auto"] .fullReportChecklistGroup .report-status-pending{backgro
 .market-empty{flex-basis:420px;min-height:310px;border-style:dashed;background:linear-gradient(145deg,color-mix(in srgb,var(--accent-soft) 72%,var(--surface)),color-mix(in srgb,var(--surface) 96%,transparent))}
 .market-empty .market-card-body h3{font-size:20px}
 .market-empty-action{margin-top:auto;width:max-content}
+.market-auth-needed{border-style:solid;border-width:2px;box-shadow:0 24px 65px color-mix(in srgb,var(--accent) 18%,transparent)}
+.market-loading{pointer-events:none}
+.market-loading:after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 0%,rgba(255,255,255,.44) 42%,transparent 72%);transform:translateX(-120%);animation:marketShimmer 1.25s linear infinite}
+@keyframes marketShimmer{to{transform:translateX(120%)}}
 body[data-theme="agency"] .market-card,
 body[data-theme="fitness"] .market-card,
 body[data-theme="auto"] .market-card,
