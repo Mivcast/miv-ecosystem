@@ -119,7 +119,7 @@ function activeHeroContent(niche){
 const imgs={marketing:'https://picsum.photos/seed/digitalmarketing/700/430',brand:'https://picsum.photos/seed/branddesign/700/430',sales:'https://picsum.photos/seed/businessmeeting/700/430',content:'https://picsum.photos/seed/contentcreator/700/430',google:'https://picsum.photos/seed/localbusiness/700/430',store:'https://picsum.photos/seed/retailstore/700/430',clinic:'https://picsum.photos/seed/doctorclinic/700/430',food:'https://picsum.photos/seed/foodbusiness/700/430',planning:'https://picsum.photos/seed/businessplanning/700/430',analytics:'https://picsum.photos/seed/analyticsdashboard/700/430',learning:'https://picsum.photos/seed/onlinelearning/700/430',team:'https://picsum.photos/seed/teamworkoffice/700/430'};
 const cardImageMap={
  calendario:'assets/cards/calendario.jpg',canais:'assets/cards/canais.jpg',local:'assets/cards/local.jpg','equipe-marketing':'assets/cards/equipe-marketing.jpg','clientes-marketing':'assets/cards/clientes-marketing.jpg',parcerias:'assets/cards/clientes-marketing.jpg','identidade-marketing':'assets/cards/identidade.jpg',brindes:'assets/cards/brindes.jpg',
- 'branding-fisico':'assets/cards/branding-fisico.jpg','branding-digital':'assets/cards/branding-digital.jpg',identidade:'assets/cards/identidade.jpg',diferenciacao:'assets/cards/diferenciacao.jpg',ticket:'assets/cards/ticket.jpg',followup:'assets/cards/followup.jpg',fidelizacao:'assets/cards/fidelizacao.jpg',whatsapp:'assets/cards/whatsapp.jpg',oferta:'assets/cards/oferta.jpg',
+ 'branding-fisico':'assets/cards/branding-fisico.jpg','branding-digital':'assets/cards/branding-digital.jpg',identidade:'assets/cards/identidade.jpg',diferenciacao:'assets/cards/diferenciacao.jpg',ticket:'assets/cards/ticket.jpg','vendas-tecnicas':'assets/cards/funil-vendas.jpg',followup:'assets/cards/followup.jpg',fidelizacao:'assets/cards/fidelizacao.jpg',whatsapp:'assets/cards/whatsapp.jpg',oferta:'assets/cards/oferta.jpg',
  'tool-calendario':'assets/cards/tool-calendario.jpg','markia-app':'assets/cards/markia-app.jpg',agendamentos:'assets/cards/agendamentos.jpg',financeiro:'assets/cards/financeiro.jpg',orcamentos:'assets/cards/orcamentos.jpg',
  'livro-admin-sabedoria':'assets/cards/livros.jpg','livro-branding-marketing':'assets/cards/livros.jpg','livro-digital-influencer':'assets/cards/livros.jpg','livro-youtuber':'assets/cards/livros.jpg','video-marketing-base':'assets/cards/videos.jpg','video-branding-base':'assets/cards/videos.jpg','video-vendas-base':'assets/cards/videos.jpg','video-conteudo-base':'assets/cards/video-conteudo-base.jpg',
  'consult-markia':'assets/cards/consult-markia.jpg','mentoria-area':'assets/cards/mentoria-area.jpg','consult-setor':'assets/cards/consult-setor.jpg','consult-completa':'assets/cards/consult-completa.jpg','consult-acomp':'assets/cards/consult-acomp.jpg',
@@ -127,25 +127,26 @@ const cardImageMap={
 };
 const analysisImageMap={empresa:'assets/cards/analise-empresa.jpg',marca:'assets/cards/analise-marca.jpg',mercado:'assets/cards/analise-mercado.jpg',oferta:'assets/cards/analise-oferta.jpg',presenca:'assets/cards/analise-presenca.jpg',marketing:'assets/cards/analise-marketing.jpg',vendas:'assets/cards/analise-vendas.jpg',clientes:'assets/cards/analise-clientes.jpg',gestao:'assets/cards/analise-gestao.jpg'};
 const items=[
- {id:'calendario',cat:'Marketing',format:'Estratégia + Ferramenta',access:'Grátis',icon:'◫',tag:'PLANEJAMENTO + CAMPANHAS',title:'Calendário inteligente de marketing',desc:'Veja as datas do mês atual, datas brasileiras, do seu nicho, cidade e empresa. As datas são grátis; ideias de criativos e campanhas são liberadas nos planos pagos.',img:imgs.planning,special:'calendar'},
- {id:'canais',cat:'Marketing',format:'Estratégia + Checklist',access:'Grátis',icon:'✦',tag:'CANAIS',title:'Estratégias para diversos meios de comunicação',desc:'Audite seus canais físicos e digitais, marque o que já está profissional, veja o que falta e acompanhe sua evolução.',img:imgs.marketing,special:'channels'},
- {id:'local',cat:'Marketing',format:'Guia',access:'Grátis',icon:'⌖',tag:'LOCAL',title:'Estratégias de marketing para negócio físico e local',desc:'Fachada, entorno, Google, avaliações, mapas, eventos, vizinhança, parcerias locais e ações para gerar procura e fluxo.',img:imgs.google,special:'marketing-checklist'},
- {id:'equipe-marketing',cat:'Marketing',format:'Estratégia',access:'Pago',price:'R$ 29,90',icon:'◎',tag:'EQUIPE',title:'Estratégias de marketing para equipes e funcionários',desc:'Atendimento, indicação, bastidores, campanhas internas, participação em conteúdo, metas e colaboradores como embaixadores da marca.',img:imgs.team,special:'marketing-checklist'},
- {id:'clientes-marketing',cat:'Marketing',format:'Estratégia',access:'Grátis',icon:'↺',tag:'CLIENTES',title:'Estratégias de marketing para clientes',desc:'Pós-venda, relacionamento, remarketing, reativação, recompra, indicação, comunidade e campanhas por estágio do cliente.',img:imgs.analytics,special:'marketing-checklist'},
- {id:'parcerias',cat:'Marketing',format:'Guia',access:'Grátis',icon:'∞',tag:'PARCERIAS',title:'Influenciadores e todos os tipos de parceria',desc:'Mapeie parceiros do nicho, permutas, co-marketing, indicação, eventos e influenciadores; saiba como orientar, o que pedir e como medir.',img:imgs.team,special:'marketing-checklist'},
+ {id:'calendario',cat:'Marketing',format:'Estratégia + Ferramenta',access:'Grátis',icon:'◫',tag:'PLANEJAMENTO + CAMPANHAS',title:'Calendário inteligente de marketing',desc:'Calendário completo para você planejar suas postagens e campanhas. Veja as datas do mês atual, datas brasileiras, do seu nicho, cidade e empresa. As datas são grátis; ideias de criativos e campanhas são liberadas nos planos pagos.',img:imgs.planning,special:'calendar'},
+ {id:'canais',cat:'Marketing',format:'Estratégia + Checklist',access:'Grátis',icon:'✦',tag:'CANAIS',title:'Estratégias para profissionalizar cada canal',desc:'Veja como sua empresa deve se posicionar e se apresentar em cada canal de comunicação, o que já está adequado e o que precisa melhorar: Instagram, WhatsApp Business, Perfil da Empresa no Google, site, landing page, Facebook, TikTok, comunicação física, parcerias, indicações e relacionamento.',img:imgs.marketing,special:'channels'},
+ {id:'local',cat:'Marketing',format:'Guia',access:'Grátis',icon:'⌖',tag:'LOCAL',title:'Estratégias para atrair clientes para seu negócio local',desc:'Descubra estratégias para aumentar sua presença local e atrair mais clientes usando fachada, entorno, Perfil da Empresa no Google, avaliações, mapas, eventos, vizinhança, parcerias locais e ações para gerar mais procura e movimento.',img:imgs.google,special:'marketing-checklist'},
+ {id:'equipe-marketing',cat:'Marketing',format:'Estratégia',access:'Pago',price:'R$ 29,90',icon:'◎',tag:'EQUIPE',title:'Como sua equipe pode ajudar a empresa a crescer',desc:'Veja como sua equipe pode contribuir para fortalecer a marca e atrair clientes por meio de atendimento, indicações, bastidores, participação em conteúdos, campanhas internas, metas e colaboradores como representantes da marca.',img:imgs.team,special:'marketing-checklist'},
+ {id:'clientes-marketing',cat:'Marketing',format:'Estratégia',access:'Grátis',icon:'↺',tag:'CLIENTES',title:'Estratégias para atrair e fidelizar clientes',desc:'Fortaleça o relacionamento com seus clientes e crie novas oportunidades por meio de pós-venda, remarketing, reativação, recompra, indicações, comunidade e campanhas para cada estágio do cliente.',img:imgs.analytics,special:'marketing-checklist'},
+ {id:'parcerias',cat:'Marketing',format:'Guia',access:'Grátis',icon:'∞',tag:'PARCERIAS',title:'Estratégias com influenciadores e parcerias',desc:'Descubra oportunidades com influenciadores, parceiros do seu nicho, permutas, indicações, co-marketing, eventos e parcerias locais ou estratégicas. Veja como encontrar parceiros, criar propostas, definir ações e acompanhar os resultados.',img:imgs.team,special:'marketing-checklist'},
  {id:'identidade-marketing',cat:'Marketing',format:'Estratégia',access:'Pago',price:'R$ 29,90',icon:'◇',tag:'IDENTIDADE VISUAL',title:'Identidade visual aplicada ao marketing',desc:'Descubra quais peças seu nicho precisa — placas, sinalização, uniforme, crachá, embalagem, adesivos, materiais e o papel estratégico de cada uma.',img:imgs.brand,special:'marketing-checklist'},
- {id:'brindes',cat:'Marketing',format:'Guia',access:'Grátis',icon:'✧',tag:'RELACIONAMENTO',title:'Brindes & bonificações',desc:'Brindes, bônus, mimos, recompensas e surpresas para gerar lembrança, conexão emocional, indicação e recorrência — com quando e como usar.',img:imgs.store,special:'marketing-checklist'},
+ {id:'brindes',cat:'Marketing',format:'Guia',access:'Grátis',icon:'✧',tag:'RELACIONAMENTO',title:'Estratégias com brindes, bônus e recompensas',desc:'Descubra como usar brindes, bônus, mimos, recompensas e surpresas para encantar clientes, fortalecer o relacionamento, gerar indicações e incentivar novas compras. Saiba o que oferecer, quando e como usar cada estratégia.',img:imgs.store,special:'marketing-checklist'},
 
- {id:'branding-fisico',cat:'Marca',format:'Estratégia',access:'Grátis',icon:'▰',tag:'BRANDING FÍSICO',title:'Branding físico',desc:'Fachada, ambiente, materiais, uniforme, embalagem e experiência para transmitir autoridade e trabalhar percepção pelos cinco sentidos.',img:imgs.store,special:'business-checklist'},
- {id:'branding-digital',cat:'Marca',format:'Estratégia',access:'Grátis',icon:'◈',tag:'BRANDING DIGITAL',title:'Branding digital',desc:'Consistência visual, verbal e de percepção em site, redes, WhatsApp, Google, anúncios e demais pontos digitais.',img:imgs.brand,special:'business-checklist'},
- {id:'identidade',cat:'Marca',format:'Guia',access:'Pago',price:'R$ 24,90',icon:'◇',tag:'IDENTIDADE',title:'Identidade visual profissional',desc:'O que precisa existir para a marca ser reconhecível, coerente e aplicável no dia a dia.',img:imgs.brand,special:'business-checklist'},
- {id:'diferenciacao',cat:'Marca',format:'Estratégia',access:'Grátis',icon:'↗',tag:'DIFERENCIAÇÃO',title:'Diferenciação competitiva',desc:'Encontre diferenças percebidas que não dependam apenas de preço.',img:imgs.analytics,special:'business-checklist'},
+ {id:'branding-fisico',cat:'Marca',format:'Estratégia',access:'Grátis',icon:'▰',tag:'BRANDING FÍSICO',title:'Estratégias para fortalecer sua marca no ambiente físico',desc:'Veja como fachada, ambiente, materiais, uniformes, embalagens e experiência do cliente podem transmitir mais profissionalismo, fortalecer sua marca e melhorar a percepção do público por meio dos cinco sentidos.',img:imgs.store,special:'business-checklist'},
+ {id:'branding-digital',cat:'Marca',format:'Estratégia',access:'Grátis',icon:'◈',tag:'BRANDING DIGITAL',title:'Como fortalecer sua marca no ambiente digital',desc:'Veja como sua empresa deve se apresentar de forma consistente no site, redes sociais, WhatsApp, Google, anúncios e outros canais digitais, fortalecendo sua identidade, comunicação, profissionalismo e percepção de marca.',img:imgs.brand,special:'business-checklist'},
+ {id:'identidade',cat:'Marca',format:'Guia',access:'Pago',price:'R$ 24,90',icon:'◇',tag:'IDENTIDADE',title:'Como construir uma identidade visual profissional',desc:'Descubra o que sua empresa precisa ter para criar uma identidade visual profissional, reconhecível e consistente, com elementos que facilitem a aplicação da marca em diferentes materiais, canais e situações do dia a dia.',img:imgs.brand,special:'business-checklist'},
+ {id:'diferenciacao',cat:'Marca',format:'Estratégia',access:'Grátis',icon:'↗',tag:'DIFERENCIAÇÃO',title:'Estratégias para se diferenciar dos concorrentes',desc:'Descubra formas de destacar sua empresa, seus produtos ou serviços e criar diferenciais que o cliente realmente perceba e valorize, sem precisar competir apenas por preço.',img:imgs.analytics,special:'business-checklist'},
 
- {id:'ticket',cat:'Vendas',format:'Estratégia',access:'Grátis',icon:'＋',tag:'TICKET',title:'Aumente o ticket médio',desc:'Combos, complementos, upgrades e pacotes aplicados ao seu negócio.',img:imgs.sales,special:'business-checklist'},
- {id:'followup',cat:'Vendas',format:'Guia',access:'Grátis',icon:'↺',tag:'FOLLOW-UP',title:'Follow-up que recupera oportunidades',desc:'Acompanhe contatos e orçamentos sem parecer insistente.',img:imgs.sales,special:'business-checklist'},
+ {id:'ticket',cat:'Vendas',format:'Estratégia',access:'Grátis',icon:'＋',tag:'TICKET',title:'Estratégias para aumentar o ticket médio',desc:'Descubra como fazer cada cliente comprar mais ou escolher opções de maior valor usando combos, complementos, upgrades, pacotes e outras estratégias aplicadas ao seu negócio.',img:imgs.sales,special:'business-checklist'},
+ {id:'vendas-tecnicas',cat:'Vendas',format:'Estratégia + Checklist',access:'Grátis',icon:'✦',tag:'TÉCNICAS DE VENDA',title:'Estratégias e técnicas para aumentar as vendas',desc:'Descubra técnicas práticas para você e sua equipe venderem mais, usando gatilhos mentais, persuasão, neuromarketing, comunicação verbal e corporal, contato visual, tom de voz, escuta ativa, perguntas estratégicas, os cinco sentidos, percepção de valor, prova social, abordagem, negociação, tratamento de objeções e técnicas de fechamento.',img:imgs.sales,special:'business-checklist'},
+ {id:'followup',cat:'Vendas',format:'Guia',access:'Grátis',icon:'↺',tag:'PÓS-VENDA',title:'Estratégias de pós-venda, fidelização, recompra e indicação',desc:'Descubra estratégias para manter o relacionamento após a venda, aumentar a satisfação, incentivar novas compras, gerar indicações e transformar clientes em clientes fiéis.',img:imgs.sales,special:'business-checklist'},
  {id:'fidelizacao',cat:'Vendas',format:'Estratégia',access:'Grátis',icon:'♡',tag:'FIDELIZAÇÃO',title:'Fidelização, recompra e indicação',desc:'Estruture motivos e momentos para o cliente continuar perto.',img:imgs.store,special:'business-checklist'},
- {id:'whatsapp',cat:'Vendas',format:'Ferramenta',access:'Pago',price:'R$ 19,90',icon:'◉',tag:'WHATSAPP',title:'Script inteligente de WhatsApp',desc:'Atendimento, diagnóstico, proposta, fechamento e pós-venda.',img:imgs.sales,special:'business-checklist'},
- {id:'oferta',cat:'Vendas',format:'Ferramenta',access:'Pago',price:'R$ 24,90',icon:'◆',tag:'OFERTA',title:'Montador de oferta',desc:'Organize valor, bônus, prova, risco, escassez e próximo passo.',img:imgs.planning,special:'business-checklist'},
+ {id:'whatsapp',cat:'Vendas',format:'Ferramenta',access:'Pago',price:'R$ 19,90',icon:'◉',tag:'WHATSAPP',title:'Mensagens de atendimento e vendas para WhatsApp',desc:'Crie mensagens e roteiros personalizados para primeiro contato, atendimento, identificação da necessidade, apresentação de produtos ou serviços, envio de proposta, resposta a objeções, recuperação de contatos, fechamento e pós-venda.',img:imgs.sales,special:'business-checklist'},
+ {id:'oferta',cat:'Vendas',format:'Ferramenta',access:'Pago',price:'R$ 24,90',icon:'◆',tag:'OFERTA',title:'Como criar ofertas que aumentam as chances de venda',desc:'Transforme seus produtos ou serviços em ofertas mais atrativas, combinando benefícios, percepção de valor, diferenciais, bônus, prova social, garantias, condições, urgência, escassez e uma chamada clara para a compra.',img:imgs.planning,special:'business-checklist'},
 
  {id:'tool-calendario',cat:'Ferramentas',format:'Ferramenta',access:'Grátis',icon:'◫',tag:'CALENDÁRIO',title:'Calendário inteligente de marketing',desc:'O mesmo calendário estratégico: datas grátis e ideias personalizadas de criativos nos planos pagos.',img:imgs.planning,special:'calendar'},
  {id:'markia-app',cat:'Ferramentas',format:'Sistema',access:'Pro',icon:'◈',tag:'EM BREVE',title:'MARK.IA',desc:'Consultor inteligente independente para usar como aplicativo, com contexto do seu negócio. Em fase final de desenvolvimento.',img:imgs.analytics,special:'notify'},
@@ -153,13 +154,13 @@ const items=[
  {id:'financeiro',cat:'Ferramentas',format:'Sistema',access:'Pro',icon:'$',tag:'EM BREVE',title:'Sistema de Contas e Financeiro',desc:'Entradas, saídas, contas e visão financeira do negócio. Em fase final de desenvolvimento.',img:imgs.analytics,special:'notify'},
  {id:'orcamentos',cat:'Ferramentas',format:'Sistema',access:'Pro',icon:'▤',tag:'EM BREVE',title:'Sistema de Orçamentos',desc:'Crie, envie, acompanhe e organize propostas e orçamentos. Em fase final de desenvolvimento.',img:imgs.planning,special:'notify'},
 
- {id:'livro-admin-sabedoria',cat:'Aprender',format:'Livro',access:'Pago',price:'R$ 39,90',icon:'▣',tag:'GESTÃO',title:'Como Administrar sua Empresa com Sabedoria',desc:'Livro para organizar decisões, prioridades, gestão e rotina empresarial com mais clareza.',img:imgs.learning,learningArea:'Gestão',learningLevel:'Intermediário',learningExternal:'https://www.mivcast.com.br/cursos_e_treinamentos_em_marketing.html',learningBody:'Use este material para revisar como a empresa decide, executa, acompanha indicadores e transforma problemas em plano de ação.'},
- {id:'livro-branding-marketing',cat:'Aprender',format:'Livro',access:'Pago',price:'R$ 39,90',icon:'▣',tag:'BRANDING',title:'Consultoria Completa em Branding e Marketing',desc:'Livro para conectar posicionamento, identidade, canais, campanhas e vendas em uma estrutura coerente.',img:imgs.learning,learningArea:'Marca',learningLevel:'Intermediário',learningExternal:'https://www.mivcast.com.br/cursos_e_treinamentos_em_marketing.html',learningBody:'Use este material junto dos cards de Branding, Identidade Visual, Diferenciação, Canais e Oferta.'},
- {id:'livro-digital-influencer',cat:'Aprender',format:'Livro',access:'Pago',price:'R$ 39,90',icon:'▣',tag:'INFLUÊNCIA',title:'Guia Completo do Digital Influencer',desc:'Livro para planejar posicionamento, conteúdo, autoridade, parcerias e monetização de influência.',img:imgs.learning,learningArea:'Marketing',learningLevel:'Intermediário',learningExternal:'https://www.mivcast.com.br/cursos_e_treinamentos_em_marketing.html',learningBody:'Use este material para estruturar presença humana, conteúdo, prova, comunidade, parcerias e canais de conversão.'},
- {id:'livro-youtuber',cat:'Aprender',format:'Livro',access:'Pago',price:'R$ 39,90',icon:'▣',tag:'YOUTUBE',title:'Guia Completo do Youtuber',desc:'Livro para organizar canal, pauta, frequência, narrativa, autoridade e evolução de conteúdo em vídeo.',img:imgs.learning,learningArea:'Conteúdo',learningLevel:'Intermediário',learningExternal:'https://www.mivcast.com.br/cursos_e_treinamentos_em_marketing.html',learningBody:'Use este material para transformar ideias em quadros, roteiros, vídeos, calendário e indicadores de evolução.'},
- {id:'video-marketing-base',cat:'Aprender',format:'Vídeo',access:'Grátis',icon:'▶',tag:'MARKETING',title:'Videoaulas MivCast sobre marketing aplicado',desc:'Acesse as aulas do canal MivCast e use o MARK para transformar o aprendizado em ações do seu nicho.',img:imgs.learning,learningArea:'Marketing',learningLevel:'Todos',learningExternal:'https://www.youtube.com/@mivcast',learningBody:'Player interno preparado para videoaulas cadastradas. Enquanto os links individuais não forem cadastrados, este card abre o canal oficial.'},
- {id:'video-branding-base',cat:'Aprender',format:'Vídeo',access:'Grátis',icon:'▶',tag:'BRANDING',title:'Videoaulas MivCast sobre branding e identidade',desc:'Conteúdos para entender percepção, posicionamento, identidade e profissionalização da marca.',img:imgs.learning,learningArea:'Marca',learningLevel:'Todos',learningExternal:'https://www.youtube.com/@mivcast',learningBody:'Cadastre links específicos do YouTube no Admin/Supabase para abrir as aulas direto dentro do sistema.'},
- {id:'video-vendas-base',cat:'Aprender',format:'Vídeo',access:'Grátis',icon:'▶',tag:'VENDAS',title:'Videoaulas MivCast sobre vendas e oferta',desc:'Aulas para melhorar proposta, atendimento, follow-up, oferta, ticket médio e recompra.',img:imgs.learning,learningArea:'Vendas',learningLevel:'Todos',learningExternal:'https://www.youtube.com/@mivcast',learningBody:'Use junto dos cards de Ticket, Follow-up, Oferta e WhatsApp para transformar conteúdo em execução.'},
+ {id:'livro-admin-sabedoria',cat:'Aprender',format:'Livro',access:'Pago',price:'R$ 39,90',icon:'▣',tag:'GESTÃO',title:'Como Administrar sua Empresa com Sabedoria',desc:'Lições de sabedoria empresarial para tomar decisões mais assertivas no seu negócio.',img:'https://s3.amazonaws.com/media.clubedeautores.com.br/cover_images/940222/big_cover_front.png',learningArea:'Gestão',learningLevel:'Intermediário',learningExternal:'https://clubedeautores.com.br/livro/como-administrar-sua-empresa-com-sabedoria',learningBody:'Um livro para organizar decisões, prioridades, rotina e visão empresarial com mais clareza, conectando gestão prática com crescimento sustentável.'},
+ {id:'livro-branding-marketing',cat:'Aprender',format:'Livro',access:'Pago',price:'R$ 39,90',icon:'▣',tag:'MARKETING',title:'Consultoria Completa em Marketing Digital e Físico',desc:'Consultor Matheus Nascimento - MivCast.',img:'https://s3.amazonaws.com/media.clubedeautores.com.br/cover_images/680181/big_cover_front.png',learningArea:'Marketing',learningLevel:'Intermediário',learningExternal:'https://clubedeautores.com.br/livro/consultoria-completa-em-marketing-digital-e-fisico',learningBody:'Um material para conectar marketing digital, presença física, posicionamento, canais, oferta e vendas em uma visão mais completa da empresa.'},
+ {id:'livro-digital-influencer',cat:'Aprender',format:'Livro',access:'Pago',price:'R$ 39,90',icon:'▣',tag:'INFLUÊNCIA',title:'Como se tornar um Influenciador Digital',desc:'Aprenda a se posicionar e viver do digital, com estratégia.',img:'https://s3.amazonaws.com/media.clubedeautores.com.br/cover_images/935515/big_cover_front.png',learningArea:'Marketing',learningLevel:'Intermediário',learningExternal:'https://clubedeautores.com.br/livro/como-se-tornar-um-influenciador-digital-mentor-matheus-nascimento',learningBody:'Use este material para estruturar presença humana, posicionamento, conteúdo, autoridade, comunidade, parcerias e caminhos de monetização.'},
+ {id:'livro-youtuber',cat:'Aprender',format:'Livro',access:'Pago',price:'R$ 39,90',icon:'▣',tag:'YOUTUBE',title:'Torne-se um(a) Grande YouTuber',desc:'Guia prático para crescer, ganhar inscritos e monetizar seu canal com estratégia.',img:'https://s3.amazonaws.com/media.clubedeautores.com.br/cover_images/937649/big_cover_front.png',learningArea:'Conteúdo',learningLevel:'Intermediário',learningExternal:'https://clubedeautores.com.br/livro/torne-se-um-a-grande-youtuber',learningBody:'Use este material para transformar ideias em quadros, roteiros, vídeos, frequência, narrativa, indicadores e evolução do canal.'},
+ {id:'video-marketing-base',cat:'Aprender',format:'Vídeo',access:'Grátis',icon:'▶',tag:'MARKETING',title:'Videoaulas MivCast sobre marketing aplicado',desc:'Acesse aulas selecionadas e use o MARK para transformar o aprendizado em ações do seu nicho.',img:imgs.learning,learningArea:'Marketing',learningLevel:'Todos',learningExternal:'https://www.youtube.com/watch?v=YWDkCOBjRkg&list=PLn4u1X2xJfP2L3HFIH89K9cfux0ibqyyp&index=21&pp=iAQBsAgC',learningBody:'Assista e depois peça ao MARK para adaptar os pontos principais ao seu nicho, cidade, oferta e estágio atual.'},
+ {id:'video-branding-base',cat:'Aprender',format:'Vídeo',access:'Grátis',icon:'▶',tag:'BRANDING',title:'Videoaulas MivCast sobre branding e identidade',desc:'Conteúdos para entender percepção, posicionamento, identidade e profissionalização da marca.',img:imgs.learning,learningArea:'Marca',learningLevel:'Todos',learningExternal:'https://www.youtube.com/watch?v=m9b7W6nucoQ&list=PLn4u1X2xJfP2L3HFIH89K9cfux0ibqyyp&index=22&pp=iAQBsAgC',learningBody:'Use junto dos cards de Branding, Identidade Visual, Diferenciação, Canais e Oferta.'},
+ {id:'video-vendas-base',cat:'Aprender',format:'Vídeo',access:'Grátis',icon:'▶',tag:'VENDAS',title:'Videoaulas MivCast sobre vendas e oferta',desc:'Aulas para melhorar proposta, atendimento, follow-up, oferta, ticket médio e recompra.',img:imgs.learning,learningArea:'Vendas',learningLevel:'Todos',learningExternal:'https://www.youtube.com/watch?v=nT7OGrZiBC8&list=PLn4u1X2xJfP1RGFYeW8W4mgD2168kXqc_&index=36&pp=iAQBsAgC',learningBody:'Use junto dos cards de Ticket, Técnicas de Venda, Pós-venda, Oferta e WhatsApp para transformar conteúdo em execução.'},
  {id:'video-conteudo-base',cat:'Aprender',format:'Vídeo',access:'Grátis',icon:'▶',tag:'CONTEÚDO',title:'Videoaulas MivCast sobre conteúdo e canais',desc:'Conteúdo para organizar Instagram, vídeos, calendário, campanhas e canais de comunicação.',img:imgs.learning,learningArea:'Conteúdo',learningLevel:'Todos',learningExternal:'https://www.youtube.com/@mivcast',learningBody:'O MARK pode adaptar qualquer aprendizado para o seu nicho, cidade, oferta e estágio atual.'},
 
  {id:'consult-markia',cat:'Consultoria',format:'Consultoria automática',access:'Pago',price:'R$ 49/mês',icon:'◈',tag:'MARK.IA',title:'MARK.IA Consultor Automático',desc:'Orientação contínua com IA contextual para ajudar a pensar, decidir e organizar os próximos passos do negócio.',img:imgs.analytics,special:'consult-sale'},
@@ -168,10 +169,10 @@ const items=[
  {id:'consult-completa',cat:'Consultoria',format:'Consultoria completa',access:'Pago',price:'R$ 2.950',icon:'◆',tag:'COMPLETA',title:'Consultoria empresarial completa',desc:'Visão ampla da empresa, diagnóstico, prioridades e plano estratégico integrado.',img:imgs.planning,special:'consult-sale'},
  {id:'consult-acomp',cat:'Consultoria',format:'Acompanhamento',access:'Pago',price:'R$ 2.950 + R$ 1.000/mês',icon:'↗',tag:'ACOMPANHAMENTO',title:'Consultoria completa + acompanhamento mensal',desc:'Consultoria completa inicial e acompanhamento contínuo para revisar execução, decisões e evolução.',img:imgs.team,special:'consult-sale'},
 
- {id:'svc-logo',cat:'MivCast',format:'Criação',access:'Pago',price:'R$ 200 a R$ 300',icon:'◇',tag:'MARCA',title:'Criação de Logo',desc:'Criação profissional de logo para sua marca.',img:imgs.brand,special:'service-sale'},
- {id:'svc-vetor',cat:'MivCast',format:'Criação',access:'Pago',price:'R$ 100',icon:'◇',tag:'MARCA',title:'Vetorização de Logo',desc:'Reconstrução vetorial da sua logo para uso profissional.',img:imgs.brand,special:'service-sale'},
+ {id:'svc-logo',cat:'MivCast',format:'Criação',access:'Pago',price:'R$ 200 a R$ 300',icon:'◇',tag:'MARCA',title:'Criação de Logo',desc:'Criação profissional de logo para sua marca, com arquivos preparados para uso digital, gráfico e físico: PDF, JPG, PNG com fundo transparente, CDR e Photoshop quando aplicável.',img:imgs.brand,special:'service-sale'},
+ {id:'svc-vetor',cat:'MivCast',format:'Criação',access:'Pago',price:'R$ 100',icon:'◇',tag:'MARCA',title:'Vetorização de Logo',desc:'Reconstrução vetorial da sua logo para uso profissional em impressão, fachada, uniforme, materiais digitais e aplicações maiores, com entrega organizada em formatos úteis para gráfica e comunicação.',img:imgs.brand,special:'service-sale'},
  {id:'svc-manual',cat:'MivCast',format:'Branding',access:'Pago',price:'R$ 500',icon:'▣',tag:'MARCA',title:'Manual da Marca',desc:'Organização das principais regras para uso consistente da identidade.',img:imgs.brand,special:'service-sale'},
- {id:'svc-site',cat:'MivCast',format:'Web',access:'Pago',price:'R$ 4.000',icon:'◫',tag:'WEB',title:'Site profissional',desc:'Desenvolvimento de site profissional para apresentar sua empresa e gerar oportunidades.',img:imgs.marketing,special:'service-sale'},
+ {id:'svc-site',cat:'MivCast',format:'Web',access:'Pago',price:'R$ 4.000',icon:'◫',tag:'WEB',title:'Site profissional',desc:'Desenvolvimento de site profissional para apresentar sua empresa com autoridade: história, áreas de atuação, serviços, projetos, depoimentos, contatos, canais e estrutura pensada para gerar confiança e oportunidades.',img:imgs.marketing,special:'service-sale'},
  {id:'svc-loja',cat:'MivCast',format:'Web',access:'Pago',price:'R$ 3.000',icon:'▰',tag:'WEB',title:'Loja Virtual',desc:'Estrutura de e-commerce para apresentar e vender produtos online.',img:imgs.store,special:'service-sale'},
  {id:'svc-lp',cat:'MivCast',format:'Web',access:'Pago',price:'R$ 1.000 a R$ 2.000',icon:'▤',tag:'WEB',title:'Landing Page',desc:'Página focada em campanha, captação ou conversão.',img:imgs.marketing,special:'service-sale'},
  {id:'svc-market',cat:'MivCast',format:'Configuração',access:'Pago',price:'R$ 500',icon:'▦',tag:'MARKETPLACE',title:'Configuração de Marketplace',desc:'Configuração inicial do seu canal de marketplace.',img:imgs.store,special:'service-sale'},
@@ -190,15 +191,15 @@ const items=[
  {id:'svc-institucional',cat:'MivCast',format:'Vídeo',access:'Pago',price:'R$ 100 a R$ 300',icon:'▶',tag:'REDES',title:'Vídeo institucional',desc:'Vídeo mais elaborado para apresentar empresa, serviço, produto ou campanha.',img:imgs.content,special:'service-sale'}
 ];
 const analyses=[
- ['empresa','⌂','Empresa & Estrutura','Como meu negócio deveria estar estruturado para funcionar bem hoje e sustentar onde quero chegar',['Estrutura Ideal do Negócio','Equipe & Organização Ideal','Processos & Produtividade','Tecnologia, IA & Automação','Modelo de Gestão','Capacidade & Gargalos']],
- ['marca','◇','Marca & Posicionamento','Como minha marca deve parecer, se posicionar e conquistar confiança',['Identidade & Apresentação da Marca','Posicionamento & Diferenciação','Autoridade, Confiança & Reputação']],
- ['mercado','⌖','Mercado','Existe mercado, para quem devo vender e como posso superar as alternativas existentes',['Mercado, Oportunidades & Validação','Público & Comportamento','Concorrência & Benchmarking']],
- ['oferta','◌','Produtos, Serviços & Oferta','O que devo vender, como organizar meu portfólio e como transformar produto, preço e oferta em uma escolha atraente',['O que Posso Vender?','Portfólio Estratégico & Performance','Validação Individual de Produto/Serviço','Preço, Valor & Oferta']],
- ['presenca','▰','Presença & Canais','Onde preciso estar e como cada ponto de contato deve funcionar para transmitir valor e facilitar a compra',['Presença Física Ideal','Presença Digital Ideal','Integração Físico + Digital / Omnichannel']],
- ['marketing','✦','Marketing & Aquisição','Como devo atrair as pessoas certas, dentro do meu orçamento, e transformar divulgação em um sistema de aquisição',['Estratégia de Divulgação','Conteúdo & Comunicação','Orgânico & Descoberta','Tráfego Pago','Campanhas & Criativos','Mensuração & Otimização']],
- ['vendas','$','Comercial & Vendas','Qual processo comercial devo usar para transformar mais oportunidades em vendas sem depender de improviso',['Funil & Processo Comercial','Atendimento, Argumentação & Conversão','CRM & Gestão Comercial','Equipe & Performance Comercial']],
- ['clientes','♥','Clientes','Como transformar a experiência do cliente em confiança, recompra, indicação e força de marca',['Jornada do Cliente','Experiência & Branding na Prática','Satisfação & Pós-venda','Fidelização, Retenção & Recompra','Indicação & Advocacia da Marca']],
- ['gestao','↗','Gestão, Resultados & Evolução','Como administrar continuamente o que foi implantado, medir resultados e evoluir sem perder controle',['Gestão Financeira & Rentabilidade','Indicadores, Metas & Planejamento','Gestão de Marketing','Gestão de Redes & Conteúdo','Gestão Comercial','Gestão de Pessoas','Processos & Produtividade','Tecnologia & Automação','Riscos & Capacidade','Plano de Evolução Contínua']]
+ ['empresa','⌂','Como estruturar melhor o seu negócio','Veja o que seu negócio já tem, o que ainda falta e o que pode ser melhorado para construir uma estrutura mais completa, profissional e preparada para crescer.',['Estrutura Ideal do Negócio','Equipe & Organização Ideal','Processos & Produtividade','Tecnologia, IA & Automação','Modelo de Gestão','Capacidade & Gargalos']],
+ ['marca','◇','Como deixar sua marca mais forte e confiável','Avalie se sua marca transmite profissionalismo, confiança, clareza e diferenciação nos pontos que o cliente vê antes de escolher você.',['Identidade & Apresentação da Marca','Posicionamento & Diferenciação','Autoridade, Confiança & Reputação']],
+ ['mercado','⌖','Como entender melhor seu mercado e seus concorrentes','Veja se existe oportunidade real, quem você deve priorizar como cliente e como sua empresa pode se posicionar melhor diante das alternativas do mercado.',['Mercado, Oportunidades & Validação','Público & Comportamento','Concorrência & Benchmarking']],
+ ['oferta','◌','Como melhorar seus produtos, serviços e ofertas','Organize o que você vende, como apresenta valor, quais opções fazem sentido e como transformar sua oferta em uma escolha mais clara e atraente.',['O que Posso Vender?','Portfólio Estratégico & Performance','Validação Individual de Produto/Serviço','Preço, Valor & Oferta']],
+ ['presenca','▰','Como melhorar sua presença física e digital','Avalie onde sua empresa precisa aparecer, como cada canal deve funcionar e se o cliente encontra caminhos fáceis para confiar, falar e comprar.',['Presença Física Ideal','Presença Digital Ideal','Integração Físico + Digital / Omnichannel']],
+ ['marketing','✦','Como atrair mais clientes com mais estratégia','Veja como divulgar melhor, criar conteúdo, organizar campanhas e transformar marketing em um sistema de procura, relacionamento e vendas.',['Estratégia de Divulgação','Conteúdo & Comunicação','Orgânico & Descoberta','Tráfego Pago','Campanhas & Criativos','Mensuração & Otimização']],
+ ['vendas','$','Como vender mais com processo e atendimento melhor','Avalie se sua empresa conduz oportunidades com clareza, responde objeções, organiza contatos e transforma interesse em venda sem depender de improviso.',['Funil & Processo Comercial','Atendimento, Argumentação & Conversão','CRM & Gestão Comercial','Equipe & Performance Comercial']],
+ ['clientes','♥','Como melhorar a experiência e fazer clientes voltarem','Veja como acolher, atender, acompanhar, fidelizar e transformar clientes satisfeitos em recompra, indicação e prova de confiança.',['Jornada do Cliente','Experiência & Branding na Prática','Satisfação & Pós-venda','Fidelização, Retenção & Recompra','Indicação & Advocacia da Marca']],
+ ['gestao','↗','Como acompanhar resultados e evoluir com controle','Avalie finanças, metas, equipe, processos, tecnologia e rotina para melhorar continuamente sem perder organização ou direção.',['Gestão Financeira & Rentabilidade','Indicadores, Metas & Planejamento','Gestão de Marketing','Gestão de Redes & Conteúdo','Gestão Comercial','Gestão de Pessoas','Processos & Produtividade','Tecnologia & Automação','Riscos & Capacidade','Plano de Evolução Contínua']]
 ];
 function save(){localStorage.setItem('mivV3Profile',JSON.stringify(state.profile));localStorage.setItem('mivV3Fav',JSON.stringify(state.favorites));localStorage.setItem('mivV3AnalysisFav',JSON.stringify(state.analysisFav));localStorage.setItem('mivV3History',JSON.stringify(state.history));localStorage.setItem('mivV3Reports',JSON.stringify(state.reports))}
 function getItem(id){return items.find(x=>x.id===id)||marketTrendItems.find(x=>x.id===id)||competitorInsightItems.find(x=>x.id===id)}
@@ -249,20 +250,20 @@ function nicheThumb(name){return localNicheHeroPaths(name)[1]}
 function renderNiches(){const dl=document.getElementById('nicheList');dl.innerHTML=Object.keys(niches).sort((a,b)=>a.localeCompare(b,'pt-BR')).map(n=>`<option value="${n}"></option>`).join('');document.getElementById('nicheGroups').innerHTML=`<div class="nicheCarouselActions"><button type="button" data-niche-prev>‹</button><button type="button" data-niche-next>›</button></div><div class="niche-carousel" id="nicheCarousel">${groups.map(g=>`<article class="niche-orbit" data-niche-card="${g.name}"><button class="niche-orbit-photo" data-niche="${g.name}" aria-label="Selecionar ${g.name}"><img src="${nicheThumb(g.name)}" alt="" loading="lazy" onerror="this.remove()"></button><strong>${g.name}</strong><div class="subchips">${g.subs.slice(0,7).map(s=>`<button data-niche="${s}">${s}</button>`).join('')}</div></article>`).join('')}</div>`;document.querySelectorAll('[data-niche]').forEach(b=>b.onclick=()=>{document.getElementById('nicheSearch').value=b.dataset.niche;applyTheme(b.dataset.niche,niches[b.dataset.niche].theme,true)});document.querySelector('[data-niche-prev]')?.addEventListener('click',()=>document.getElementById('nicheCarousel')?.scrollBy({left:-760,behavior:'smooth'}));document.querySelector('[data-niche-next]')?.addEventListener('click',()=>document.getElementById('nicheCarousel')?.scrollBy({left:760,behavior:'smooth'}))}
 function imgFor(item){const img=item.img||'';return img&&!img.includes('picsum.photos')?img:(cardImageMap[item.id]||img)}
 function card(item){const saved=state.favorites.includes(item.id);const unlocked=hasItemAccess(item);const lock=item.access==='Grátis'?`<span class="lock-badge free-badge">GRÁTIS</span>`:unlocked?`<span class="lock-badge free-badge">✓ LIBERADO</span>`:`<span class="lock-badge">🔒 PRO ${item.access==='Pago'?'· ou '+(item.price||'avulso'):''}</span>`;return `<article class="card"><div class="cardImg cardImgFallback"><div class="cardFallbackLabel"><span>${item.icon||'◆'}</span><small>${item.cat||'MIV ECOSYSTEM'}</small></div><img src="${imgFor(item)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">${lock}<button class="heart ${saved?'saved':''}" data-fav="${item.id}">${saved?'♥':'♡'}</button></div><div class="cardBody"><div class="meta"><span>${item.tag}</span><small>${item.format}</small></div><h3>${item.title}</h3><p>${item.desc}</p><button class="open" data-open="${item.id}">Abrir →</button></div></article>`}
-const bases={marketing:['calendario','canais','local','equipe-marketing','clientes-marketing','parcerias','identidade-marketing','brindes'],brand:['branding-fisico','branding-digital','identidade','diferenciacao'],sales:['ticket','followup','fidelizacao','whatsapp','oferta'],tools:['tool-calendario','markia-app','agendamentos','financeiro','orcamentos'],learn:['livro-admin-sabedoria','livro-branding-marketing','livro-digital-influencer','livro-youtuber','video-marketing-base','video-branding-base','video-vendas-base','video-conteudo-base'],consult:['consult-markia','mentoria-area','consult-setor','consult-completa','consult-acomp'],mivcast:['svc-logo','svc-vetor','svc-manual','svc-site','svc-loja','svc-lp','svc-market','svc-market40','svc-google','svc-instagram','svc-15artes','svc-facebook','svc-whatsapp','svc-link','svc-linkedin','svc-midiakit','svc-impressos','svc-arte','svc-video','svc-institucional']};
+const bases={marketing:['calendario','canais','local','equipe-marketing','clientes-marketing','parcerias','brindes'],brand:['identidade','branding-fisico','branding-digital','diferenciacao'],sales:['ticket','vendas-tecnicas','followup','whatsapp','oferta'],tools:['tool-calendario','markia-app','agendamentos','financeiro','orcamentos'],learn:['livro-admin-sabedoria','livro-branding-marketing','livro-digital-influencer','livro-youtuber','video-marketing-base','video-branding-base','video-vendas-base','video-conteudo-base'],consult:['consult-markia','mentoria-area','consult-setor','consult-completa','consult-acomp'],mivcast:['svc-logo','svc-vetor','svc-manual','svc-site','svc-loja','svc-lp','svc-market','svc-market40','svc-google','svc-instagram','svc-15artes','svc-facebook','svc-whatsapp','svc-link','svc-linkedin','svc-midiakit','svc-impressos','svc-arte','svc-video','svc-institucional']};
 function recommended(){
  const t=state.profile.theme;
  const map={
-  medical:['local','branding-digital','clientes-marketing','whatsapp','guia-google','video-oferta'],
-  health:['clientes-marketing','branding-digital','parcerias','whatsapp','guia-conteudo','calendario'],
-  fitness:['clientes-marketing','calendario','whatsapp','fidelizacao','video-oferta','brindes'],
-  agency:['canais','calendario','identidade-marketing','video-trafego','ia-negocios','diferenciacao'],
-  food:['local','calendario','ticket','clientes-marketing','brindes','fidelizacao'],
-  retail:['calendario','identidade-marketing','ticket','whatsapp','branding-fisico','fidelizacao'],
-  beauty:['clientes-marketing','branding-digital','calendario','whatsapp','fidelizacao','local'],
-  legal:['branding-digital','clientes-marketing','local','diferenciacao','guia-google','calendario'],
-  construction:['local','identidade-marketing','whatsapp','branding-fisico','parcerias','calendario'],
-  auto:['local','clientes-marketing','whatsapp','fidelizacao','brindes','calendario']
+  medical:['local','branding-digital','clientes-marketing','whatsapp','video-marketing-base','video-vendas-base'],
+  health:['clientes-marketing','branding-digital','parcerias','whatsapp','video-conteudo-base','calendario'],
+  fitness:['clientes-marketing','calendario','whatsapp','followup','video-vendas-base','brindes'],
+  agency:['canais','calendario','identidade','video-marketing-base','markia-app','diferenciacao'],
+  food:['local','calendario','ticket','clientes-marketing','brindes','followup'],
+  retail:['calendario','identidade','ticket','whatsapp','branding-fisico','followup'],
+  beauty:['clientes-marketing','branding-digital','calendario','whatsapp','followup','local'],
+  legal:['branding-digital','clientes-marketing','local','diferenciacao','video-marketing-base','calendario'],
+  construction:['local','identidade','whatsapp','branding-fisico','parcerias','calendario'],
+  auto:['local','clientes-marketing','whatsapp','followup','brindes','calendario']
  };
  return (map[t]||['calendario','canais','local','ticket','branding-digital','guia-google']).filter(id=>getItem(id));
 }
@@ -308,13 +309,13 @@ async function toggleFav(id){const adding=!state.favorites.includes(id);state.fa
 const businessChecklistDefinitions={
  'branding-fisico':{
   category:'POSICIONAMENTO & MARCA',
-  title:'Branding físico',
-  intro:'A marca também é percebida no ambiente, na fachada, nos materiais e na experiência presencial. Este checklist ajuda a transformar pontos físicos em sinais de confiança, coerência e posicionamento.',
+  title:'Estratégias para fortalecer sua marca no ambiente físico',
+  intro:'A marca também é percebida na fachada, no ambiente, na sinalização, nos uniformes, nas embalagens, nos impressos e na experiência presencial. Este checklist ajuda a transformar pontos físicos em sinais de confiança, coerência e posicionamento.',
   sections:[
    {name:'Ambiente e percepção',items:[
     ['facade','A fachada transmite o nível de profissionalismo desejado','Nome, leitura, conservação, iluminação, materiais e coerência visual influenciam a primeira impressão.'],
     ['environment','O ambiente reforça o posicionamento da marca','Organização, limpeza, conforto, estética e detalhes devem combinar com a proposta da empresa.'],
-    ['signage','A sinalização facilita a experiência','Placas, setores, preços e orientações devem ser claros e coerentes com a identidade.'],
+    ['signage','A sinalização facilita a experiência','Placas, setores, preços, cardápios, etiquetas, crachás e orientações devem ser claros e coerentes com a identidade.'],
     ['sensory','Os sentidos foram considerados na experiência','Som, aroma, iluminação, textura e apresentação podem reforçar a percepção da marca quando aplicáveis.']
    ]},
    {name:'Equipe e materiais',items:[
@@ -327,7 +328,7 @@ const businessChecklistDefinitions={
  },
  'branding-digital':{
   category:'POSICIONAMENTO & MARCA',
-  title:'Branding digital',
+  title:'Como fortalecer sua marca no ambiente digital',
   intro:'No digital, cada contato reforça ou enfraquece a percepção da marca. Revise como identidade, linguagem, confiança e experiência aparecem nos canais online.',
   sections:[
    {name:'Consistência digital',items:[
@@ -346,7 +347,7 @@ const businessChecklistDefinitions={
  },
  'identidade':{
   category:'POSICIONAMENTO & MARCA',
-  title:'Identidade visual profissional',
+  title:'Como construir uma identidade visual profissional',
   intro:'Uma identidade visual profissional precisa ser reconhecível, coerente e aplicável no dia a dia. Este checklist mostra o que precisa existir para a marca funcionar de verdade.',
   sections:[
    {name:'Base da identidade',items:[
@@ -365,7 +366,7 @@ const businessChecklistDefinitions={
  },
  'diferenciacao':{
   category:'POSICIONAMENTO & MARCA',
-  title:'Diferenciação competitiva',
+  title:'Estratégias para se diferenciar dos concorrentes',
   intro:'Diferenciação não é apenas preço. Este checklist ajuda a identificar e comunicar motivos reais para o cliente escolher sua empresa.',
   sections:[
    {name:'Diferenciais reais',items:[
@@ -384,7 +385,7 @@ const businessChecklistDefinitions={
  },
  'ticket':{
   category:'VENDAS & CRESCIMENTO',
-  title:'Aumente o ticket médio',
+  title:'Estratégias para aumentar o ticket médio',
   intro:'Aumentar ticket não significa empurrar mais produtos. O objetivo é aumentar valor percebido e montar combinações que façam sentido para o cliente e para a margem.',
   sections:[
    {name:'Oferta e combinação',items:[
@@ -401,22 +402,43 @@ const businessChecklistDefinitions={
    ]}
   ]
  },
+ 'vendas-tecnicas':{
+  category:'VENDAS & CRESCIMENTO',
+  title:'Estratégias e técnicas para aumentar as vendas',
+  intro:'Vender melhor exige abordagem, escuta, clareza, prova e condução. Este checklist ajuda você e sua equipe a revisar pontos práticos de comunicação, persuasão, percepção de valor e fechamento.',
+  sections:[
+   {name:'Abordagem e comunicação',items:[
+    ['opening','A abordagem inicial acolhe a pessoa e abre conversa?','A primeira frase precisa deixar a pessoa confortável e mostrar que você entendeu o contexto dela.'],
+    ['questions','Vocês fazem perguntas antes de apresentar preço ou solução?','Boas perguntas revelam necessidade, urgência, objeções e o que realmente importa para o cliente.'],
+    ['listening','A equipe pratica escuta ativa?','Escutar, confirmar entendimento e responder com contexto aumenta confiança e reduz ruído.'],
+    ['voice_body','Tom de voz, postura e contato visual ajudam a venda?','Comunicação verbal e corporal influenciam segurança, atenção e percepção de profissionalismo.']
+   ]},
+   {name:'Persuasão e fechamento',items:[
+    ['value','A equipe sabe explicar valor antes de falar de preço?','Mostre resultado, economia de tempo, segurança, conveniência, transformação ou benefício percebido.'],
+    ['proof','Existe prova social ou evidência de confiança?','Depoimentos, avaliações, casos, antes e depois ou demonstrações ajudam o cliente a se sentir mais seguro.'],
+    ['objections','Objeções comuns têm respostas preparadas?','Preço, prazo, confiança, comparação e urgência precisam de respostas claras e honestas.'],
+    ['closing','Existe uma chamada para ação clara no fechamento?','Diga exatamente qual é o próximo passo: agendar, pagar, escolher opção, enviar dados ou confirmar pedido.']
+   ]}
+  ]
+ },
  'followup':{
   category:'VENDAS & CRESCIMENTO',
-  title:'Follow-up que recupera oportunidades',
-  intro:'Muitos clientes não dizem “não”; apenas param de responder. Um bom follow-up cria continuidade sem parecer insistência.',
+  title:'Estratégias de pós-venda, fidelização, recompra e indicação',
+  intro:'O relacionamento depois da venda pode aumentar satisfação, recompra, indicação e confiança. Este checklist une follow-up, pós-venda, fidelização e reativação para manter clientes próximos sem parecer insistente.',
   sections:[
    {name:'Processo',items:[
     ['stages','Existe definição de etapas do lead','Saiba quem pediu informação, orçamento, proposta e quem ficou sem resposta.'],
     ['timing','Há cadência de retorno','Defina quando e quantas vezes acompanhar.'],
     ['context','O retorno cita o contexto real','Evite mensagens genéricas como “e aí, decidiu?”.'],
-    ['value','Cada contato acrescenta valor','Responda dúvida, envie prova, comparação ou informação útil.']
+    ['value','Cada contato acrescenta valor','Responda dúvida, envie prova, comparação, informação útil ou um próximo passo claro.']
    ]},
-   {name:'Controle',items:[
+   {name:'Controle, recompra e indicação',items:[
     ['crm','Leads ficam registrados','Use CRM, planilha ou sistema para não depender da memória.'],
     ['status','Existe status de follow-up','Em aberto, aguardando, perdido, convertido etc.'],
     ['reason','Motivos de perda são anotados','Preço, prazo, concorrência, silêncio ou falta de fit.'],
-    ['review','O processo é revisado','Melhore scripts e timing com base no que converte.']
+    ['after_sales','Existe pós-venda depois da compra','Acompanhe satisfação, uso, suporte e próximos passos.'],
+    ['reactivation','Existe reativação de clientes antigos','Retome relacionamento com contexto e motivo real.'],
+    ['referral','Clientes satisfeitos são convidados a indicar','Facilite a indicação quando a experiência foi positiva.']
    ]}
   ]
  },
@@ -441,7 +463,7 @@ const businessChecklistDefinitions={
  },
  'whatsapp':{
   category:'VENDAS & CRESCIMENTO',
-  title:'Script inteligente de WhatsApp',
+  title:'Mensagens de atendimento e vendas para WhatsApp',
   intro:'O WhatsApp precisa conduzir a conversa sem parecer robótico. Revise como sua equipe recebe, entende, orienta e fecha oportunidades.',
   sections:[
    {name:'Condução',items:[
@@ -460,7 +482,7 @@ const businessChecklistDefinitions={
  },
  'oferta':{
   category:'VENDAS & CRESCIMENTO',
-  title:'Montador de oferta',
+  title:'Como criar ofertas que aumentam as chances de venda',
   intro:'Uma oferta forte organiza valor, condições e decisão. Revise os elementos que fazem uma proposta ser clara e atraente sem depender apenas de desconto.',
   sections:[
    {name:'Estrutura da oferta',items:[
@@ -482,8 +504,8 @@ const businessChecklistDefinitions={
 
 const marketingStrategyDefinitions={
  'local':{
-  title:'Estratégias de marketing para negócio físico e local',
-  intro:'Revise os pontos que fazem uma empresa local ser encontrada, percebida como profissional e escolhida por quem está perto.',
+  title:'Estratégias para atrair clientes para seu negócio local',
+  intro:'Revise os pontos que fazem uma empresa local ser encontrada, percebida como profissional e escolhida por quem está perto, usando fachada, Google, mapas, avaliações, vizinhança, eventos e parcerias.',
   sections:[
    {name:'Presença física e descoberta',items:[
     ['facade','Fachada identifica claramente a empresa','Nome, leitura, conservação, iluminação e coerência visual ajudam o público a reconhecer e confiar no negócio.'],
@@ -501,8 +523,8 @@ const marketingStrategyDefinitions={
   ]
  },
  'equipe-marketing':{
-  title:'Estratégias de marketing para equipes e funcionários',
-  intro:'Sua equipe também comunica a marca. Este checklist ajuda a transformar atendimento, bastidores, indicação e participação dos colaboradores em força de marketing.',
+  title:'Como sua equipe pode ajudar a empresa a crescer',
+  intro:'Sua equipe também comunica a marca. Este checklist ajuda a transformar atendimento, bastidores, indicações, campanhas internas, metas e participação dos colaboradores em força de marketing.',
   sections:[
    {name:'Equipe como parte da marca',items:[
     ['service_standard','Existe padrão de atendimento coerente com a marca','A forma de receber, responder e orientar clientes deve reforçar o posicionamento.'],
@@ -519,8 +541,8 @@ const marketingStrategyDefinitions={
   ]
  },
  'clientes-marketing':{
-  title:'Estratégias de marketing para clientes',
-  intro:'Marketing não termina na venda. Estruture relacionamento, pós-venda, reativação, recompra, indicação e comunicação adequada ao estágio de cada cliente.',
+  title:'Estratégias para atrair e fidelizar clientes',
+  intro:'Marketing não termina na venda. Estruture relacionamento, pós-venda, reativação, recompra, indicação, comunidade e comunicação adequada ao estágio de cada cliente.',
   sections:[
    {name:'Depois da compra',items:[
     ['welcome','Existe uma boa experiência logo após a compra?','Confirmação, orientações e expectativas claras reduzem insegurança.'],
@@ -538,8 +560,8 @@ const marketingStrategyDefinitions={
   ]
  },
  'parcerias':{
-  title:'Influenciadores e todos os tipos de parceria',
-  intro:'Parcerias podem ampliar confiança, alcance e oferta. O importante é escolher parceiros coerentes, definir papéis e medir se a ação realmente trouxe resultado.',
+  title:'Estratégias com influenciadores e parcerias',
+  intro:'Parcerias podem ampliar confiança, alcance e oferta. O importante é encontrar parceiros e influenciadores coerentes, definir proposta, combinar entregas e medir se a ação realmente trouxe resultado.',
   sections:[
    {name:'Mapeamento',items:[
     ['complementary','Negócios complementares foram identificados','Procure empresas que atendam o mesmo público sem competir diretamente.'],
@@ -576,8 +598,8 @@ const marketingStrategyDefinitions={
   ]
  },
  'brindes':{
-  title:'Brindes & bonificações',
-  intro:'Brindes e bônus funcionam melhor quando têm propósito. Revise como usar lembrança, surpresa, recompensa e benefício sem desvalorizar sua oferta.',
+  title:'Estratégias com brindes, bônus e recompensas',
+  intro:'Brindes, bônus, mimos e recompensas funcionam melhor quando têm propósito. Revise o que oferecer, quando oferecer e como usar cada ação para encantar, gerar indicação, recompra e lembrança sem desvalorizar sua oferta.',
   sections:[
    {name:'Estratégia',items:[
     ['objective','Cada brinde tem um objetivo definido','Pode ser lembrança, agradecimento, ativação, indicação, fidelização ou experiência.'],
@@ -740,6 +762,16 @@ appendChecklistSection(businessChecklistDefinitions,'ticket','Pontos avançados'
  ['Usar frete progressivo quando aplicável','Frete pode influenciar cesta e decisão.'],
  ['Adaptar ticket por perfil','Clientes diferentes aceitam composições diferentes.'],
  ['Proteger margem','Não aumente ticket com itens que reduzem lucro real.']
+]);
+appendChecklistSection(businessChecklistDefinitions,'vendas-tecnicas','Pontos avançados',[
+ ['Usar gatilhos mentais com ética','Autoridade, prova social, urgência e escassez só devem aparecer quando forem verdadeiros.'],
+ ['Organizar roteiro de abordagem','A equipe precisa saber como iniciar, diagnosticar, apresentar, contornar objeções e fechar.'],
+ ['Treinar perguntas estratégicas','Perguntas boas ajudam o cliente a perceber necessidade, prioridade e valor.'],
+ ['Usar os cinco sentidos quando aplicável','Ambiente, som, aroma, toque, demonstração e visual podem aumentar percepção de valor.'],
+ ['Praticar tratamento de objeções','Preço, prazo, confiança e comparação precisam ser trabalhados sem confronto.'],
+ ['Definir técnica de fechamento','Resumo da decisão, escolha guiada, próximo passo e confirmação reduzem indecisão.'],
+ ['Medir conversão por vendedor ou canal','Sem medição, a empresa não sabe o que precisa treinar.'],
+ ['Revisar vendas perdidas','Toda venda perdida pode revelar uma melhoria na oferta, atendimento ou comunicação.']
 ]);
 appendChecklistSection(businessChecklistDefinitions,'followup','Pontos avançados',[
  ['Definir cadência por estágio','Lead novo, orçamento enviado e quase fechamento pedem ritmos diferentes.'],
@@ -1036,8 +1068,12 @@ channelDefinitions.forEach(ch=>normalizeChecklistItems(ch.items));
 
 function getChannelState(){try{return JSON.parse(localStorage.getItem('mivChannelChecklist')||'{}')}catch(e){return{}}}
 function setChannelState(data){localStorage.setItem('mivChannelChecklist',JSON.stringify(data));persistProgress('channels','canais',data)}
-function channelProgress(ch,stateMap){const vals=ch.items.map(i=>stateMap[`${ch.id}:${i[0]}`]).filter(Boolean);const correct=vals.filter(v=>v==='correct').length;const applicable=ch.items.length-vals.filter(v=>v==='na').length;return applicable?Math.round(correct/applicable*100):0}
-function renderChannelSection(ch,stateMap){const p=channelProgress(ch,stateMap);return `<section class="channelSection" id="channel-${ch.id}"><div class="channelSectionHead"><div><span>${ch.group} · ${ch.importance}</span><h3>${ch.name}</h3><p>${ch.intro}</p></div><div class="channelScore"><strong>${p}%</strong><small>estrutura pronta</small></div></div><div class="channelItems">${ch.items.map(item=>{const key=`${ch.id}:${item[0]}`,v=stateMap[key]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-channel-key="${key}"><div class="channelCheckText"><strong>${item[1]}</strong><p>${item[2]}</p></div><div class="channelStates"><button class="${v==='correct'?'active ok':''}" data-check-value="correct">✓ Já está OK</button><button class="${v==='improve'?'active improve':''}" data-check-value="improve">○ Está feito, mas precisa melhorar</button><button class="${v==='na'?'active na':''}" data-check-value="na">× Não fiz, preciso fazer</button></div><div class="pointActions"><button class="paidAction" data-point-suggest data-title="${encodeURIComponent(item[1])}" data-guidance="${encodeURIComponent(item[2])}">🔒 Sugestão para este ponto</button><button class="paidAction" data-point-mark data-title="${encodeURIComponent(item[1])}" data-guidance="${encodeURIComponent(item[2])}">🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div></section>`}
+function checklistStateButtons(value='',attr='data-check-value'){
+ return `<button class="${value==='correct'?'active ok':''}" ${attr}="correct">✓ Já está OK</button><button class="${value==='improve'?'active improve':''}" ${attr}="improve">○ Está feito, mas precisa melhorar</button><button class="${value==='na'?'active na':''}" ${attr}="na">× Não fiz, preciso fazer</button><button class="${value==='skip'?'active skip':''}" ${attr}="skip">— Não tenho interesse nisso</button>`;
+}
+function progressFromValues(total,values=[]){const applicable=Math.max(0,total-values.filter(v=>v==='skip').length);return applicable?Math.round(values.filter(v=>v==='correct').length/applicable*100):0}
+function channelProgress(ch,stateMap){const vals=ch.items.map(i=>stateMap[`${ch.id}:${i[0]}`]).filter(Boolean);return progressFromValues(ch.items.length,vals)}
+function renderChannelSection(ch,stateMap){const p=channelProgress(ch,stateMap);return `<section class="channelSection" id="channel-${ch.id}"><div class="channelSectionHead"><div><span>${ch.group} · ${ch.importance}</span><h3>${ch.name}</h3><p>${ch.intro}</p></div><div class="channelScore"><strong>${p}%</strong><small>estrutura pronta</small></div></div><div class="channelItems">${ch.items.map(item=>{const key=`${ch.id}:${item[0]}`,v=stateMap[key]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-channel-key="${key}"><div class="channelCheckText"><strong>${item[1]}</strong><p>${item[2]}</p></div><div class="channelStates">${checklistStateButtons(v,'data-check-value')}</div><div class="pointActions"><button class="paidAction" data-point-suggest data-title="${encodeURIComponent(item[1])}" data-guidance="${encodeURIComponent(item[2])}">🔒 Sugestão para este ponto</button><button class="paidAction" data-point-mark data-title="${encodeURIComponent(item[1])}" data-guidance="${encodeURIComponent(item[2])}">🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div></section>`}
 function renderChannelsModule(){const body=document.getElementById('detailBody'),stateMap=getChannelState();body.innerHTML=`${profileNotice()}<span class="eyebrow">CHECKLIST DE PROFISSIONALIZAÇÃO</span><h2>Como estão seus canais de comunicação?</h2><p>Revise cada canal, marque o que já está certo e acompanhe o que falta melhorar. Seu progresso fica salvo e pode aparecer nos relatórios da sua Central.</p><div class="channelSummary">${channelDefinitions.map(ch=>`<button class="channelJump" data-channel-jump="${ch.id}"><span>${ch.group}</span><strong>${ch.name}</strong><small>${channelProgress(ch,stateMap)}% concluído</small></button>`).join('')}</div><div id="channelChecklist">${channelDefinitions.map(ch=>renderChannelSection(ch,stateMap)).join('')}</div><div class="channelReportActions"><button class="primary" id="channelSaveReport">Salvar relatório</button><button class="outline" id="channelPrint">Imprimir relatório</button></div>`;bindChannelChecklist()}
 function bindChannelChecklist(){
  document.querySelectorAll('[data-company-profile]').forEach(b=>b.onclick=goCompanyProfile);
@@ -1054,9 +1090,9 @@ function bindChannelChecklist(){
  document.querySelectorAll('[data-point-mark]').forEach(b=>b.onclick=()=>{if(!hasProAccess()){openPlanPaywall('MARK.IA contextual');return}askMarkAboutPoint(decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance))});
  document.getElementById('channelSaveReport')?.addEventListener('click',()=>{
    const data=getChannelState(),total=channelDefinitions.reduce((n,c)=>n+c.items.length,0),answered=Object.keys(data).length,correct=Object.values(data).filter(v=>v==='correct').length;
-   saveAndOpenReport({name:'Relatório · Canais de Comunicação',date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'channels',sourceItemId:'canais',answered,correct,total,progress:total?Math.round(correct/Math.max(1,total-Object.values(data).filter(v=>v==='na').length)*100):0,checklist:flattenChannelChecklist(data)}});
+   saveAndOpenReport({name:'Relatório · Canais de Comunicação',date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'channels',sourceItemId:'canais',answered,correct,total,progress:progressFromValues(total,Object.values(data)),checklist:flattenChannelChecklist(data)}});
  });
- document.getElementById('channelPrint')?.addEventListener('click',()=>{const data=getChannelState(),total=channelDefinitions.reduce((n,c)=>n+c.items.length,0),answered=Object.keys(data).length,correct=Object.values(data).filter(v=>v==='correct').length;saveAndOpenReport({name:'Relatório · Canais de Comunicação',date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'channels',sourceItemId:'canais',answered,correct,total,progress:total?Math.round(correct/Math.max(1,total-Object.values(data).filter(v=>v==='na').length)*100):0,checklist:flattenChannelChecklist(data)}},true)})
+ document.getElementById('channelPrint')?.addEventListener('click',()=>{const data=getChannelState(),total=channelDefinitions.reduce((n,c)=>n+c.items.length,0),answered=Object.keys(data).length,correct=Object.values(data).filter(v=>v==='correct').length;saveAndOpenReport({name:'Relatório · Canais de Comunicação',date:new Date().toLocaleDateString('pt-BR'),status:'Salvo',meta:{type:'channels',sourceItemId:'canais',answered,correct,total,progress:progressFromValues(total,Object.values(data)),checklist:flattenChannelChecklist(data)}},true)})
 }
 function showChannelsDetail(item){state.current=item;document.getElementById('detailVisual').style.backgroundImage=`url('${item.img}')`;document.getElementById('detailCat').textContent='MARKETING · CHECKLIST PROFISSIONAL';document.getElementById('detailTitle').textContent=item.title;document.getElementById('detailDesc').textContent='Revise seus canais físicos e digitais, marque o que já está adequado e veja exatamente o que falta profissionalizar.';document.getElementById('favBtn').textContent=state.favorites.includes(item.id)?'♥ Salvo':'♡ Salvar';document.getElementById('useBtn').textContent='Iniciar checklist';document.getElementById('useBtn').onclick=()=>{renderChannelsModule();document.getElementById('detailBody')?.scrollIntoView({behavior:'smooth',block:'start'})};renderChannelsModule();document.getElementById('related').innerHTML=`<div class="relatedItem"><strong>Seu progresso fica salvo</strong><span>Na produção, será sincronizado com Supabase e aparecerá em relatórios.</span></div><div class="relatedItem"><strong>MARK por canal</strong><span>Depois poderá sugerir bio, destaques, estrutura, mensagens e correções específicas.</span></div>`;addHistory(item);route('detail')}
 
@@ -1065,12 +1101,12 @@ function showChannelsDetail(item){state.current=item;document.getElementById('de
 function getBusinessChecklistState(id){try{return JSON.parse(localStorage.getItem('mivBusinessChecklist:'+id)||'{}')}catch(e){return{}}}
 function setBusinessChecklistState(id,data){localStorage.setItem('mivBusinessChecklist:'+id,JSON.stringify(data));persistProgress('business',id,data)}
 function businessChecklistProgress(def,data){
- const items=def.sections.flatMap(s=>s.items),applicable=items.length-Object.values(data).filter(v=>v==='na').length;
- return applicable?Math.round(Object.values(data).filter(v=>v==='correct').length/applicable*100):0;
+ const items=def.sections.flatMap(s=>s.items);
+ return progressFromValues(items.length,Object.values(data));
 }
 function renderBusinessChecklist(item){
  const def=businessChecklistDefinitions[item.id],body=document.getElementById('detailBody'),data=getBusinessChecklistState(item.id),pct=businessChecklistProgress(def,data);
-  body.innerHTML=`${profileNotice()}<span class="eyebrow">${def.category} · CHECKLIST</span><h2>${def.title}</h2><p>${def.intro}</p><div class="strategyProgress"><div><strong>${pct}%</strong><span>estrutura pronta</span></div><div class="strategyProgressBar"><i style="width:${pct}%"></i></div></div>${def.sections.map((sec,si)=>`<section class="strategySection"><span class="eyebrow">${sec.name.toUpperCase()}</span><div class="channelItems">${sec.items.map(it=>{const key=`${si}:${it[0]}`,v=data[key]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-business-key="${key}"><div class="channelCheckText"><strong>${it[1]}</strong><p>${it[2]}</p></div><div class="channelStates"><button class="${v==='correct'?'active ok':''}" data-business-value="correct">✓ Já está OK</button><button class="${v==='improve'?'active improve':''}" data-business-value="improve">○ Está feito, mas precisa melhorar</button><button class="${v==='na'?'active na':''}" data-business-value="na">× Não fiz, preciso fazer</button></div><div class="pointActions"><button class="paidAction" data-point-suggest data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Sugestão para este ponto</button><button class="paidAction" data-point-mark data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div></section>`).join('')}<div class="channelReportActions"><button class="primary" id="businessSaveReport">Salvar relatório</button><button class="outline" id="businessPrint">Imprimir relatório</button></div>`;
+  body.innerHTML=`${profileNotice()}<span class="eyebrow">${def.category} · CHECKLIST</span><h2>${def.title}</h2><p>${def.intro}</p><div class="strategyProgress"><div><strong>${pct}%</strong><span>estrutura pronta</span></div><div class="strategyProgressBar"><i style="width:${pct}%"></i></div></div>${def.sections.map((sec,si)=>`<section class="strategySection"><span class="eyebrow">${sec.name.toUpperCase()}</span><div class="channelItems">${sec.items.map(it=>{const key=`${si}:${it[0]}`,v=data[key]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-business-key="${key}"><div class="channelCheckText"><strong>${it[1]}</strong><p>${it[2]}</p></div><div class="channelStates">${checklistStateButtons(v,'data-business-value')}</div><div class="pointActions"><button class="paidAction" data-point-suggest data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Sugestão para este ponto</button><button class="paidAction" data-point-mark data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div></section>`).join('')}<div class="channelReportActions"><button class="primary" id="businessSaveReport">Salvar relatório</button><button class="outline" id="businessPrint">Imprimir relatório</button></div>`;
  document.querySelectorAll('[data-company-profile]').forEach(b=>b.onclick=goCompanyProfile);
  document.querySelectorAll('[data-business-value]').forEach(b=>b.onclick=()=>{const row=b.closest('[data-business-key]'),d=getBusinessChecklistState(item.id);d[row.dataset.businessKey]=b.dataset.businessValue;setBusinessChecklistState(item.id,d);renderBusinessChecklist(item);toast('Progresso salvo.')});
   document.querySelectorAll('[data-point-suggest]').forEach(b=>b.onclick=()=>{if(!hasProAccess()){openPlanPaywall('Sugestões personalizadas');return}const row=b.closest('.channelCheckItem');renderPointSuggestion(row,decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance),'ponto do checklist')});
@@ -1085,12 +1121,12 @@ function showBusinessChecklist(item){
 function getMarketingChecklistState(id){try{return JSON.parse(localStorage.getItem('mivMarketingChecklist:'+id)||'{}')}catch(e){return{}}}
 function setMarketingChecklistState(id,data){localStorage.setItem('mivMarketingChecklist:'+id,JSON.stringify(data));persistProgress('marketing',id,data)}
 function marketingChecklistProgress(def,data){
- const items=def.sections.flatMap(s=>s.items),applicable=items.length-Object.values(data).filter(v=>v==='na').length;
- return applicable?Math.round(Object.values(data).filter(v=>v==='correct').length/applicable*100):0;
+ const items=def.sections.flatMap(s=>s.items);
+ return progressFromValues(items.length,Object.values(data));
 }
 function renderMarketingChecklist(item){
  const def=marketingStrategyDefinitions[item.id],body=document.getElementById('detailBody'),data=getMarketingChecklistState(item.id),pct=marketingChecklistProgress(def,data);
-  body.innerHTML=`${profileNotice()}<span class="eyebrow">ESTRATÉGIA + CHECKLIST</span><h2>${def.title}</h2><p>${def.intro}</p><div class="strategyProgress"><div><strong>${pct}%</strong><span>estrutura pronta</span></div><div class="strategyProgressBar"><i style="width:${pct}%"></i></div></div>${def.sections.map((sec,si)=>`<section class="strategySection"><span class="eyebrow">${sec.name.toUpperCase()}</span><div class="channelItems">${sec.items.map(it=>{const key=`${si}:${it[0]}`,v=data[key]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-marketing-key="${key}"><div class="channelCheckText"><strong>${it[1]}</strong><p>${it[2]}</p></div><div class="channelStates"><button class="${v==='correct'?'active ok':''}" data-mkt-value="correct">✓ Já está OK</button><button class="${v==='improve'?'active improve':''}" data-mkt-value="improve">○ Está feito, mas precisa melhorar</button><button class="${v==='na'?'active na':''}" data-mkt-value="na">× Não fiz, preciso fazer</button></div><div class="pointActions"><button class="paidAction" data-point-suggest data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Sugestão para este ponto</button><button class="paidAction" data-point-mark data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div></section>`).join('')}<div class="channelReportActions"><button class="primary" id="mktSaveReport">Salvar relatório</button><button class="outline" id="mktPrint">Imprimir relatório</button></div>`;
+  body.innerHTML=`${profileNotice()}<span class="eyebrow">ESTRATÉGIA + CHECKLIST</span><h2>${def.title}</h2><p>${def.intro}</p><div class="strategyProgress"><div><strong>${pct}%</strong><span>estrutura pronta</span></div><div class="strategyProgressBar"><i style="width:${pct}%"></i></div></div>${def.sections.map((sec,si)=>`<section class="strategySection"><span class="eyebrow">${sec.name.toUpperCase()}</span><div class="channelItems">${sec.items.map(it=>{const key=`${si}:${it[0]}`,v=data[key]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-marketing-key="${key}"><div class="channelCheckText"><strong>${it[1]}</strong><p>${it[2]}</p></div><div class="channelStates">${checklistStateButtons(v,'data-mkt-value')}</div><div class="pointActions"><button class="paidAction" data-point-suggest data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Sugestão para este ponto</button><button class="paidAction" data-point-mark data-title="${encodeURIComponent(it[1])}" data-guidance="${encodeURIComponent(it[2])}">🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div></section>`).join('')}<div class="channelReportActions"><button class="primary" id="mktSaveReport">Salvar relatório</button><button class="outline" id="mktPrint">Imprimir relatório</button></div>`;
  document.querySelectorAll('[data-company-profile]').forEach(b=>b.onclick=goCompanyProfile);
  document.querySelectorAll('[data-mkt-value]').forEach(b=>b.onclick=()=>{const row=b.closest('[data-marketing-key]'),d=getMarketingChecklistState(item.id);d[row.dataset.marketingKey]=b.dataset.mktValue;setMarketingChecklistState(item.id,d);renderMarketingChecklist(item);toast('Progresso salvo.')});
   document.querySelectorAll('[data-point-suggest]').forEach(b=>b.onclick=()=>{if(!hasProAccess()){openPlanPaywall('Sugestões personalizadas');return}const row=b.closest('.channelCheckItem');renderPointSuggestion(row,decodeURIComponent(b.dataset.title),decodeURIComponent(b.dataset.guidance),'ponto da estratégia')});
@@ -1233,6 +1269,22 @@ const analysisDepthPoints={
  'Mensuração & Otimização':['Origem dos leads','Conversão por canal','Custo por oportunidade','Taxa de fechamento','Recompra','Ajustes por evidência']
 };
 function detailedAnalysisPoints(basePoints,sub){const extra=analysisDepthPoints[sub]||[];return [...basePoints,...extra.filter(x=>!basePoints.includes(x))]}
+function analysisPointGuidance(point,id='',sub=''){
+ const p=String(point||'').toLowerCase();
+ if(p.includes('cta'))return 'Veja se a pessoa entende claramente o que deve fazer agora: chamar, agendar, comprar, pedir orçamento, enviar dados ou escolher uma opção.';
+ if(p.includes('preço')||p.includes('valor'))return 'Compare se o preço está explicado pelo valor entregue, pela confiança transmitida e pelas condições oferecidas.';
+ if(p.includes('cliente')||p.includes('público'))return 'Pense em quem compra de verdade, o que essa pessoa valoriza, quais dúvidas ela tem e o que faz ela escolher ou desistir.';
+ if(p.includes('concorr'))return 'Observe referências e concorrentes para entender o que eles fazem bem, o que você pode adaptar e o que não deve copiar.';
+ if(p.includes('equipe'))return 'Veja se as pessoas sabem suas funções, entendem a promessa da empresa e conseguem manter um padrão de atendimento.';
+ if(p.includes('canal')||p.includes('instagram')||p.includes('whatsapp')||p.includes('google')||p.includes('site'))return 'Confira se esse canal está atualizado, coerente com a marca e facilita o próximo passo do cliente.';
+ if(p.includes('oferta')||p.includes('produto')||p.includes('serviço'))return 'Avalie se a oferta está clara, desejável, fácil de entender e conectada ao problema que o cliente quer resolver.';
+ if(p.includes('processo')||p.includes('produtividade'))return 'Veja se existe um jeito definido de executar, acompanhar responsáveis e reduzir retrabalho no dia a dia.';
+ if(p.includes('marca')||p.includes('identidade')||p.includes('posicionamento'))return 'Analise se a empresa parece profissional, coerente e fácil de reconhecer nos materiais, canais e atendimento.';
+ if(p.includes('venda')||p.includes('comercial')||p.includes('funil'))return 'Revise como a oportunidade entra, como é atendida, como recebe proposta e como chega ao fechamento.';
+ if(p.includes('conteúdo')||p.includes('campanha')||p.includes('divulgação'))return 'Veja se existe objetivo, público, mensagem, canal e uma forma simples de medir se a ação funcionou.';
+ if(p.includes('gestão')||p.includes('indicador')||p.includes('meta'))return 'Confira se existe acompanhamento simples para decidir com base em dados, prioridade e resultado, não só no improviso.';
+ return `Pense em como este ponto aparece hoje na sua empresa e se ele ajuda ou atrapalha o objetivo desta análise${sub?` em ${sub}`:''}.`;
+}
 function analysisSpecialistView(score,priorities){
  let intro=score>=75
   ?'A base desta área está relativamente organizada. Agora vale concentrar energia nos poucos pontos que ainda limitam o resultado.'
@@ -1255,7 +1307,7 @@ function renderAnalysisDetail(id,sub=''){
  body.innerHTML=`${analysisProfileNotice()}
  <span class="eyebrow">ANÁLISE EMPRESARIAL</span><h2>${sub||a[2]}</h2><p>Responda as perguntas específicas desta análise. Elas serão combinadas com as informações já salvas sobre sua empresa.</p>
  <div class="analysisBrief">${qs.map((q,i)=>`<label>${q}<textarea data-analysis-answer="${i}" placeholder="Digite sua resposta...">${data['q'+i]||''}</textarea></label>`).join('')}</div>
- <h3>Checklist da análise</h3><div class="analysisChecklist">${points.map((p,i)=>{const v=data['s'+i]||'';return `<div class="channelCheckItem status-${v||'pending'}" data-analysis-row="${i}"><div class="channelCheckText"><strong>${p}</strong><p>Avalie como este ponto está hoje na sua empresa.</p></div><div class="channelStates"><button class="${v==='correct'?'active ok':''}" data-analysis-status="correct">✓ Já está OK</button><button class="${v==='improve'?'active improve':''}" data-analysis-status="improve">○ Está feito, mas precisa melhorar</button><button class="${v==='na'?'active na':''}" data-analysis-status="na">× Não fiz, preciso fazer</button></div><div class="pointActions"><button class="paidAction" data-analysis-suggest>🔒 Sugestão para este ponto</button><button class="paidAction" data-analysis-mark>🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div>
+ <h3>Checklist da análise</h3><div class="analysisChecklist">${points.map((p,i)=>{const v=data['s'+i]||'',guidance=analysisPointGuidance(p,id,sub);return `<div class="channelCheckItem status-${v||'pending'}" data-analysis-row="${i}"><div class="channelCheckText"><strong>${plainChecklistTitle(p)}</strong><p>${guidance}</p></div><div class="channelStates">${checklistStateButtons(v,'data-analysis-status')}</div><div class="pointActions"><button class="paidAction" data-analysis-suggest>🔒 Sugestão para este ponto</button><button class="paidAction" data-analysis-mark>🔒 Perguntar ao MARK.IA</button></div><div class="pointOutput"></div></div>`}).join('')}</div>
  <div class="channelReportActions"><button class="primary" id="analysisGenerate">Gerar análise</button><button class="outline" id="analysisPrint">Imprimir</button></div><div id="analysisResult"></div>`;
 
  document.querySelector('[data-analysis-profile]')?.addEventListener('click',goCompanyProfile);
@@ -1264,7 +1316,7 @@ function renderAnalysisDetail(id,sub=''){
  document.querySelectorAll('[data-analysis-suggest]').forEach((btn,i)=>btn.addEventListener('click',()=>{if(!hasProAccess()){openPlanPaywall('Sugestões personalizadas das análises');return}const row=btn.closest('.channelCheckItem');renderPointSuggestion(row,points[i],'Considere este ponto com base na realidade, objetivo e contexto atual da empresa.','ponto da análise')}));
  document.querySelectorAll('[data-analysis-mark]').forEach((btn,i)=>btn.addEventListener('click',()=>{if(!hasProAccess()){openPlanPaywall('MARK.IA contextual nas análises');return}askMarkAboutPoint(points[i],'Quero entender melhor este ponto dentro desta análise.')}));
  document.getElementById('analysisGenerate')?.addEventListener('click',async()=>{
-   const d=getAnalysisData(id,sub),vals=points.map((_,i)=>d['s'+i]).filter(Boolean),app=vals.filter(v=>v!=='na').length||1,ok=vals.filter(v=>v==='correct').length,score=Math.round(ok/app*100);
+   const d=getAnalysisData(id,sub),vals=points.map((_,i)=>d['s'+i]).filter(Boolean),score=progressFromValues(points.length,vals);
    const localPriorities=points.filter((_,i)=>d['s'+i]==='improve').slice(0,5);
    const answers=qs.map((question,i)=>({question,answer:d['q'+i]||''})),checklist=points.map((point,i)=>({point,status:d['s'+i]||'pending'}));
    const box=document.getElementById('analysisResult');
@@ -1447,7 +1499,7 @@ function reportMetricRows(meta={}){
  if(meta.answered!=null&&meta.total!=null)rows.push(['Respondidos',`${meta.answered} de ${meta.total}`]);
  return rows;
 }
-function reportStatusLabel(v){return v==='correct'?'Já está OK':v==='improve'?'Está feito, mas precisa melhorar':v==='na'?'Não fiz, preciso fazer':'Não respondido'}
+function reportStatusLabel(v){return v==='correct'?'Já está OK':v==='improve'?'Está feito, mas precisa melhorar':v==='na'?'Não fiz, preciso fazer':v==='skip'?'Não tenho interesse nisso':'Não respondido'}
 function flattenSectionChecklist(def,data={}){
  if(!def||!Array.isArray(def.sections))return [];
  return def.sections.flatMap((sec,si)=>(Array.isArray(sec.items)?sec.items:[]).map(it=>({point:plainChecklistTitle(it?.[1]||it?.[0]||'Ponto avaliado'),status:data[`${si}:${it?.[0]}`]||'pending'})));
@@ -1489,7 +1541,7 @@ async function shareCurrentReport(){
 }
 let reportViewMode='all';
 function reportFilterLabel(mode){
- return {all:'Completo',titles:'Só títulos',correct:'Já feito',improve:'A melhorar',na:'Precisa fazer',pending:'Pendentes'}[mode]||'Completo';
+ return {all:'Completo',titles:'Só títulos',correct:'Já feito',improve:'A melhorar',na:'Precisa fazer',skip:'Sem interesse',pending:'Pendentes'}[mode]||'Completo';
 }
 function filterReportChecklist(checklist=[]){
  if(reportViewMode==='all'||reportViewMode==='titles')return checklist;
@@ -1497,7 +1549,7 @@ function filterReportChecklist(checklist=[]){
 }
 function renderReportFilters(checklist=[]){
  if(!checklist.length)return '';
- const opts=[['all','Completo'],['titles','Só títulos'],['correct','Já feito'],['improve','A melhorar'],['na','Precisa fazer'],['pending','Pendentes']];
+ const opts=[['all','Completo'],['titles','Só títulos'],['correct','Já feito'],['improve','A melhorar'],['na','Precisa fazer'],['skip','Sem interesse'],['pending','Pendentes']];
  return `<div class="reportFilterBar"><span>Visualizar relatório:</span>${opts.map(([mode,label])=>`<button type="button" class="${reportViewMode===mode?'active':''}" data-report-filter="${mode}">${label}</button>`).join('')}</div>`;
 }
 function renderFullSavedReport(report){
@@ -1519,7 +1571,7 @@ function renderFullSavedReport(report){
  ${rows.length?`<section class="fullReportMetrics">${rows.map(([k,v])=>`<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</section>`:''}
  ${meta.score!=null?`<section class="fullReportSection"><span class="eyebrow">RESULTADO</span><h2>${meta.score}% de adequação inicial</h2><p>Este resultado representa o cenário registrado no momento em que a análise foi salva.</p></section>`:''}
  ${answers.length?`<section class="fullReportSection"><span class="eyebrow">RESPOSTAS DA ANÁLISE</span><h2>Contexto informado</h2><div class="fullReportAnswers">${answers.map((x,i)=>`<div><small>${x.question||`Pergunta ${i+1}`}</small><p>${x.answer||'Não respondido'}</p></div>`).join('')}</div></section>`:''}
- ${checklist.length?`<section class="fullReportSection"><span class="eyebrow">CHECKLIST</span><h2>Situação dos pontos avaliados</h2><div class="fullReportChecklist grouped">${reportViewMode==='all'?`${groupChecklist('na','Precisa ser feito')}${groupChecklist('improve','Está pronto, mas precisa melhorar')}${groupChecklist('correct','Já está pronto')}${groupChecklist('pending','Ainda não respondido')}`:flatChecklist}</div></section>`:''}
+ ${checklist.length?`<section class="fullReportSection"><span class="eyebrow">CHECKLIST</span><h2>Situação dos pontos avaliados</h2><div class="fullReportChecklist grouped">${reportViewMode==='all'?`${groupChecklist('na','Precisa ser feito')}${groupChecklist('improve','Está pronto, mas precisa melhorar')}${groupChecklist('correct','Já está pronto')}${groupChecklist('skip','Sem interesse agora')}${groupChecklist('pending','Ainda não respondido')}`:flatChecklist}</div></section>`:''}
  ${priorities.length?`<section class="fullReportSection"><span class="eyebrow">PRIORIDADES</span><h2>O que merece atenção primeiro</h2><div class="analysisPriorities">${priorities.map((x,i)=>`<div><strong>${i+1}</strong><span>${x}</span></div>`).join('')}</div></section>`:''}
  ${meta.score!=null?`<section class="fullReportSection">${analysisSpecialistView(Number(meta.score)||0,priorities)}</section>`:''}
  ${!hasDetails?`<section class="fullReportSection legacyReport"><span class="eyebrow">RELATÓRIO HISTÓRICO</span><h2>Dados disponíveis deste relatório</h2><p>Este relatório foi criado antes de o sistema começar a armazenar o conteúdo completo das análises. Por isso, os indicadores acima foram preservados, mas respostas e checklist detalhado não estavam salvos. Os novos relatórios passarão a abrir completos nesta página.</p></section>`:''}`;
@@ -1646,7 +1698,7 @@ async function sendMarkQuestion(q){
 }
 document.getElementById('markForm').onsubmit=e=>{e.preventDefault();const i=document.getElementById('markInput'),q=i.value.trim();if(!q)return;i.value='';sendMarkQuestion(q)};document.querySelectorAll('.chips button').forEach(b=>b.onclick=()=>{document.getElementById('markInput').value=b.textContent;document.getElementById('markForm').requestSubmit()});
 
-function suggestByNeed(){const el=document.getElementById('needInput');if(!el)return;const q=el.value.toLowerCase().trim();if(!q){toast('Conte em uma frase o que você precisa resolver.');return}let ids=[];const rules=[[['whatsapp','chamam','atendimento','lead','contato'],['whatsapp','followup','proposta','curso-vendas']], [['vender','vendas','conversão','converter'],['oferta','ticket','followup','proposta','curso-vendas']], [['divulgar','marketing','anúncio','trafego','tráfego'],['canais','campanhas','video-trafego','conteudo','calendario']], [['marca','profissional','branding','identidade'],['branding-digital','branding-fisico','identidade','diferenciacao']], [['google','local','mapa'],['googletool','local','guia-google']], [['conteúdo','conteudo','post','criativo','instagram'],['conteudo','calendario','guia-conteudo','campanhas']], [['preço','preco','barato','ticket'],['ticket','oferta','diferenciacao','proposta']], [['cliente','fidelizar','recompra','indicação'],['fidelizacao','followup','whatsapp','ticket']]];for(const [keys,vals] of rules)if(keys.some(k=>q.includes(k)))ids.push(...vals);ids=[...new Set([...ids,...recommended()])].slice(0,8);renderShelf('recTrack',ids);document.getElementById('recTitle').textContent='Sugestões para o que você descreveu';document.getElementById('needStatus').textContent=`MARK encontrou ${ids.length} caminhos iniciais e reorganizou o carrossel acima.`;document.getElementById('recTrack').scrollIntoView({behavior:'smooth',block:'center'});toast('Recomendações reorganizadas para sua necessidade')}
+function suggestByNeed(){const el=document.getElementById('needInput');if(!el)return;const q=el.value.toLowerCase().trim();if(!q){toast('Conte em uma frase o que você precisa resolver.');return}let ids=[];const rules=[[['whatsapp','chamam','atendimento','lead','contato'],['whatsapp','followup','video-vendas-base']], [['vender','vendas','conversão','converter'],['vendas-tecnicas','oferta','ticket','followup','video-vendas-base']], [['divulgar','marketing','anúncio','trafego','tráfego'],['canais','local','video-marketing-base','calendario']], [['marca','profissional','branding','identidade'],['identidade','branding-digital','branding-fisico','diferenciacao']], [['google','local','mapa'],['local','tool-calendario','video-marketing-base']], [['conteúdo','conteudo','post','criativo','instagram'],['canais','calendario','video-conteudo-base','clientes-marketing']], [['preço','preco','barato','ticket'],['ticket','oferta','diferenciacao']], [['cliente','fidelizar','recompra','indicação'],['clientes-marketing','followup','whatsapp','ticket']]];for(const [keys,vals] of rules)if(keys.some(k=>q.includes(k)))ids.push(...vals);ids=[...new Set([...ids,...recommended()])].slice(0,8);renderShelf('recTrack',ids);document.getElementById('recTitle').textContent='Sugestões para o que você descreveu';document.getElementById('needStatus').textContent=`MARK encontrou ${ids.length} caminhos iniciais e reorganizou o carrossel acima.`;document.getElementById('recTrack').scrollIntoView({behavior:'smooth',block:'center'});toast('Recomendações reorganizadas para sua necessidade')}
 const needBtn=document.getElementById('needSuggest');if(needBtn)needBtn.onclick=suggestByNeed;
 
 
