@@ -246,7 +246,7 @@ function applySubTone(niche){
     document.body.style.setProperty('--accent-soft',`color-mix(in srgb, ${c} 11%, #ffffff)`);
   }
 }
-function applyTheme(niche,theme,scrollToCards=false){state.profile.niche=niche;state.profile.theme=theme||niches[niche]?.theme||'clean';document.body.dataset.theme=state.profile.theme;applySubTone(niche);const hero=activeHeroContent(niche);document.getElementById('heroTitle').textContent=hero.title;document.getElementById('heroText').textContent=hero.text;setHeroBackground(hero.image);if(!hero.image)applyLocalHeroIfExists(niche);document.getElementById('currentNiche').innerHTML=`<span>Experiência atual</span><strong>${niche}</strong><small>${(niches[niche]?.group||'Negócios')} · tema ${state.profile.theme}</small>`;save();renderTracks();if(state.route==='central')renderCentral();updateMark();if(scrollToCards)setTimeout(()=>document.getElementById('recomendados')?.scrollIntoView({behavior:'smooth',block:'start'}),80);toast('Vitrine adaptada para '+niche)}
+function applyTheme(niche,theme,scrollToCards=false){state.profile.niche=niche;state.profile.theme=theme||niches[niche]?.theme||'clean';document.body.dataset.theme=state.profile.theme;applySubTone(niche);const hero=activeHeroContent(niche);document.getElementById('heroTitle').textContent=hero.title;document.getElementById('heroText').textContent=hero.text;setHeroBackground(hero.image);if(!hero.image)applyLocalHeroIfExists(niche);document.getElementById('currentNiche').innerHTML=`<span>Experiência atual</span><strong>${niche}</strong><small>${(niches[niche]?.group||'Negócios')} · tema ${state.profile.theme}</small>`;save();renderTracks();maybeRenderCentral();updateMark();if(scrollToCards)setTimeout(()=>document.getElementById('recomendados')?.scrollIntoView({behavior:'smooth',block:'start'}),80);toast('Vitrine adaptada para '+niche)}
 function nicheThumb(name){return localNicheHeroPaths(name)[1]}
 function renderNiches(){const dl=document.getElementById('nicheList');dl.innerHTML=Object.keys(niches).sort((a,b)=>a.localeCompare(b,'pt-BR')).map(n=>`<option value="${n}"></option>`).join('');document.getElementById('nicheGroups').innerHTML=`<div class="nicheCarouselActions"><button type="button" data-niche-prev>‹</button><button type="button" data-niche-next>›</button></div><div class="niche-carousel" id="nicheCarousel">${groups.map(g=>`<article class="niche-orbit" data-niche-card="${g.name}"><button class="niche-orbit-photo" data-niche="${g.name}" aria-label="Selecionar ${g.name}"><img src="${nicheThumb(g.name)}" alt="" loading="lazy" onerror="this.remove()"></button><strong>${g.name}</strong><div class="subchips">${g.subs.slice(0,7).map(s=>`<button data-niche="${s}">${s}</button>`).join('')}</div></article>`).join('')}</div>`;document.querySelectorAll('[data-niche]').forEach(b=>b.onclick=()=>{document.getElementById('nicheSearch').value=b.dataset.niche;applyTheme(b.dataset.niche,niches[b.dataset.niche].theme,true)});document.querySelector('[data-niche-prev]')?.addEventListener('click',()=>document.getElementById('nicheCarousel')?.scrollBy({left:-760,behavior:'smooth'}));document.querySelector('[data-niche-next]')?.addEventListener('click',()=>document.getElementById('nicheCarousel')?.scrollBy({left:760,behavior:'smooth'}))}
 function imgFor(item){const img=item.img||'';return img&&!img.includes('picsum.photos')?img:(cardImageMap[item.id]||img)}
@@ -303,7 +303,7 @@ function renderTracks(){document.getElementById('recTitle').textContent=`Mais ú
 function renderTools(){let arr=bases.tools.map(getItem).filter(Boolean);if(state.toolFilter!=='Todos'){arr=arr.filter(i=>state.toolFilter==='Grátis'?i.access==='Grátis':state.toolFilter==='Pago'?i.access!=='Grátis':i.cat===state.toolFilter)}document.getElementById('toolsTrack').innerHTML=arr.map(card).join('');bindCards()}
 function renderLearn(){let arr=bases.learn.map(getItem).filter(Boolean);if(state.learnFilter!=='Todos'){arr=arr.filter(i=>state.learnFilter==='Grátis'?i.access==='Grátis':state.learnFilter==='Pago'?i.access!=='Grátis':i.format===state.learnFilter)}const q=(document.getElementById('learnSearch')?.value||'').trim().toLowerCase(),area=document.getElementById('learnArea')?.value||'Todos',level=document.getElementById('learnLevel')?.value||'Todos';if(q)arr=arr.filter(i=>[i.title,i.desc,i.cat,i.tag,i.format].join(' ').toLowerCase().includes(q));if(area!=='Todos')arr=arr.filter(i=>(i.learningArea||i.cat)===area);if(level!=='Todos')arr=arr.filter(i=>(i.learningLevel||'Todos')===level||!i._learning);document.getElementById('learnTrack').innerHTML=arr.map(card).join('');bindCards()}
 function bindCards(){document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openItem(b.dataset.open));document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=e=>{e.stopPropagation();toggleFav(b.dataset.fav)})}
-async function toggleFav(id){const adding=!state.favorites.includes(id);state.favorites=adding?[...state.favorites,id]:state.favorites.filter(x=>x!==id);save();renderTracks();if(state.route==='central')renderCentral();if(state.current?.id===id)document.getElementById('favBtn').textContent=adding?'♥ Salvo':'♡ Salvar';toast(adding?'Salvo na Minha Central':'Removido dos favoritos');if(mivUser&&mivSupabase){try{await persistFavorite('item',id,adding)}catch(err){console.error('[MIV favorite]',err);toast('Favorito alterado aqui, mas não sincronizou.')}}}
+async function toggleFav(id){const adding=!state.favorites.includes(id);state.favorites=adding?[...state.favorites,id]:state.favorites.filter(x=>x!==id);save();renderTracks();maybeRenderCentral();if(state.current?.id===id)document.getElementById('favBtn').textContent=adding?'♥ Salvo':'♡ Salvar';toast(adding?'Salvo na Minha Central':'Removido dos favoritos');if(mivUser&&mivSupabase){try{await persistFavorite('item',id,adding)}catch(err){console.error('[MIV favorite]',err);toast('Favorito alterado aqui, mas não sincronizou.')}}}
 
 
 
@@ -1442,7 +1442,7 @@ function route(name,options={}){
   if(options.replace)history.replaceState({mivRoute:name},'',url);else history.pushState({mivRoute:name},'',url);
  }
  window.scrollTo({top:0,behavior:options.instant?'auto':'smooth'});
- if(name==='central'){renderCentral();setTimeout(async()=>{try{await syncMySubscription();await loadAccessFromSupabase();if(state.route==='central')renderCentral()}catch(e){console.warn('[MIV central subscription refresh]',e)}},150)}updateMark();
+ if(name==='central'){renderCentral();setTimeout(async()=>{try{await syncMySubscription();await loadAccessFromSupabase();maybeRenderCentral()}catch(e){console.warn('[MIV central subscription refresh]',e)}},150)}updateMark();
 }
 function renderCentral(){
  renderAccessUI();fillCompanyProfileForm();renderCompanySuggestions();
@@ -1776,7 +1776,7 @@ async function loadAccessFromSupabase(){
  else if(sub?.status==='past_due'){accessState.plan='past_due';accessState.subscription=sub}
  accessState.purchases=new Set((buys||[]).map(x=>normalizeAccessItemId(x.item_id)));
  accessState.ready=true;
- renderAccessUI();renderTracks();try{renderAnalyses()}catch(e){}if(state.route==='central')renderCentral();
+ renderAccessUI();renderTracks();try{renderAnalyses()}catch(e){}maybeRenderCentral();
 }
 let subscriptionConfirming=false;
 async function syncMySubscription({showStatus=false}={}){
@@ -1792,9 +1792,9 @@ async function syncMySubscription({showStatus=false}={}){
   const {data:{session}}=await mivSupabase.auth.getSession();
   const r=await fetch('/api/sync-my-subscription',{method:'POST',headers:{Authorization:`Bearer ${session?.access_token||''}`}});
   const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Falha ao confirmar assinatura');
-  if(d?.subscription?.status==='active'&&['pro','premium'].includes(d.subscription.plan)){accessState.plan=d.subscription.plan;accessState.subscription=d.subscription;accessState.ready=true;renderAccessUI();if(state.route==='central')renderCentral()}
+  if(d?.subscription?.status==='active'&&['pro','premium'].includes(d.subscription.plan)){accessState.plan=d.subscription.plan;accessState.subscription=d.subscription;accessState.ready=true;renderAccessUI();maybeRenderCentral()}
   await loadAccessFromSupabase();
-  if(state.route==='central')renderCentral();
+  maybeRenderCentral();
   if(showStatus&&box){
    const active=hasProAccess();
    box.querySelector('div').innerHTML=active?`<h2 style="margin:0 0 10px">${planLabel()} liberado ✓</h2><p style="margin:0 0 18px;color:#65706d">Sua assinatura foi confirmada e o acesso já está disponível.</p><button id="subscriptionConfirmClose" class="open">Ir para Minha Central</button>`:'<h2 style="margin:0 0 10px">Pagamento em processamento</h2><p style="margin:0 0 18px;color:#65706d">O Mercado Pago ainda está finalizando a confirmação. Sua Central verificará novamente automaticamente.</p><button id="subscriptionConfirmClose" class="open">Continuar</button>';
@@ -1832,7 +1832,7 @@ async function syncSinglePurchaseReturn({showStatus=false}={}){
   const d=await r.json().catch(()=>({}));
   if(!r.ok)throw new Error(d.error||'Falha ao confirmar compra');
   await loadAccessFromSupabase();
-  if(state.route==='central')renderCentral();
+  maybeRenderCentral();
   if(showStatus&&box){
    box.querySelector('div').innerHTML=d.synced?`<h2 style="margin:0 0 10px">Item liberado ✓</h2><p style="margin:0 0 18px;color:#65706d">Sua compra foi confirmada e já está disponível na sua conta.</p><button id="purchaseConfirmClose" class="open">Ir para Minha Central</button>`:'<h2 style="margin:0 0 10px">Compra em processamento</h2><p style="margin:0 0 18px;color:#65706d">O Mercado Pago ainda está finalizando a confirmação. Atualize sua Central em alguns segundos.</p><button id="purchaseConfirmClose" class="open">Continuar</button>';
    box.querySelector('#purchaseConfirmClose').onclick=()=>{box.remove();route('central')};
@@ -1897,8 +1897,10 @@ function renderAccessUI(){
 let mivUser=null;
 let mivActiveCompanyId=null;
 let mivCompanySyncing=false;
+let mivHydratingAuth=false;
 function authStatus(id,msg,type=''){const el=document.getElementById(id);if(!el)return;el.textContent=msg||'';el.className='authStatus '+type}
 function friendlyAuthError(err){const m=(err?.message||'').toLowerCase();if(m.includes('invalid login'))return 'E-mail ou senha incorretos.';if(m.includes('already registered'))return 'Este e-mail já possui uma conta.';if(m.includes('password'))return 'A senha precisa atender aos requisitos de segurança.';if(m.includes('email'))return 'Verifique o endereço de e-mail informado.';return err?.message||'Não foi possível concluir. Tente novamente.'}
+function maybeRenderCentral(){if(!mivHydratingAuth&&state.route==='central')renderCentral()}
 function runPendingAuthAction(){
  const action=pendingAuthAction;if(!action)return false;pendingAuthAction=null;
  if(action.type==='refreshTrends'){route('home');setTimeout(()=>{document.getElementById('tendencias')?.scrollIntoView({behavior:'smooth',block:'start'});refreshMarketTrends()},180);return true}
@@ -1933,7 +1935,7 @@ async function loadDynamicCatalog(){
   Object.keys(bases).forEach(k=>bases[k].splice(0,bases[k].length));
   rows.filter(r=>r.active!==false).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).forEach(r=>{if(bases[r.shelf_key]&&!bases[r.shelf_key].includes(r.item_id))bases[r.shelf_key].push(r.item_id)});
   dynamicCatalogReady=true;
-  try{renderTracks();if(state.route==='central')renderCentral()}catch(e){console.warn('[MIV catalog render]',e)}
+  try{renderTracks();maybeRenderCentral()}catch(e){console.warn('[MIV catalog render]',e)}
   return true;
  }catch(e){console.warn('[MIV catalog]',e);return false}
 }
@@ -2038,11 +2040,11 @@ async function loadFavoritesFromSupabase(){
   return;
  }
  state.favorites=(data||[]).filter(x=>x.item_type==='item').map(x=>x.item_id);
- state.analysisFav=(data||[]).filter(x=>x.item_type==='analysis').map(x=>x.item_id);save();renderTracks();try{renderAnalyses()}catch(e){}if(state.route==='central')renderCentral();
+ state.analysisFav=(data||[]).filter(x=>x.item_type==='analysis').map(x=>x.item_id);save();renderTracks();try{renderAnalyses()}catch(e){}maybeRenderCentral();
 }
 
 function newClientId(){try{return crypto.randomUUID()}catch(e){return 'miv-'+Date.now()+'-'+Math.random().toString(36).slice(2)}}
-function addReport(report){const row={...report,client_id:report.client_id||newClientId(),created_at:report.created_at||new Date().toISOString()};state.reports.unshift(row);save();if(mivUser&&mivSupabase)persistReport(row).catch(err=>console.warn('[MIV report]',err));if(state.route==='central')renderCentral();return row}
+function addReport(report){const row={...report,client_id:report.client_id||newClientId(),created_at:report.created_at||new Date().toISOString()};state.reports.unshift(row);save();if(mivUser&&mivSupabase)persistReport(row).catch(err=>console.warn('[MIV report]',err));maybeRenderCentral();return row}
 async function persistHistory(entry){if(!mivUser||!mivSupabase)return;const {error}=await mivSupabase.from('user_history').upsert({user_id:mivUser.id,company_id:mivActiveCompanyId||null,item_id:entry.id,title:entry.title||null,last_used_at:entry.ts||new Date().toISOString()},{onConflict:'user_id,item_id'});if(error)throw error}
 async function persistReport(report){if(!mivUser||!mivSupabase)return;const {error}=await mivSupabase.from('user_reports').upsert({user_id:mivUser.id,company_id:mivActiveCompanyId||null,client_id:report.client_id||newClientId(),name:report.name,status:report.status||'Salvo',meta:report.meta||{},created_at:report.created_at||new Date().toISOString()},{onConflict:'user_id,client_id'});if(error)throw error}
 async function persistProgress(progressType,itemId,data){if(!mivUser||!mivSupabase)return;try{const {error}=await mivSupabase.from('user_progress').upsert({user_id:mivUser.id,company_id:mivActiveCompanyId||null,progress_type:progressType,item_id:String(itemId||''),data:data||{},updated_at:new Date().toISOString()},{onConflict:'user_id,progress_type,item_id'});if(error)throw error}catch(err){console.warn('[MIV progress]',err)}}
@@ -2063,7 +2065,7 @@ async function loadWorkspaceFromSupabase(){
  if(!prog.length&&localProgress.length){const rows=localProgress.map(x=>({user_id:mivUser.id,company_id:mivActiveCompanyId||null,progress_type:x.progress_type,item_id:x.item_id,data:x.data,updated_at:new Date().toISOString()}));const {error}=await mivSupabase.from('user_progress').upsert(rows,{onConflict:'user_id,progress_type,item_id'});if(error)throw error;prog=rows}
  state.history=(hist||[]).filter(Boolean).map(x=>({id:x.item_id,title:x.title||getItem(x.item_id)?.title||x.item_id,ts:x.last_used_at}));
  state.reports=(reps||[]).filter(Boolean).map(x=>({client_id:x.client_id,name:x.name,status:x.status,date:new Date(x.created_at).toLocaleDateString('pt-BR'),created_at:x.created_at,meta:x.meta||{}}));
- mirrorProgressRows(prog);save();if(state.route==='central')renderCentral();
+ mirrorProgressRows(prog);save();maybeRenderCentral();
 }
 async function getFirstCompanyLink(){
  const {data,error}=await mivSupabase.from('company_users').select('company_id,member_role,created_at').eq('user_id',mivUser.id).order('created_at',{ascending:true}).limit(1);
@@ -2099,7 +2101,7 @@ async function loadCompanyFromSupabase(){
   };
   mirrorCompanyProfile(p);
   if(p.subniche||p.niche){state.profile.niche=p.subniche||p.niche;state.profile.theme=niches[state.profile.niche]?.theme||niches[p.niche]?.theme||state.profile.theme;save()}
-  if(state.route==='central')renderCentral();
+  maybeRenderCentral();
   return p;
  }catch(err){console.error('[MIV company load]',err);toast('Não foi possível carregar os dados da empresa.');return null}
  finally{mivCompanySyncing=false}
@@ -2115,6 +2117,7 @@ async function applyAuthSession(session){
  if(centralBtn)centralBtn.hidden=true;
  if(logout)logout.hidden=!mivUser;
  if(!mivUser){mivActiveCompanyId=null;accessState.plan='free';accessState.subscription=null;accessState.purchases=new Set();accessState.ready=true;renderAccessUI();mirrorCompanyProfile({});state.favorites=[];state.analysisFav=[];save();if(state.route==='central')route('home');return}
+ mivHydratingAuth=true;
  Promise.resolve().then(async()=>{
   try{await loadCompanyFromSupabase()}catch(e){console.warn('[MIV company hydrate]',e)}
   try{await loadAccessFromSupabase()}catch(e){console.warn('[MIV access hydrate]',e)}
@@ -2123,8 +2126,13 @@ async function applyAuthSession(session){
   try{await loadFavoritesFromSupabase()}catch(e){console.warn('[MIV favorites hydrate]',e)}
   try{await loadWorkspaceFromSupabase()}catch(e){console.warn('[MIV workspace hydrate]',e)}
   try{await loadCentralExtras()}catch(e){console.warn('[MIV central extras hydrate]',e)}
+  mivHydratingAuth=false;
   if(runPendingAuthAction())return;
-  if(state.route==='central')renderCentral();
+  maybeRenderCentral();
+ }).catch(e=>{
+  console.warn('[MIV auth hydrate]',e);
+  mivHydratingAuth=false;
+  maybeRenderCentral();
  });
 }
 function openAuth(mode='login'){if(!authModal)return;authModal.classList.add('show');document.querySelectorAll('.authPane').forEach(x=>x.classList.remove('active'));document.getElementById(mode==='register'?'authRegister':mode==='forgot'?'authForgot':'authLogin')?.classList.add('active')}

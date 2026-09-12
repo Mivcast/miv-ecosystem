@@ -83,6 +83,78 @@ function attachSource(card,sources,index,fallback=''){
   if(src?.url)return {...card,source:card.source||clean(src.title,140),source_url:clean(src.url,600)};
   return card.source?{...card,source_url:sourceSearchUrl(card,fallback)}:card;
 }
+function decodeXml(s=''){
+  return clean(s).replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,'$1').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+}
+function stripHtml(s=''){return decodeXml(s).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()}
+async function googleNews(query,limit=10){
+  const url='https://news.google.com/rss/search?'+new URLSearchParams({q:query,hl:'pt-BR',gl:'BR',ceid:'BR:pt-419'}).toString();
+  const r=await fetch(url,{headers:{'User-Agent':'MIV Ecosystem market intelligence'}});
+  if(!r.ok)return [];
+  const xml=await r.text(),items=[];
+  for(const m of xml.matchAll(/<item>([\s\S]*?)<\/item>/g)){
+    const block=m[1],pick=tag=>decodeXml((block.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`))||[])[1]||'');
+    const title=stripHtml(pick('title')),link=stripHtml(pick('link')),source=stripHtml(pick('source'))||'Google News',pubDate=stripHtml(pick('pubDate')),description=stripHtml(pick('description'));
+    if(title&&link)items.push({title,link,source,pubDate,description});
+    if(items.length>=limit)break;
+  }
+  return items;
+}
+function uniqueNews(rows){
+  const seen=new Set(),out=[];
+  for(const x of rows){
+    const key=(x.title||'').toLowerCase().replace(/\s+-\s+[^-]+$/,'').slice(0,120);
+    if(!key||seen.has(key))continue;seen.add(key);out.push(x);
+  }
+  return out;
+}
+function cleanNewsTitle(title,source){
+  return clean(String(title||'').replace(new RegExp(`\\s+-\\s+${String(source||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}$`,'i'),''),160);
+}
+function newsDateLabel(pubDate){
+  const d=pubDate?new Date(pubDate):null;
+  return d&&!Number.isNaN(d.getTime())?` em ${d.toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'})}`:' recentemente';
+}
+function newsTrendCard(n,niche,i){
+  const title=cleanNewsTitle(n.title,n.source);
+  return cleanTrend({
+    title,
+    description:`${title} foi publicado${newsDateLabel(n.pubDate)}. Acompanhe essa novidade porque ela pode render conteúdo atual para quem atua com ${niche}.`,
+    mark_strategy:`Use essa notícia como gancho para um post educativo: explique o que aconteceu em linguagem simples, conecte com uma dúvida real do seu público e finalize com uma orientação segura, sem prometer resultado.`,
+    importance:i<2?5:i<5?4:3,
+    source:n.source,
+    source_url:n.link
+  });
+}
+function competitorNewsCard(n,niche,competitor,i){
+  const title=cleanNewsTitle(n.title,n.source);
+  return cleanMarketCard({
+    competitor:competitor||n.source||'Referência do mercado',
+    title:`O que observar: ${title}`,
+    description:`Movimento público encontrado${newsDateLabel(n.pubDate)}: ${title}. Use como referência para entender temas, formatos e argumentos que estão aparecendo no mercado de ${niche}.`,
+    mark_strategy:'Adapte a ideia para a sua realidade: transforme o assunto em uma publicação, página, vídeo curto, conversa no WhatsApp ou melhoria de posicionamento. A intenção é se inspirar, não copiar literalmente.',
+    importance:i<2?5:i<5?4:3,
+    source:n.source,
+    source_url:n.link
+  });
+}
+async function fallbackTrendCards(niche,limit){
+  const queries=[`"${niche}" notícia OR estudo OR pesquisa when:30d`,`"${niche}" mercado OR tendência OR inovação when:90d`,`${niche} comportamento consumidor Brasil when:90d`];
+  const found=[];
+  for(const q of queries){found.push(...await googleNews(q,limit*2));if(uniqueNews(found).length>=limit)break}
+  return uniqueNews(found).slice(0,limit).map((n,i)=>newsTrendCard(n,niche,i));
+}
+async function fallbackCompetitorCards(niche,names,max,suggest){
+  const targets=names.length?names:[`referências ${niche} Brasil`,`profissionais ${niche} destaque Brasil`,`empresas ${niche} Brasil`].slice(0,max);
+  const found=[];
+  for(const name of targets.slice(0,max)){
+    const rows=await googleNews(`"${name}" ${niche} OR Instagram OR YouTube OR campanha OR entrevista OR lançamento when:90d`,3);
+    found.push(...rows.map(x=>({...x,competitor:name})));
+  }
+  const cards=uniqueNews(found).slice(0,max*3).map((n,i)=>competitorNewsCard(n,niche,n.competitor,i));
+  const competitors=suggest?targets.map(x=>x.replace(/^referências |^profissionais |^empresas /,'')).slice(0,max):[];
+  return {competitors,cards};
+}
 async function handleMarketIntel(req,res,{su,sk,gk,user}){
   const action=clean(req.body?.action,40);
   const {settings,company,profile}=await marketContext(su,sk,user.id);
@@ -93,8 +165,10 @@ async function handleMarketIntel(req,res,{su,sk,gk,user}){
   if(action==='trends'){
     const limit=Math.max(5,Math.min(30,Number(req.body?.limit)||30));
     const prompt=`Hoje é ${today}. Pesquise em tempo real na web as ${limit} notícias e tendências recentes mais relevantes para o nicho abaixo. O objetivo NÃO é listar assuntos genéricos de marketing; é encontrar fatos atuais com fonte real, como pesquisas, descobertas, leis, dados, movimentos de consumo, tecnologia, saúde, mercado, comportamento, eventos, decisões de empresas, campanhas públicas ou matérias jornalísticas que possam virar conteúdo e posicionamento.\n\n${marketCompanyText(company,profile,niche)}\n\nEstratégia de pesquisa obrigatória:\n1. Procure primeiro notícias e tendências dos últimos 7 dias.\n2. Se não houver volume suficiente, amplie para os últimos 30 dias.\n3. Se ainda faltar, amplie para os últimos 90 dias usando fontes relevantes do nicho.\n4. Em nichos com pouca notícia direta, busque assuntos adjacentes úteis para o público do nicho, mas explique a conexão de forma honesta.\n\nRegras obrigatórias:\n- Use fontes confiáveis e preferencialmente recentes. Quando a data estiver disponível, cite no resumo.\n- Não retorne temas evergreen/genéricos como "busca local", "Google em alta", "WhatsApp", "prova social", "vídeos curtos" ou "CTA" se não houver uma notícia, estudo, matéria ou movimento público específico por trás.\n- Não invente cura, lei, número, descoberta, tendência ou matéria. Se não encontrar fonte real suficiente, retorne menos cards, mas faça a busca ampliada antes disso.\n- Cada card precisa ter source_url clicável para a matéria, estudo ou página original usada.\n- Se a relação com o nicho for indireta, explique como usar com cuidado, sem forçar promoção.\n- Para nichos médicos/saúde, escreva de forma educativa, sem prometer resultado clínico e deixando claro quando algo ainda é pesquisa.\n\nRetorne SOMENTE JSON válido no formato {"trends":[{"title":"...","description":"...","mark_strategy":"...","importance":0-5,"source":"nome do site","source_url":"https://..."}]}.\nEm cada card:\n- title: manchete curta e clara.\n- description: o que aconteceu, quando aconteceu se a fonte permitir, e por que importa para esse nicho.\n- mark_strategy: uma dica prática no estilo "Estratégia do MARK para você", explicando como usar a notícia em post, carrossel, WhatsApp, campanha, oferta, conteúdo educativo, relacionamento ou posicionamento.\n- importance: nota de 0 a 5 pela relevância para o nicho.\n- source e source_url: fonte original confiável.`;
-    const {obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,6400);
-    const trends=(Array.isArray(obj.trends)?obj.trends:[]).map((x,i)=>attachSource(cleanTrend(x),sources,i,niche)).filter(x=>x.title&&x.description&&(x.source||x.source_url)).slice(0,limit);
+    let obj={},sources=[],used=model;
+    try{({obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,6400))}catch(e){console.warn('[MARKET INTEL trends fallback]',e.message)}
+    let trends=(Array.isArray(obj.trends)?obj.trends:[]).map((x,i)=>attachSource(cleanTrend(x),sources,i,niche)).filter(x=>x.title&&x.description&&(x.source||x.source_url)).slice(0,limit);
+    if(!trends.length)trends=await fallbackTrendCards(niche,limit);
     return send(res,200,{trends,sources,model:used});
   }
   if(action==='competitors'||action==='suggest_competitors'){
@@ -103,9 +177,11 @@ async function handleMarketIntel(req,res,{su,sk,gk,user}){
     const prompt=action==='suggest_competitors'
       ?`Hoje é ${today}. Pesquise referências e concorrentes brasileiros fortes em presença digital para o nicho abaixo. Eles podem ser concorrentes geográficos, concorrentes de atenção ou referências nacionais que disputam o mesmo público em Google, Instagram, YouTube, imprensa, eventos, site ou anúncios.\n\n${marketCompanyText(company,profile,niche)}\n\nSugira até ${max} nomes e gere até 3 movimentos por concorrente. Cada movimento deve ser algo observável publicamente: post, vídeo, campanha, página, oferta, evento, posicionamento, parceria, imprensa, conteúdo educativo, prova social ou mudança de presença digital. Procure primeiro movimentos recentes; se não encontrar o suficiente, amplie para movimentos públicos dos últimos 90 dias ou páginas/canais atuais que sirvam como referência.\n\nRegras obrigatórias:\n- Use fontes reais e coloque source_url clicável sempre que possível.\n- Não invente postagem, seguidores, campanha, número ou lançamento sem fonte.\n- Escreva como benchmarking: "o que estão fazendo" + "como adaptar para sua empresa", sem orientar cópia literal.\n- Se não encontrar movimentos recentes suficientes, use movimentos públicos verificáveis ainda úteis.\n\nRetorne SOMENTE JSON válido: {"competitors":["..."],"cards":[{"competitor":"...","title":"...","description":"...","mark_strategy":"...","importance":0-5,"source":"nome do site","source_url":"https://..."}]}.`
       :`Hoje é ${today}. Pesquise na web movimentos públicos dos concorrentes abaixo para inspirar uma empresa do nicho informado. Observe lançamentos, posts, vídeos, campanhas, canais, posicionamento, prova social, parcerias, eventos, conteúdos, ofertas, páginas de venda, SEO, imprensa e experiência do cliente. Procure primeiro movimentos recentes; se não encontrar o suficiente, amplie para os últimos 90 dias e depois para páginas/canais atuais verificáveis.\n\n${marketCompanyText(company,profile,niche)}\nConcorrentes: ${names.length?names.join(', '):'não informados'}\n\nRegras obrigatórias:\n- Gere até 3 cards por concorrente, respeitando a lista enviada.\n- Cada card deve representar uma ação pública encontrada, com source_url clicável.\n- Não invente ações específicas, métricas, seguidores, datas, campanhas ou posts sem fonte.\n- Escreva a description no formato de benchmarking: o que eles estão fazendo e qual exemplo foi encontrado.\n- Escreva mark_strategy como "o que você poderia fazer" adaptando a ideia para a empresa, sem copiar literalmente.\n\nRetorne SOMENTE JSON válido: {"cards":[{"competitor":"...","title":"...","description":"...","mark_strategy":"...","importance":0-5,"source":"nome do site","source_url":"https://..."}]}.`;
-    const {obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,5200);
-    const competitors=(Array.isArray(obj.competitors)?obj.competitors:[]).map(x=>clean(x,120)).filter(Boolean).slice(0,max);
-    const cards=(Array.isArray(obj.cards)?obj.cards:[]).map((x,i)=>attachSource(cleanMarketCard(x),sources,i,niche)).filter(x=>x.title&&x.description&&(x.source||x.source_url)).slice(0,max*3);
+    let obj={},sources=[],used=model;
+    try{({obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,5200))}catch(e){console.warn('[MARKET INTEL competitors fallback]',e.message)}
+    let competitors=(Array.isArray(obj.competitors)?obj.competitors:[]).map(x=>clean(x,120)).filter(Boolean).slice(0,max);
+    let cards=(Array.isArray(obj.cards)?obj.cards:[]).map((x,i)=>attachSource(cleanMarketCard(x),sources,i,niche)).filter(x=>x.title&&x.description&&(x.source||x.source_url)).slice(0,max*3);
+    if(!cards.length){const fallback=await fallbackCompetitorCards(niche,names,max,action==='suggest_competitors');competitors=competitors.length?competitors:fallback.competitors;cards=fallback.cards}
     return send(res,200,{competitors,cards,sources,model:used});
   }
   return send(res,400,{error:'Ação inválida.'});
@@ -115,7 +191,6 @@ module.exports=async function handler(req,res){
   try{
     const su=process.env.SUPABASE_URL,pk=process.env.SUPABASE_PUBLISHABLE_KEY,sk=process.env.SUPABASE_SECRET_KEY,gk=process.env.GEMINI_API_KEY;
     if(!su||!pk||!sk)return send(res,500,{error:'Configuração do Supabase incompleta.'});
-    if(!gk)return send(res,503,{error:'MARK.IA ainda não possui GEMINI_API_KEY configurada no servidor.',code:'gemini_not_configured'});
     const auth=String(req.headers.authorization||''),token=auth.startsWith('Bearer ')?auth.slice(7):'';
     if(!token)return send(res,401,{error:'Entre na sua conta para conversar com o MARK.IA.'});
     const ur=await fetch(`${su}/auth/v1/user`,{headers:{apikey:pk,Authorization:`Bearer ${token}`}});
@@ -123,6 +198,7 @@ module.exports=async function handler(req,res){
     const user=await ur.json();
     const marketAction=clean(req.body?.action,40);
     if(['trends','competitors','suggest_competitors'].includes(marketAction))return handleMarketIntel(req,res,{su,sk,gk,user});
+    if(!gk)return send(res,503,{error:'MARK.IA ainda não possui GEMINI_API_KEY configurada no servidor.',code:'gemini_not_configured'});
     // V13.29: franquia mensal do MARK.IA — Grátis 5, PRO 80, Premium 300 (limites pagos vêm do Admin/Supabase).
     const now=new Date(), periodMonth=`${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,'0')}-01`;
     let plan='free', markLimit=5;
