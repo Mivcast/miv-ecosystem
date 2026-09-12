@@ -271,7 +271,8 @@ function recommended(){
 function renderShelf(id,ids){const el=document.getElementById(id);if(!el)return;el.innerHTML=ids.map(i=>getItem(i)).filter(Boolean).map(card).join('');bindCards()}
 function sourceHost(url,label='Fonte'){try{return new URL(url).hostname.replace(/^www\./,'')}catch(e){return label||'Fonte'}}
 function sourceSearchUrl(item){return `https://www.google.com/search?q=${encodeURIComponent([item.title,item.source,state.profile.niche].filter(Boolean).join(' '))}`}
-function hasPremiumAccess(){return accessState.plan==='premium'}
+function currentPlanKey(){return String(accessState.plan||'free').trim().toLowerCase()}
+function hasPremiumAccess(){return currentPlanKey().includes('premium')}
 function trendLimit(){return hasPremiumAccess()?30:hasProAccess()?15:5}
 function competitorLimit(){return hasPremiumAccess()?10:hasProAccess()?5:3}
 function competitorCardLimit(){return hasProAccess()?7:1}
@@ -296,7 +297,7 @@ function marketCard(item,index,limit,lockedLabel){
  return `<article class="market-card ${locked?'locked':''} ${locked&&isCompetitor?'locked-channel':''}"><div class="market-card-top"><span class="market-stars" aria-label="${Number(item.importance)||0} de 5">${marketStars(item.importance)}</span><button class="heart ${saved?'saved':''}" ${locked?'data-scroll="planos"':`data-fav="${item.id}"`}>${locked?'🔒':saved?'♥':'♡'}</button></div><div class="market-card-body ${bodyClass}"><span class="meta-pill">${item.cat}</span><h3>${markEsc(item.title)}</h3><p>${descHtml}</p><strong>Estratégia do MARK para você</strong><p>${markEsc(item.mark_strategy)}</p></div>${actions}${item.source_url&&!locked?`<a class="source-link" href="${markEsc(item.source_url)}" target="_blank" rel="noopener">Fonte: ${markEsc(item.source||sourceHost(item.source_url))}</a>`:`<small class="source-link">${markEsc(item.source||'Fonte do radar')}</small>`}${locked?`<div class="market-lock"><b>${lockedLabel||`Libere no ${needed}`}</b><span>Assine para acessar mais cards do seu mercado.</span><button class="primary" data-scroll="planos">Ver planos</button></div>`:''}</article>`;
 }
 function lockedMarketPlaceholder(i,type='trend'){return {id:`locked-${type}-${i}`,cat:type==='trend'?'Tendências':'Concorrentes',format:'Plano pago',access:'Pago',icon:'🔒',tag:'PLANOS',title:type==='trend'?(i>=15?'Tendência Premium':'Tendência PRO'):'Canal extra',desc:'Existe mais inteligência disponível para acompanhar seu mercado com mais profundidade.',mark_strategy:'Assine um plano pago para liberar mais cards, fontes e ideias de ação para seu negócio.',importance:i>=15?5:4,source:'Planos MIV',source_url:'',special:'market-locked',img:'assets/cards/analise-mercado.jpg'}}
-function renderMarketTrends(){const el=document.getElementById('trendsTrack');if(!el)return;if(!marketTrendItems.length){el.innerHTML=marketEmptyCard('trends','Clique em “Atualizar tendências” para buscar notícias recentes do seu nicho com fontes reais.',`Seu plano atual libera ${trendLimit()} notícia(s) por atualização.`, 'Atualizar tendências','refreshTrends');bindMarketEmptyActions();return}const real=marketTrendItems.slice(0,trendLimit()),locked=Array.from({length:Math.max(0,30-real.length)},(_,i)=>lockedMarketPlaceholder(real.length+i,'trend'));el.innerHTML=[...real,...locked].map((x,i)=>marketCard(x,i,trendLimit(),i>=15?'Tendências Premium':'Tendências PRO')).join('');bindCards();bindPlanScrolls()}
+function renderMarketTrends(){const el=document.getElementById('trendsTrack');if(!el)return;if(!marketTrendItems.length){el.innerHTML=marketEmptyCard('trends','Clique em “Atualizar tendências” para buscar notícias recentes do seu nicho com fontes reais.',`Seu plano atual libera ${trendLimit()} notícia(s) por atualização.`, 'Atualizar tendências','refreshTrends');bindMarketEmptyActions();return}const limit=trendLimit(),real=marketTrendItems.slice(0,limit),locked=hasPremiumAccess()?[]:Array.from({length:Math.max(0,30-real.length)},(_,i)=>lockedMarketPlaceholder(real.length+i,'trend'));el.innerHTML=[...real,...locked].map((x,i)=>marketCard(x,i,limit,i>=15?'Tendências Premium':'Tendências PRO')).join('');bindCards();bindPlanScrolls()}
 function renderCompetitorInsights(){const el=document.getElementById('competitorTrack');if(!el)return;const items=competitorInsightItems.length?competitorInsightItems.slice(0,7):COMPETITOR_CHANNELS.map(competitorChannelPlaceholder);el.innerHTML=items.map((x,i)=>marketCard(x,i,competitorCardLimit(),'Concorrentes no PRO')).join('');bindCards();bindPlanScrolls()}
 function bindMarketEmptyActions(){document.querySelectorAll('[data-click]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.click)?.click());document.querySelectorAll('[data-auth-market]').forEach(b=>b.onclick=()=>{if(!pendingAuthAction)pendingAuthAction={type:b.dataset.authMarket==='competitors'?'refreshCompetitors':'refreshTrends',suggest:b.dataset.authMarket==='competitors'};openAuth('login')})}
 function bindPlanScrolls(){document.querySelectorAll('[data-scroll="planos"]').forEach(b=>b.onclick=()=>{route('home');setTimeout(()=>document.getElementById('planos')?.scrollIntoView({behavior:'smooth'}),80)})}
@@ -1761,10 +1762,11 @@ function authRedirectUrl(){
  const origin=local?MIV_PRODUCTION_ORIGIN:location.origin;
  return origin+location.pathname;
 }
-function hasProAccess(){return accessState.plan==='pro'||accessState.plan==='premium'}
+function hasProAccess(){const plan=currentPlanKey();return plan.includes('pro')||plan.includes('premium')}
 function normalizeAccessItemId(id){const key=String(id||'').trim().toLowerCase();const aliases={'script-whatsapp':'whatsapp','whatsapp-script':'whatsapp','mark-ia':'mark'};return aliases[key]||key}
 function hasItemAccess(item){if(!item)return false;if(item.access==='Grátis')return true;if(hasProAccess())return true;return accessState.purchases.has(normalizeAccessItemId(item.id))}
-function planLabel(){return accessState.plan==='premium'?'Premium':accessState.plan==='pro'?'Pro':accessState.plan==='pending'?'Processando':accessState.plan==='past_due'?'Pagamento pendente':'Grátis'}
+function normalizePlanValue(plan){const key=String(plan||'').trim().toLowerCase();return key.includes('premium')?'premium':key.includes('pro')?'pro':key==='pending'?'pending':key==='past_due'?'past_due':'free'}
+function planLabel(){const plan=currentPlanKey();return plan.includes('premium')?'Premium':plan.includes('pro')?'Pro':plan==='pending'?'Processando':plan==='past_due'?'Pagamento pendente':'Grátis'}
 function openPlanPaywall(title){const fake={id:'plan-gate',title:title||'Conteúdo Pro',price:'Plano Pro'};state.current=fake;document.getElementById('payTitle').textContent=fake.title;document.getElementById('singlePrice').textContent='Plano Pro';document.getElementById('paywall').classList.add('show');document.getElementById('overlay').classList.add('show')}
 async function loadAccessFromSupabase(){
  accessState.plan='free';accessState.subscription=null;accessState.purchases=new Set();accessState.ready=false;
@@ -1777,7 +1779,7 @@ async function loadAccessFromSupabase(){
  ]);
  if(se)console.warn('[MIV access subscription]',se);if(be)console.warn('[MIV access purchases]',be);
  const sub=(subs||[])[0]||null;
- if(sub?.status==='active'&&(!sub.current_period_end||sub.current_period_end>now)){accessState.plan=['pro','premium'].includes(sub.plan)?sub.plan:'free';accessState.subscription=sub}
+ if(sub?.status==='active'&&(!sub.current_period_end||sub.current_period_end>now)){accessState.plan=normalizePlanValue(sub.plan);accessState.subscription=sub}
  else if(sub?.status==='pending'){accessState.plan='pending';accessState.subscription=sub}
  else if(sub?.status==='past_due'){accessState.plan='past_due';accessState.subscription=sub}
  accessState.purchases=new Set((buys||[]).map(x=>normalizeAccessItemId(x.item_id)));
@@ -1798,7 +1800,7 @@ async function syncMySubscription({showStatus=false}={}){
   const {data:{session}}=await mivSupabase.auth.getSession();
   const r=await fetch('/api/sync-my-subscription',{method:'POST',headers:{Authorization:`Bearer ${session?.access_token||''}`}});
   const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Falha ao confirmar assinatura');
-  if(d?.subscription?.status==='active'&&['pro','premium'].includes(d.subscription.plan)){accessState.plan=d.subscription.plan;accessState.subscription=d.subscription;accessState.ready=true;renderAccessUI();maybeRenderCentral()}
+  if(d?.subscription?.status==='active'&&['pro','premium'].includes(normalizePlanValue(d.subscription.plan))){accessState.plan=normalizePlanValue(d.subscription.plan);accessState.subscription=d.subscription;accessState.ready=true;renderAccessUI();renderTracks();maybeRenderCentral()}
   await loadAccessFromSupabase();
   maybeRenderCentral();
   if(showStatus&&box){
@@ -1866,10 +1868,11 @@ function subscriptionStatusLabel(sub){if(!sub)return 'Sem assinatura';if(sub.can
 function renderSubscriptionManager(){
  const box=document.getElementById('subscriptionManager');if(!box)return;
  const sub=accessState.subscription;
- if(!mivUser||!sub||!['pro','premium'].includes(accessState.plan)){box.hidden=true;return}
+ const activePlan=normalizePlanValue(accessState.plan);
+ if(!mivUser||!sub||!['pro','premium'].includes(activePlan)){box.hidden=true;return}
  box.hidden=false;
- const cfg=subscriptionPlans[accessState.plan]||{};
- document.getElementById('subscriptionPlanName').textContent=accessState.plan==='premium'?'Premium':'PRO';
+ const cfg=subscriptionPlans[activePlan]||{};
+ document.getElementById('subscriptionPlanName').textContent=activePlan==='premium'?'Premium':'PRO';
  document.getElementById('subscriptionPlanPrice').textContent=Number(cfg.price_cents)>0?moneyCents(cfg.price_cents):'—';
  document.getElementById('subscriptionNextCharge').textContent=sub.cancel_at_period_end?'Não haverá nova cobrança':formatSubscriptionDate(sub.next_payment_date||sub.current_period_end);
  document.getElementById('subscriptionHumanStatus').textContent=subscriptionStatusLabel(sub);
@@ -1880,8 +1883,8 @@ function renderSubscriptionManager(){
   notice.hidden=false;notice.textContent=`Downgrade para PRO programado para ${formatSubscriptionDate(sub.scheduled_change_at)}. Até lá, seu acesso Premium continua normal.`;
  }
  const up=document.getElementById('subscriptionUpgradeBtn'),down=document.getElementById('subscriptionDowngradeBtn'),undo=document.getElementById('subscriptionUndoDowngradeBtn'),cancel=document.getElementById('subscriptionCancelBtn');
- up.hidden=accessState.plan!=='pro'||!!sub.cancel_at_period_end;
- down.hidden=accessState.plan!=='premium'||!!sub.scheduled_plan||!!sub.cancel_at_period_end;
+ up.hidden=activePlan!=='pro'||!!sub.cancel_at_period_end;
+ down.hidden=activePlan!=='premium'||!!sub.scheduled_plan||!!sub.cancel_at_period_end;
  undo.hidden=sub.scheduled_plan!=='pro'||!!sub.cancel_at_period_end;
  cancel.hidden=!!sub.cancel_at_period_end;
  if(up)up.onclick=()=>startSubscription('premium');
@@ -1890,14 +1893,15 @@ function renderSubscriptionManager(){
  if(cancel){cancel.onclick=()=>cancelCurrentSubscription();cancel.style.cssText='background:none;border:0;box-shadow:none;padding:4px 0;color:#8a9290;text-decoration:underline;text-underline-offset:3px;font:inherit;font-size:13px;cursor:pointer'}
 }
 function renderAccessUI(){
- document.body.dataset.plan=accessState.plan;
+ const activePlan=normalizePlanValue(accessState.plan);
+ document.body.dataset.plan=activePlan;
  const badge=document.getElementById('centralPlanBadge'),desc=document.getElementById('centralPlanDesc');
  const checking=!!mivUser&&!accessState.ready;
  if(badge)badge.textContent=checking?'Verificando…':planLabel();
- if(desc)desc.textContent=checking?'Confirmando seu plano e seus acessos…':accessState.plan==='pending'?'Sua assinatura está em processamento. O acesso pago será liberado após confirmação do Mercado Pago.':accessState.plan==='past_due'?'Há uma pendência de pagamento na assinatura. Itens Pro ficam protegidos até regularização.':hasProAccess()?'Itens Pro estão liberados nesta conta.':accessState.purchases.size?`${accessState.purchases.size} item(ns) avulso(s) liberado(s).`:'Conteúdos gratuitos liberados. Itens Pro continuam protegidos.';
+ if(desc)desc.textContent=checking?'Confirmando seu plano e seus acessos…':activePlan==='pending'?'Sua assinatura está em processamento. O acesso pago será liberado após confirmação do Mercado Pago.':activePlan==='past_due'?'Há uma pendência de pagamento na assinatura. Itens Pro ficam protegidos até regularização.':hasProAccess()?'Itens Pro estão liberados nesta conta.':accessState.purchases.size?`${accessState.purchases.size} item(ns) avulso(s) liberado(s).`:'Conteúdos gratuitos liberados. Itens Pro continuam protegidos.';
   const proBtns=[document.getElementById('planProBtn'),document.getElementById('centralPlanProBtn')].filter(Boolean),premiumBtns=[document.getElementById('planPremiumBtn'),document.getElementById('centralPlanPremiumBtn')].filter(Boolean);
-  proBtns.forEach(proBtn=>{proBtn.textContent=accessState.plan==='pro'?'Plano atual':accessState.plan==='premium'?'Downgrade para PRO':'Quero acesso Pro';proBtn.disabled=accessState.plan==='pro'});
-  premiumBtns.forEach(premiumBtn=>{premiumBtn.textContent=accessState.plan==='premium'?'Plano atual':accessState.plan==='pro'?'Fazer upgrade para Premium':'Quero acesso Premium';premiumBtn.disabled=accessState.plan==='premium'});
+  proBtns.forEach(proBtn=>{proBtn.textContent=activePlan==='pro'?'Plano atual':activePlan==='premium'?'Downgrade para PRO':'Quero acesso Pro';proBtn.disabled=activePlan==='pro'});
+  premiumBtns.forEach(premiumBtn=>{premiumBtn.textContent=activePlan==='premium'?'Plano atual':activePlan==='pro'?'Fazer upgrade para Premium':'Quero acesso Premium';premiumBtn.disabled=activePlan==='premium'});
  try{renderSubscriptionManager()}catch(e){console.warn('[MIV subscription manager]',e)}
 }
 let mivUser=null;
