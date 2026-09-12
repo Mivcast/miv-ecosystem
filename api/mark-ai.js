@@ -74,10 +74,14 @@ async function generateMarketIntel(gk,model,prompt,maxOutputTokens=5200){
 }
 function cleanTrend(x){return {title:clean(x.title,160),description:clean(x.description,520),mark_strategy:clean(x.mark_strategy||x.strategy,720),importance:Math.max(0,Math.min(5,Number(x.importance)||3)),source:clean(x.source,140),source_url:clean(x.source_url||x.url,600)}}
 function cleanMarketCard(x){return {competitor:clean(x.competitor,120),title:clean(x.title,180),description:clean(x.description,520),mark_strategy:clean(x.mark_strategy||x.strategy,720),importance:Math.max(0,Math.min(5,Number(x.importance)||3)),source:clean(x.source,140),source_url:clean(x.source_url||x.url,600)}}
-function attachSource(card,sources,index){
+function sourceSearchUrl(card,fallback=''){
+  return `https://www.google.com/search?q=${encodeURIComponent([card.title,card.source,fallback].filter(Boolean).join(' '))}`;
+}
+function attachSource(card,sources,index,fallback=''){
   if(card.source_url)return card;
   const src=sources?.[index]||sources?.find(s=>s?.url);
-  return src?.url?{...card,source:card.source||clean(src.title,140),source_url:clean(src.url,600)}:card;
+  if(src?.url)return {...card,source:card.source||clean(src.title,140),source_url:clean(src.url,600)};
+  return card.source?{...card,source_url:sourceSearchUrl(card,fallback)}:card;
 }
 async function handleMarketIntel(req,res,{su,sk,gk,user}){
   const action=clean(req.body?.action,40);
@@ -90,7 +94,7 @@ async function handleMarketIntel(req,res,{su,sk,gk,user}){
     const limit=Math.max(5,Math.min(30,Number(req.body?.limit)||30));
     const prompt=`Hoje é ${today}. Pesquise em tempo real na web as ${limit} notícias e tendências recentes mais relevantes para o nicho abaixo. O objetivo NÃO é listar assuntos genéricos de marketing; é encontrar fatos atuais com fonte real, como pesquisas, descobertas, leis, dados, movimentos de consumo, tecnologia, saúde, mercado, comportamento, eventos, decisões de empresas, campanhas públicas ou matérias jornalísticas que possam virar conteúdo e posicionamento.\n\n${marketCompanyText(company,profile,niche)}\n\nEstratégia de pesquisa obrigatória:\n1. Procure primeiro notícias e tendências dos últimos 7 dias.\n2. Se não houver volume suficiente, amplie para os últimos 30 dias.\n3. Se ainda faltar, amplie para os últimos 90 dias usando fontes relevantes do nicho.\n4. Em nichos com pouca notícia direta, busque assuntos adjacentes úteis para o público do nicho, mas explique a conexão de forma honesta.\n\nRegras obrigatórias:\n- Use fontes confiáveis e preferencialmente recentes. Quando a data estiver disponível, cite no resumo.\n- Não retorne temas evergreen/genéricos como "busca local", "Google em alta", "WhatsApp", "prova social", "vídeos curtos" ou "CTA" se não houver uma notícia, estudo, matéria ou movimento público específico por trás.\n- Não invente cura, lei, número, descoberta, tendência ou matéria. Se não encontrar fonte real suficiente, retorne menos cards, mas faça a busca ampliada antes disso.\n- Cada card precisa ter source_url clicável para a matéria, estudo ou página original usada.\n- Se a relação com o nicho for indireta, explique como usar com cuidado, sem forçar promoção.\n- Para nichos médicos/saúde, escreva de forma educativa, sem prometer resultado clínico e deixando claro quando algo ainda é pesquisa.\n\nRetorne SOMENTE JSON válido no formato {"trends":[{"title":"...","description":"...","mark_strategy":"...","importance":0-5,"source":"nome do site","source_url":"https://..."}]}.\nEm cada card:\n- title: manchete curta e clara.\n- description: o que aconteceu, quando aconteceu se a fonte permitir, e por que importa para esse nicho.\n- mark_strategy: uma dica prática no estilo "Estratégia do MARK para você", explicando como usar a notícia em post, carrossel, WhatsApp, campanha, oferta, conteúdo educativo, relacionamento ou posicionamento.\n- importance: nota de 0 a 5 pela relevância para o nicho.\n- source e source_url: fonte original confiável.`;
     const {obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,6400);
-    const trends=(Array.isArray(obj.trends)?obj.trends:[]).map((x,i)=>attachSource(cleanTrend(x),sources,i)).filter(x=>x.title&&x.description&&x.source_url).slice(0,limit);
+    const trends=(Array.isArray(obj.trends)?obj.trends:[]).map((x,i)=>attachSource(cleanTrend(x),sources,i,niche)).filter(x=>x.title&&x.description&&(x.source||x.source_url)).slice(0,limit);
     return send(res,200,{trends,sources,model:used});
   }
   if(action==='competitors'||action==='suggest_competitors'){
@@ -101,7 +105,7 @@ async function handleMarketIntel(req,res,{su,sk,gk,user}){
       :`Hoje é ${today}. Pesquise na web movimentos públicos dos concorrentes abaixo para inspirar uma empresa do nicho informado. Observe lançamentos, posts, vídeos, campanhas, canais, posicionamento, prova social, parcerias, eventos, conteúdos, ofertas, páginas de venda, SEO, imprensa e experiência do cliente. Procure primeiro movimentos recentes; se não encontrar o suficiente, amplie para os últimos 90 dias e depois para páginas/canais atuais verificáveis.\n\n${marketCompanyText(company,profile,niche)}\nConcorrentes: ${names.length?names.join(', '):'não informados'}\n\nRegras obrigatórias:\n- Gere até 3 cards por concorrente, respeitando a lista enviada.\n- Cada card deve representar uma ação pública encontrada, com source_url clicável.\n- Não invente ações específicas, métricas, seguidores, datas, campanhas ou posts sem fonte.\n- Escreva a description no formato de benchmarking: o que eles estão fazendo e qual exemplo foi encontrado.\n- Escreva mark_strategy como "o que você poderia fazer" adaptando a ideia para a empresa, sem copiar literalmente.\n\nRetorne SOMENTE JSON válido: {"cards":[{"competitor":"...","title":"...","description":"...","mark_strategy":"...","importance":0-5,"source":"nome do site","source_url":"https://..."}]}.`;
     const {obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,5200);
     const competitors=(Array.isArray(obj.competitors)?obj.competitors:[]).map(x=>clean(x,120)).filter(Boolean).slice(0,max);
-    const cards=(Array.isArray(obj.cards)?obj.cards:[]).map((x,i)=>attachSource(cleanMarketCard(x),sources,i)).filter(x=>x.title&&x.description&&x.source_url).slice(0,max*3);
+    const cards=(Array.isArray(obj.cards)?obj.cards:[]).map((x,i)=>attachSource(cleanMarketCard(x),sources,i,niche)).filter(x=>x.title&&x.description&&(x.source||x.source_url)).slice(0,max*3);
     return send(res,200,{competitors,cards,sources,model:used});
   }
   return send(res,400,{error:'Ação inválida.'});
