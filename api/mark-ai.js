@@ -115,12 +115,60 @@ function newsDateLabel(pubDate){
   const d=pubDate?new Date(pubDate):null;
   return d&&!Number.isNaN(d.getTime())?` em ${d.toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'})}`:' recentemente';
 }
+function topicKind(title=''){
+  const t=String(title).toLowerCase();
+  if(/sintoma|alerta|risco|preven|cuidado|tosse|dor|sinal|diagnóstico|diagnostico|tratamento|vacina|exame/.test(t))return 'saude-alerta';
+  if(/estudo|pesquisa|cientista|descoberta|universidade|ia |inteligência artificial|inteligencia artificial|tecnologia|inova/.test(t))return 'estudo';
+  if(/lei|regra|anvisa|governo|ministério|ministerio|prefeitura|conselho|trt|concurso|política|politica/.test(t))return 'institucional';
+  if(/campanha|evento|semana|dia mundial|mês|mes |setembro|outubro|ação|acao/.test(t))return 'campanha';
+  if(/mercado|consumidor|cresce|alta|queda|tendência|tendencia|procura|demanda|vendas/.test(t))return 'mercado';
+  return 'noticia';
+}
+function trendStrategy(title,niche,i){
+  const kind=topicKind(title);
+  const variants={
+    'saude-alerta':[
+      `Faça um post educativo do tipo “quando procurar ajuda?”: explique o sinal principal da notícia, liste 3 cuidados práticos e finalize convidando a pessoa a buscar orientação profissional se ela se identificar.`,
+      `Transforme em carrossel de alerta: capa com a dúvida mais comum, depois sinais de atenção, erros que as pessoas cometem e uma chamada final para conversar com seu público de ${niche}.`
+    ],
+    estudo:[
+      `Use como quadro “Saiu na ciência/mercado”: traduza a descoberta em linguagem simples, diga o que ainda é pesquisa e feche com uma pergunta para gerar comentários.`,
+      `Crie um reel curto: comece com “um estudo novo mostrou...”, explique em 3 frases o impacto para o público e conecte com uma orientação prática do seu trabalho.`
+    ],
+    institucional:[
+      `Faça um post de posicionamento: explique o que mudou ou está em discussão, por que isso importa para clientes de ${niche} e como a pessoa pode se preparar ou se informar melhor.`,
+      `Use nos stories com enquete: “você sabia disso?” Depois explique a notícia em linguagem simples e abra uma caixa de perguntas sobre impactos no dia a dia.`
+    ],
+    campanha:[
+      `Aproveite como pauta sazonal: crie uma sequência de stories ou carrossel conectando a data/campanha com uma dúvida real dos seus clientes, sem forçar venda direta.`,
+      `Monte uma ação de relacionamento: envie uma mensagem no WhatsApp para clientes que possam se interessar pelo tema, com tom de cuidado, utilidade e proximidade.`
+    ],
+    mercado:[
+      `Transforme em conteúdo de autoridade: mostre o comportamento do mercado, explique o que isso revela sobre as necessidades dos clientes e apresente uma sugestão prática para quem acompanha seu perfil.`,
+      `Crie um carrossel “o que isso muda para você?” com 3 impactos possíveis e uma recomendação simples ligada ao seu serviço.`
+    ],
+    noticia:[
+      `Use como gancho de conversa: explique a notícia, mostre por que ela pode importar para o público de ${niche} e termine com uma pergunta para estimular comentários ou respostas no WhatsApp.`,
+      `Faça um post de contexto: “o que aconteceu, por que importa e como pensar sobre isso”. Esse formato ajuda a posicionar sua marca como fonte confiável, não só como vendedora.`
+    ]
+  };
+  const list=variants[kind]||variants.noticia;
+  return list[i%list.length];
+}
+function competitorStrategy(title,niche,competitor,i){
+  const kind=topicKind(title);
+  if(kind==='campanha')return `Observe o formato da campanha e adapte para sua realidade: escolha uma data/tema parecido, crie uma ação simples para seus clientes e acompanhe respostas, cliques ou conversas geradas.`;
+  if(kind==='institucional')return `Use como referência de posicionamento: explique ao seu público como esse movimento impacta o mercado e publique sua visão profissional sem copiar a comunicação do concorrente.`;
+  if(kind==='estudo')return `Transforme em um quadro recorrente: “o que o mercado está discutindo”. Cite a fonte, traduza a ideia em linguagem simples e conecte com uma dica prática do seu nicho.`;
+  if(kind==='saude-alerta')return `Adapte como conteúdo de utilidade pública: mostre sinais, cuidados ou dúvidas comuns e finalize com uma chamada leve para a pessoa procurar orientação quando necessário.`;
+  return i%2?`Compare o ângulo usado por ${competitor||'essa referência'} com o seu: transforme o tema em reel, carrossel ou artigo curto, usando sua linguagem e sua realidade local.`:`Use como inspiração de pauta: publique uma versão própria explicando o assunto, acrescente sua opinião profissional e convide o público para responder uma pergunta simples.`;
+}
 function newsTrendCard(n,niche,i){
   const title=cleanNewsTitle(n.title,n.source);
   return cleanTrend({
     title,
     description:`${title} foi publicado${newsDateLabel(n.pubDate)}. Acompanhe essa novidade porque ela pode render conteúdo atual para quem atua com ${niche}.`,
-    mark_strategy:`Use essa notícia como gancho para um post educativo: explique o que aconteceu em linguagem simples, conecte com uma dúvida real do seu público e finalize com uma orientação segura, sem prometer resultado.`,
+    mark_strategy:trendStrategy(title,niche,i),
     importance:i<2?5:i<5?4:3,
     source:n.source,
     source_url:n.link
@@ -128,31 +176,33 @@ function newsTrendCard(n,niche,i){
 }
 function competitorNewsCard(n,niche,competitor,i){
   const title=cleanNewsTitle(n.title,n.source);
+  const ref=competitor||n.source||'Referência do mercado';
   return cleanMarketCard({
-    competitor:competitor||n.source||'Referência do mercado',
+    competitor:ref,
     title:`O que observar: ${title}`,
     description:`Movimento público encontrado${newsDateLabel(n.pubDate)}: ${title}. Use como referência para entender temas, formatos e argumentos que estão aparecendo no mercado de ${niche}.`,
-    mark_strategy:'Adapte a ideia para a sua realidade: transforme o assunto em uma publicação, página, vídeo curto, conversa no WhatsApp ou melhoria de posicionamento. A intenção é se inspirar, não copiar literalmente.',
+    mark_strategy:competitorStrategy(title,niche,ref,i),
     importance:i<2?5:i<5?4:3,
     source:n.source,
     source_url:n.link
   });
 }
 async function fallbackTrendCards(niche,limit){
-  const queries=[`"${niche}" notícia OR estudo OR pesquisa when:30d`,`"${niche}" mercado OR tendência OR inovação when:90d`,`${niche} comportamento consumidor Brasil when:90d`];
+  const queries=[`"${niche}" notícia estudo pesquisa Brasil when:30d`,`"${niche}" mercado tendência inovação Brasil when:90d`,`${niche} saúde negócios comportamento consumidor Brasil when:90d`];
   const found=[];
   for(const q of queries){found.push(...await googleNews(q,limit*2));if(uniqueNews(found).length>=limit)break}
   return uniqueNews(found).slice(0,limit).map((n,i)=>newsTrendCard(n,niche,i));
 }
 async function fallbackCompetitorCards(niche,names,max,suggest){
-  const targets=names.length?names:[`referências ${niche} Brasil`,`profissionais ${niche} destaque Brasil`,`empresas ${niche} Brasil`].slice(0,max);
+  const targets=names.length?names:[niche,`${niche} Brasil`,`${niche} mercado`].slice(0,max);
   const found=[];
   for(const name of targets.slice(0,max)){
-    const rows=await googleNews(`"${name}" ${niche} OR Instagram OR YouTube OR campanha OR entrevista OR lançamento when:90d`,3);
+    const rows=await googleNews(`"${name}" ${niche} campanha entrevista lançamento evento conteúdo mercado when:90d`,3);
     found.push(...rows.map(x=>({...x,competitor:name})));
   }
+  if(!found.length)found.push(...(await googleNews(`${niche} campanha mercado entrevista lançamento Brasil when:90d`,max*3)).map(x=>({...x,competitor:x.source||'Referência do mercado'})));
   const cards=uniqueNews(found).slice(0,max*3).map((n,i)=>competitorNewsCard(n,niche,n.competitor,i));
-  const competitors=suggest?targets.map(x=>x.replace(/^referências |^profissionais |^empresas /,'')).slice(0,max):[];
+  const competitors=suggest?(cards.map(x=>x.competitor).filter(Boolean).slice(0,max)): [];
   return {competitors,cards};
 }
 async function handleMarketIntel(req,res,{su,sk,gk,user}){
@@ -166,7 +216,7 @@ async function handleMarketIntel(req,res,{su,sk,gk,user}){
     const limit=Math.max(5,Math.min(30,Number(req.body?.limit)||30));
     const prompt=`Hoje é ${today}. Pesquise em tempo real na web as ${limit} notícias e tendências recentes mais relevantes para o nicho abaixo. O objetivo NÃO é listar assuntos genéricos de marketing; é encontrar fatos atuais com fonte real, como pesquisas, descobertas, leis, dados, movimentos de consumo, tecnologia, saúde, mercado, comportamento, eventos, decisões de empresas, campanhas públicas ou matérias jornalísticas que possam virar conteúdo e posicionamento.\n\n${marketCompanyText(company,profile,niche)}\n\nEstratégia de pesquisa obrigatória:\n1. Procure primeiro notícias e tendências dos últimos 7 dias.\n2. Se não houver volume suficiente, amplie para os últimos 30 dias.\n3. Se ainda faltar, amplie para os últimos 90 dias usando fontes relevantes do nicho.\n4. Em nichos com pouca notícia direta, busque assuntos adjacentes úteis para o público do nicho, mas explique a conexão de forma honesta.\n\nRegras obrigatórias:\n- Use fontes confiáveis e preferencialmente recentes. Quando a data estiver disponível, cite no resumo.\n- Não retorne temas evergreen/genéricos como "busca local", "Google em alta", "WhatsApp", "prova social", "vídeos curtos" ou "CTA" se não houver uma notícia, estudo, matéria ou movimento público específico por trás.\n- Não invente cura, lei, número, descoberta, tendência ou matéria. Se não encontrar fonte real suficiente, retorne menos cards, mas faça a busca ampliada antes disso.\n- Cada card precisa ter source_url clicável para a matéria, estudo ou página original usada.\n- Se a relação com o nicho for indireta, explique como usar com cuidado, sem forçar promoção.\n- Para nichos médicos/saúde, escreva de forma educativa, sem prometer resultado clínico e deixando claro quando algo ainda é pesquisa.\n\nRetorne SOMENTE JSON válido no formato {"trends":[{"title":"...","description":"...","mark_strategy":"...","importance":0-5,"source":"nome do site","source_url":"https://..."}]}.\nEm cada card:\n- title: manchete curta e clara.\n- description: o que aconteceu, quando aconteceu se a fonte permitir, e por que importa para esse nicho.\n- mark_strategy: uma dica prática no estilo "Estratégia do MARK para você", explicando como usar a notícia em post, carrossel, WhatsApp, campanha, oferta, conteúdo educativo, relacionamento ou posicionamento.\n- importance: nota de 0 a 5 pela relevância para o nicho.\n- source e source_url: fonte original confiável.`;
     let obj={},sources=[],used=model;
-    try{({obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,6400))}catch(e){console.warn('[MARKET INTEL trends fallback]',e.message)}
+    if(gk)try{({obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,6400))}catch(e){console.warn('[MARKET INTEL trends fallback]',e.message)}
     let trends=(Array.isArray(obj.trends)?obj.trends:[]).map((x,i)=>attachSource(cleanTrend(x),sources,i,niche)).filter(x=>x.title&&x.description&&(x.source||x.source_url)).slice(0,limit);
     if(!trends.length)trends=await fallbackTrendCards(niche,limit);
     return send(res,200,{trends,sources,model:used});
@@ -178,7 +228,7 @@ async function handleMarketIntel(req,res,{su,sk,gk,user}){
       ?`Hoje é ${today}. Pesquise referências e concorrentes brasileiros fortes em presença digital para o nicho abaixo. Eles podem ser concorrentes geográficos, concorrentes de atenção ou referências nacionais que disputam o mesmo público em Google, Instagram, YouTube, imprensa, eventos, site ou anúncios.\n\n${marketCompanyText(company,profile,niche)}\n\nSugira até ${max} nomes e gere até 3 movimentos por concorrente. Cada movimento deve ser algo observável publicamente: post, vídeo, campanha, página, oferta, evento, posicionamento, parceria, imprensa, conteúdo educativo, prova social ou mudança de presença digital. Procure primeiro movimentos recentes; se não encontrar o suficiente, amplie para movimentos públicos dos últimos 90 dias ou páginas/canais atuais que sirvam como referência.\n\nRegras obrigatórias:\n- Use fontes reais e coloque source_url clicável sempre que possível.\n- Não invente postagem, seguidores, campanha, número ou lançamento sem fonte.\n- Escreva como benchmarking: "o que estão fazendo" + "como adaptar para sua empresa", sem orientar cópia literal.\n- Se não encontrar movimentos recentes suficientes, use movimentos públicos verificáveis ainda úteis.\n\nRetorne SOMENTE JSON válido: {"competitors":["..."],"cards":[{"competitor":"...","title":"...","description":"...","mark_strategy":"...","importance":0-5,"source":"nome do site","source_url":"https://..."}]}.`
       :`Hoje é ${today}. Pesquise na web movimentos públicos dos concorrentes abaixo para inspirar uma empresa do nicho informado. Observe lançamentos, posts, vídeos, campanhas, canais, posicionamento, prova social, parcerias, eventos, conteúdos, ofertas, páginas de venda, SEO, imprensa e experiência do cliente. Procure primeiro movimentos recentes; se não encontrar o suficiente, amplie para os últimos 90 dias e depois para páginas/canais atuais verificáveis.\n\n${marketCompanyText(company,profile,niche)}\nConcorrentes: ${names.length?names.join(', '):'não informados'}\n\nRegras obrigatórias:\n- Gere até 3 cards por concorrente, respeitando a lista enviada.\n- Cada card deve representar uma ação pública encontrada, com source_url clicável.\n- Não invente ações específicas, métricas, seguidores, datas, campanhas ou posts sem fonte.\n- Escreva a description no formato de benchmarking: o que eles estão fazendo e qual exemplo foi encontrado.\n- Escreva mark_strategy como "o que você poderia fazer" adaptando a ideia para a empresa, sem copiar literalmente.\n\nRetorne SOMENTE JSON válido: {"cards":[{"competitor":"...","title":"...","description":"...","mark_strategy":"...","importance":0-5,"source":"nome do site","source_url":"https://..."}]}.`;
     let obj={},sources=[],used=model;
-    try{({obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,5200))}catch(e){console.warn('[MARKET INTEL competitors fallback]',e.message)}
+    if(gk)try{({obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,5200))}catch(e){console.warn('[MARKET INTEL competitors fallback]',e.message)}
     let competitors=(Array.isArray(obj.competitors)?obj.competitors:[]).map(x=>clean(x,120)).filter(Boolean).slice(0,max);
     let cards=(Array.isArray(obj.cards)?obj.cards:[]).map((x,i)=>attachSource(cleanMarketCard(x),sources,i,niche)).filter(x=>x.title&&x.description&&(x.source||x.source_url)).slice(0,max*3);
     if(!cards.length){const fallback=await fallbackCompetitorCards(niche,names,max,action==='suggest_competitors');competitors=competitors.length?competitors:fallback.competitors;cards=fallback.cards}
