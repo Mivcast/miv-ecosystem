@@ -83,6 +83,16 @@ function attachSource(card,sources,index,fallback=''){
   if(src?.url)return {...card,source:card.source||clean(src.title,140),source_url:clean(src.url,600)};
   return card.source?{...card,source_url:sourceSearchUrl(card,fallback)}:card;
 }
+function normalizePlan(plan){const key=String(plan||'').trim().toLowerCase();return key.includes('premium')?'premium':key.includes('pro')?'pro':'free'}
+async function userPlan(su,sk,userId){
+  const now=new Date();
+  const activeSubs=await rows(su,sk,`user_subscriptions?user_id=eq.${userId}&status=eq.active&select=plan,current_period_end,created_at&order=created_at.desc&limit=1`);
+  const sub=activeSubs[0];
+  if(sub&&(!sub.current_period_end||new Date(sub.current_period_end)>now))return normalizePlan(sub.plan);
+  return 'free';
+}
+function planTrendLimit(plan){return plan==='premium'?30:plan==='pro'?15:5}
+function planCompetitorLimit(plan){return plan==='premium'?10:plan==='pro'?5:3}
 function decodeXml(s=''){
   return clean(s).replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,'$1').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>');
 }
@@ -289,17 +299,22 @@ async function handleMarketIntel(req,res,{su,sk,gk,user}){
   if(model==='gemini-2.5-flash')model='gemini-3.8-flash';
   const niche=clean(req.body?.niche,240)||company?.subniche||company?.niche||'negócios locais';
   const today=new Date().toISOString().slice(0,10);
+  const plan=await userPlan(su,sk,user.id);
   if(action==='trends'){
-    const limit=Math.max(5,Math.min(30,Number(req.body?.limit)||30));
+    const limit=Math.max(5,Math.min(planTrendLimit(plan),Number(req.body?.limit)||planTrendLimit(plan)));
     const prompt=`Hoje é ${today}. Pesquise em tempo real na web as ${limit} notícias e tendências recentes mais relevantes para o nicho abaixo. O objetivo NÃO é listar assuntos genéricos de marketing; é encontrar fatos atuais com fonte real, como pesquisas, descobertas, leis, dados, movimentos de consumo, tecnologia, saúde, mercado, comportamento, eventos, decisões de empresas, campanhas públicas ou matérias jornalísticas que possam virar conteúdo e posicionamento.\n\n${marketCompanyText(company,profile,niche)}\n\nEstratégia de pesquisa obrigatória:\n1. Procure primeiro notícias e tendências dos últimos 7 dias.\n2. Se não houver volume suficiente, amplie para os últimos 30 dias.\n3. Se ainda faltar, amplie para os últimos 90 dias usando fontes relevantes do nicho.\n4. Em nichos com pouca notícia direta, busque assuntos adjacentes úteis para o público do nicho, mas explique a conexão de forma honesta.\n\nRegras obrigatórias:\n- Use fontes confiáveis e preferencialmente recentes. Quando a data estiver disponível, cite no resumo.\n- Não retorne temas evergreen/genéricos como "busca local", "Google em alta", "WhatsApp", "prova social", "vídeos curtos" ou "CTA" se não houver uma notícia, estudo, matéria ou movimento público específico por trás.\n- Não invente cura, lei, número, descoberta, tendência ou matéria. Se não encontrar fonte real suficiente, retorne menos cards, mas faça a busca ampliada antes disso.\n- Cada card precisa ter source_url clicável para a matéria, estudo ou página original usada.\n- Se a relação com o nicho for indireta, explique como usar com cuidado, sem forçar promoção.\n- Para nichos médicos/saúde, escreva de forma educativa, sem prometer resultado clínico e deixando claro quando algo ainda é pesquisa.\n\nRetorne SOMENTE JSON válido no formato {"trends":[{"title":"...","description":"...","mark_strategy":"...","importance":0-5,"source":"nome do site","source_url":"https://..."}]}.\nEm cada card:\n- title: manchete curta e clara.\n- description: o que aconteceu, quando aconteceu se a fonte permitir, e por que importa para esse nicho.\n- mark_strategy: uma dica prática no estilo "Estratégia do MARK para você", explicando como usar a notícia em post, carrossel, WhatsApp, campanha, oferta, conteúdo educativo, relacionamento ou posicionamento.\n- importance: nota de 0 a 5 pela relevância para o nicho.\n- source e source_url: fonte original confiável.`;
     let obj={},sources=[],used=model;
     if(gk)try{({obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,6400))}catch(e){console.warn('[MARKET INTEL trends fallback]',e.message)}
     let trends=(Array.isArray(obj.trends)?obj.trends:[]).map((x,i)=>attachSource(cleanTrend(x),sources,i,niche)).filter(x=>x.title&&x.description&&(x.source||x.source_url)).slice(0,limit);
-    if(!trends.length)trends=await fallbackTrendCards(niche,limit);
+    if(trends.length<limit){
+      const fallback=await fallbackTrendCards(niche,limit);
+      const seen=new Set(trends.map(x=>String(x.title||'').toLowerCase().slice(0,120)));
+      for(const card of fallback){const key=String(card.title||'').toLowerCase().slice(0,120);if(!seen.has(key)){seen.add(key);trends.push(card)}if(trends.length>=limit)break}
+    }
     return send(res,200,{trends,sources,model:used});
   }
   if(action==='competitors'||action==='suggest_competitors'){
-    const max=Math.max(1,Math.min(10,Number(req.body?.limit)||1));
+    const max=Math.max(1,Math.min(planCompetitorLimit(plan),Number(req.body?.limit)||planCompetitorLimit(plan)));
     const names=(Array.isArray(req.body?.competitors)?req.body.competitors:[]).map(x=>clean(x,120)).filter(Boolean).slice(0,max);
     const channelFocus=clean(req.body?.channel,80);
     const channelList=COMMUNICATION_CHANNELS.map(x=>x.label).join(', ');
