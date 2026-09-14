@@ -278,29 +278,32 @@ function signalName(signal,channel){
     return clean((signal.title||channel.label||'Sinal público').split(/[-|:]/)[0],70);
   }
 }
-function signalLine(signal,channel){
-  const who=signalName(signal,channel),title=cleanSignalText(cleanNewsTitle(signal.title,signal.source),120),snippet=cleanSignalText(signal.description,170);
-  return `${who}: apareceu em resultado público recente ligado a “${title||snippet||'conteúdo do canal'}”${snippet&&snippet!==title?`. O trecho sugere: ${snippet}`:''}.`;
+function signalTopic(signal){
+  const title=cleanSignalText(cleanNewsTitle(signal.title,signal.source),140),snippet=cleanSignalText(signal.description,180);
+  return title||snippet||'assunto recente do mercado';
 }
-function movementFromSignals(channel,niche,signals,linkSummaries=[]){
+function movementBullet(signal,channel,niche){
+  const topic=signalTopic(signal),text=[signal.title,signal.description].join(' ').toLowerCase();
+  if(/reel|short|vídeo|video|tiktok|youtube/.test(text))return `estão usando vídeos curtos ou conteúdos em formato rápido para puxar atenção sobre “${topic}”.`;
+  if(/dica|como|guia|passo|erro|mito|pergunta|dúvida|duvida/.test(text))return `estão transformando dúvidas e temas educativos em conteúdo simples sobre “${topic}”.`;
+  if(/avalia|depoimento|cliente|resultado|antes|depois|case/.test(text))return `estão tentando reforçar confiança com prova social, experiência de cliente ou resultado percebido.`;
+  if(/campanha|evento|semana|mês|mes|data|lança|lanca|novo|novidade/.test(text))return `estão aproveitando novidade, data ou campanha para criar conversa em torno de “${topic}”.`;
+  return `estão puxando temas recentes do mercado para gerar autoridade e conversa sobre “${topic}”.`;
+}
+function movementFromSignals(channel,niche,signals){
   const usableSignals=(signals||[]).filter(x=>!isWeakSocialSignal(x)).slice(0,4);
-  const direct=linkSummaries.filter(x=>x.title||x.description||x.text).slice(0,2).map(x=>{
-    const handle=publicHandleFromUrl(x.url),summary=cleanSignalText([x.title,x.description].filter(Boolean).join(' — ')||x.text,220);
-    return `${handle?`@${handle}`:x.url}: ${summary||'perfil público encontrado, mas com leitura limitada pela plataforma'}`;
-  });
-  const lines=usableSignals.map(x=>signalLine(x,channel));
-  if(!direct.length&&!lines.length)return '';
-  const base=[...direct,...lines].join(' ');
+  if(!usableSignals.length)return '';
+  const bullets=[...new Set(usableSignals.map(x=>movementBullet(x,channel,niche)))].slice(0,5).map(x=>`- ${x}`).join('\n');
   const channelMoves={
-    instagram:`Movimento observado: concorrentes e referências do nicho estão tentando transformar autoridade em atenção rápida no Instagram, usando presença de perfil, temas pesquisáveis e formatos que normalmente viram Reels, carrosséis, stories e chamadas para conversa.`,
-    facebook:`Movimento observado: o Facebook aparece mais como canal de relacionamento e presença local, com sinais de página, comunidade, avisos e conteúdos que reforçam confiança para quem pesquisa antes de chamar.`,
-    tiktok:`Movimento observado: no TikTok, o sinal útil é transformar dúvidas e curiosidades do nicho em vídeos curtos, diretos e com linguagem mais espontânea.`,
-    'google-business':`Movimento observado: no Google Empresas, o jogo é decisão local: avaliações, fotos, informações atualizadas e respostas públicas ajudam o cliente a escolher antes do contato.`,
-    youtube:`Movimento observado: no YouTube, referências do nicho usam títulos pesquisáveis e vídeos para explicar temas que precisam de mais profundidade, depois reaproveitam cortes em canais curtos.`,
-    'site-landing-page':`Movimento observado: sites e landing pages estão sendo usados para organizar promessa, serviços, provas e chamadas de contato em uma jornada mais clara.`,
-    marketplaces:`Movimento observado: em lojas e marketplaces, a disputa acontece em apresentação: foto, descrição, prova, benefício, avaliação e clareza da oferta.`
+    instagram:`Além das sugestões acima, encontrei estes movimentos recentes no Instagram entre referências do nicho:`,
+    facebook:`Além das sugestões acima, encontrei estes movimentos recentes no Facebook e em páginas públicas do nicho:`,
+    tiktok:`Além das sugestões acima, encontrei estes movimentos recentes no TikTok e em conteúdos curtos do nicho:`,
+    'google-business':`Além das sugestões acima, encontrei estes movimentos recentes ligados a busca local e Google Empresas:`,
+    youtube:`Além das sugestões acima, encontrei estes movimentos recentes no YouTube e em vídeos pesquisáveis do nicho:`,
+    'site-landing-page':`Além das sugestões acima, encontrei estes movimentos recentes em sites, blogs e landing pages do nicho:`,
+    marketplaces:`Além das sugestões acima, encontrei estes movimentos recentes em lojas, catálogos e marketplaces do nicho:`
   };
-  return `${channelMoves[channel.key]||`Movimento observado: há sinais públicos recentes em ${channel.label} ligados ao nicho de ${niche}.`} Evidências encontradas: ${base}`;
+  return `${channelMoves[channel.key]||`Além das sugestões acima, encontrei estes movimentos recentes em ${channel.label}:`}\n${bullets}`;
 }
 async function publicSignalSearch(channel,niche,competitors,limit=6){
   const names=(competitors||[]).filter(x=>!/^https?:\/\//i.test(x)).slice(0,4);
@@ -342,18 +345,10 @@ async function suggestCompetitorNames(niche,max){
   }
   return filterCompetitorNames(found,max);
 }
-function channelDescription(channel,niche,competitors,news,linkSummaries=[]){
-  const names=competitors.length?competitors:['Concorrente A','Concorrente B','Concorrente C'];
-  const evidence=new Map();
-  news.forEach((n,i)=>{const haystack=[n.title,n.source,n.description].join(' ').toLowerCase();const key=competitors.find(c=>haystack.includes(c.toLowerCase()))||names[i%names.length];if(!evidence.has(key))evidence.set(key,n)});
-  const movement=movementFromSignals(channel,niche,news,linkSummaries);
+function channelDescription(channel,niche,competitors,news){
+  const movement=movementFromSignals(channel,niche,news);
   if(movement)return movement;
-  return names.map((name,idx)=>{
-    const n=evidence.get(name),title=n?cleanNewsTitle(n.title,n.source):'';
-    if(n)return `${name}: encontrei um sinal público que pode ajudar a observar ${channel.label}: “${title}”. Veja a fonte, repare no formato, na promessa, na frequência e no tipo de chamada usada.`;
-    if(/^https?:\/\//i.test(name))return `${name}: não encontrei sinais indexados suficientes nesta rodada. A plataforma pode limitar leitura automática, então use o link como ponto de partida para conferir bio, posts recentes, legendas, prova social e chamadas.`;
-    return `${name}: não encontrei sinal indexado confiável nesta rodada em ${channel.label}. Ainda assim, este canal pode ser usado para ocupar temas que o mercado deixa pouco explorados no nicho de ${niche}.`;
-  }).join('\n');
+  return `Além das sugestões acima, não encontrei movimentos recentes confiáveis para resumir neste canal agora. Ainda assim, use este meio para observar temas, formatos, promessas e chamadas que aparecem no mercado de ${niche}.`;
 }
 function channelStrategy(channel,niche){
   const map={
@@ -368,20 +363,20 @@ function channelStrategy(channel,niche){
   return map[channel.key]||`Use este canal para observar o que chama atenção no mercado e adaptar uma publicação própria para ${niche}.`;
 }
 async function channelCompetitorCards(niche,competitors,focus='',linkSummaries=[]){
-  const list=(competitors.length?competitors:['Referência local','Referência de conteúdo','Referência nacional']).slice(0,10);
+  const list=[];
   const cards=[];
   const focused=simpleSlug(focus);
   const channels=focus?COMMUNICATION_CHANNELS.filter(x=>simpleSlug(x.label)===focused||x.key===focused):COMMUNICATION_CHANNELS;
   for(const [i,channel] of channels.entries()){
-    const news=await publicSignalSearch(channel,niche,list,Math.max(3,list.length));
+    const news=await publicSignalSearch(channel,niche,list,5);
     cards.push(cleanMarketCard({
-      competitor:list.join(', '),
+      competitor:'',
       channel:channel.label,
       title:channel.label,
-      description:channelDescription(channel,niche,list,news,linkSummaries),
+      description:channelDescription(channel,niche,list,news),
       mark_strategy:channelStrategy(channel,niche),
       importance:i<4?5:4,
-      source:news[0]?.source||(linkSummaries.some(x=>x.title||x.description)?'Link público analisado':'Busca pública indexada'),
+      source:news[0]?.source||'Busca pública indexada',
       source_url:news[0]?.link||competitorSearchUrl(channel,niche,list)
     }));
   }
@@ -456,10 +451,10 @@ async function handleMarketIntel(req,res,{su,sk,gk,user}){
     const channelFocus=clean(req.body?.channel,80);
     const channelList=COMMUNICATION_CHANNELS.map(x=>x.label).join(', ');
     const linkFocus=linkHandles.length?`Handles extraídos dos links informados: ${linkHandles.map(x=>`@${x}`).join(', ')}. Quando houver handle, pesquise primeiro o handle exato e só depois referências do mesmo nicho.`:'';
-    const searchPlaybook=COMMUNICATION_CHANNELS.map(x=>`${x.label}: pesquisar ${x.site?`site:${x.site} `:''}${linkHandles.join(' ')} ${niche} ${company?.city||''} ${x.query} últimos 7 dias`).join('\n');
+    const searchPlaybook=COMMUNICATION_CHANNELS.map(x=>`${x.label}: pesquisar ${x.site?`site:${x.site} `:''}${niche} ${company?.city||''} ${x.query} últimos 7 dias`).join('\n');
     const prompt=action==='suggest_competitors'
       ?`Hoje é ${today}. Pesquise até ${max} referências/concorrentes brasileiros reais, ativos e relevantes para o nicho abaixo. Concorrente deve ser nome de profissional, clínica, empresa, marca, instituto, perfil ou canal reconhecível. NÃO coloque manchetes, perguntas, assuntos, domínios, URLs ou nomes de portais jornalísticos como concorrente. Priorize nomes que tenham sinal público recente em Instagram, Facebook, TikTok, Google Empresas, YouTube, site ou marketplace. Depois gere exatamente 7 cards, um por canal de comunicação: ${channelList}.\n\n${marketCompanyText(company,profile,niche)}\n\nEm cada card, compare os concorrentes sugeridos naquele canal. Exemplo de descrição desejada:\nConcorrente A: está fazendo tal coisa no Instagram.\nConcorrente B: não encontrei atualização clara nos últimos 30 dias.\nConcorrente C: está usando tal formato.\n\nRegras obrigatórias:\n- O array competitors deve ter apenas nomes reais de concorrentes/referências, nunca frases de notícias.\n- Só sugira concorrentes que tenham pelo menos um canal público encontrado; se não tiver segurança, retorne menos nomes.\n- Use fontes públicas reais e source_url clicável quando encontrar evidência.\n- Não invente post, métrica, campanha ou frequência. Se não encontrar, diga que não encontrou atualização pública clara nos últimos 30 dias.\n- Cada card deve ter como title exatamente um destes canais: ${channelList}.\n- mark_strategy deve orientar o que o usuário pode fazer naquele canal.\n- Retorne SOMENTE JSON válido: {"competitors":["..."],"cards":[{"competitor":"nomes separados por vírgula","title":"Instagram","description":"...","mark_strategy":"...","importance":0-5,"source":"nome da fonte ou busca pública","source_url":"https://..."}]}.`
-      :`Hoje é ${today}. Pesquise movimentos públicos de comunicação e gere exatamente ${channelFocus?'1 card para o canal clicado':'7 cards, um por canal de comunicação'}: ${channelFocus||channelList}.\n\n${marketCompanyText(company,profile,niche)}\nConcorrentes informados por nome: ${names.length?names.join(', '):'não informados'}\nLinks de concorrentes informados pelo usuário: ${links.length?links.join(', '):'não informados'}\nLeitura técnica prévia dos links públicos:\n${linkContext}\n${linkFocus}\nCanal que o usuário clicou primeiro: ${channelFocus||'não informado'}\n\nConsultas obrigatórias de descoberta pública, como se o usuário pesquisasse no Google e filtrasse por recente:\n${searchPlaybook}\n\nObjetivo do resultado:\n- O card NÃO deve listar apenas títulos, links ou snippets. Ele deve sintetizar o movimento de comunicação: formato usado, tema recorrente, promessa/ângulo, prova social, CTA e possível intenção estratégica.\n- Se houver link informado, foque no link/handle informado. Não troque por celebridades, influenciadores genéricos ou perfis fora do nicho. Use outras referências apenas se forem claramente do mesmo nicho e úteis para comparar.\n- Em vez de dizer “achei o perfil X”, explique “o concorrente parece usar o canal para Y, com sinais de Z”.\n- Segundo parágrafo / mark_strategy: diga o que o usuário pode fazer igual ou melhor, de forma prática, sem copiar literalmente.\n\nRegras obrigatórias:\n- Use fontes públicas reais e source_url clicável quando encontrar evidência.\n- Não invente post, métrica, campanha, frequência ou resultado. Se Instagram, TikTok ou Facebook limitarem leitura direta, procure sinais indexados por Google Search antes de concluir que não há nada.\n- Não escreva textos crus como “Create an account or log in”, “instagram.com”, “&nbsp;”, nem despeje snippets. Traduza o sinal em insight útil.\n- Não use Maíra Cardi, Gabriel Medina, Sophia Valverde ou celebridades genéricas como concorrentes, salvo se o nicho do usuário for exatamente celebridade/entretenimento.\n- Cada card deve ter title exatamente igual ao canal analisado, usando estes nomes: ${channelList}.\n- description deve começar com “Movimento observado:” e explicar o que os concorrentes/referências estão fazendo naquele canal.\n- mark_strategy deve começar com “Faça melhor assim:” e orientar o que o usuário pode adaptar naquele canal.\n- Retorne SOMENTE JSON válido: {"cards":[{"competitor":"nomes ou links separados por vírgula","title":"Instagram","description":"...","mark_strategy":"...","importance":0-5,"source":"nome da fonte ou busca pública","source_url":"https://..."}]}.`;
+      :`Hoje é ${today}. Pesquise novidades e movimentos recentes de comunicação para o nicho abaixo e gere exatamente ${channelFocus?'1 card para o canal clicado':'7 cards, um por canal de comunicação'}: ${channelFocus||channelList}.\n\n${marketCompanyText(company,profile,niche)}\nCanal que o usuário clicou primeiro: ${channelFocus||'não informado'}\n\nConsultas obrigatórias de descoberta pública, como se o usuário pesquisasse no Google e filtrasse por recente:\n${searchPlaybook}\n\nObjetivo do resultado:\n- NÃO coloque nomes de concorrentes, perfis, links soltos ou trechos crus no texto do card.\n- O card deve explicar movimentos gerais recentes do mercado naquele canal, por exemplo: “estão usando vídeos curtos para responder dúvidas”, “estão postando sobre tal assunto”, “estão reforçando prova social”, “estão aproveitando datas/campanhas”, “estão levando para WhatsApp/agendamento”.\n- description deve começar com “Além das sugestões acima, encontramos os seguintes movimentos recentes:” e depois trazer bullets curtos com quantos movimentos úteis forem encontrados.\n- mark_strategy deve começar com “Sugestão estratégica para você:” e dar uma recomendação prática baseada nesses movimentos.\n\nRegras obrigatórias:\n- Use busca pública real para se inspirar, mas transforme os achados em síntese geral. Não cite celebridades, nomes de marcas ou perfis específicos.\n- Não invente métrica, frequência ou resultado. Se a evidência for fraca, fale em “movimento aparente” ou “sinal recorrente”.\n- Não escreva textos crus como “Create an account or log in”, “instagram.com”, “&nbsp;”, nem despeje snippets.\n- Cada card deve ter title exatamente igual ao canal analisado, usando estes nomes: ${channelList}.\n- Retorne SOMENTE JSON válido: {"cards":[{"competitor":"","title":"Instagram","description":"Além das sugestões acima, encontramos os seguintes movimentos recentes:\\n- ...","mark_strategy":"Sugestão estratégica para você: ...","importance":0-5,"source":"Busca pública","source_url":"https://..."}]}.`;
     let obj={},sources=[],used=model;
     if(gk)try{({obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,5200))}catch(e){console.warn('[MARKET INTEL competitors fallback]',e.message)}
     let competitors=filterCompetitorNames(Array.isArray(obj.competitors)?obj.competitors:[],max);
@@ -467,10 +462,10 @@ async function handleMarketIntel(req,res,{su,sk,gk,user}){
     const validChannels=new Set(COMMUNICATION_CHANNELS.map(x=>x.label.toLowerCase()));
     const badCard=card=>{
       const text=[card.description,card.mark_strategy,card.competitor,card.source_url].join(' ').toLowerCase();
-      if(/create an account|log in to instagram|&nbsp;|maíra cardi|maira cardi|gabriel medina|sophia valverde/.test(text))return true;
+      if(/create an account|log in to instagram|&nbsp;|maíra cardi|maira cardi|gabriel medina|sophia valverde|referência local|referencia local|referência nacional|referencia nacional/.test(text))return true;
       return !!(linkHandles.length&&channelFocus&&simpleSlug(card.title)===simpleSlug(channelFocus)&&!linkHandles.some(h=>text.includes(h.toLowerCase())));
     };
-    if(cards.length<(channelFocus?1:7)||cards.some(x=>!validChannels.has(String(x.title||'').toLowerCase()))||cards.some(badCard)){const fallback=await fallbackCompetitorCards(niche,names.length?names:linkHandles.length?linkHandles:links.length?links:competitors,max,action==='suggest_competitors',channelFocus,linkSummaries);competitors=competitors.length?competitors:fallback.competitors;cards=fallback.cards}
+    if(cards.length<(channelFocus?1:7)||cards.some(x=>!validChannels.has(String(x.title||'').toLowerCase()))||cards.some(badCard)){const fallback=await fallbackCompetitorCards(niche,[],max,action==='suggest_competitors',channelFocus,[]);competitors=competitors.length?competitors:fallback.competitors;cards=fallback.cards}
     return send(res,200,{competitors,cards,sources,model:used});
   }
   return send(res,400,{error:'Ação inválida.'});

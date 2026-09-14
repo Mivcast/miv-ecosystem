@@ -277,7 +277,7 @@ function trendLimit(){return hasPremiumAccess()?30:hasProAccess()?15:5}
 function competitorLimit(){return hasPremiumAccess()?10:hasProAccess()?3:1}
 function competitorCardLimit(){return 7}
 const MARKET_TRENDS_CACHE='mivMarketTrendItems_v2_sourced';
-const MARKET_COMPETITORS_CACHE='mivCompetitorInsightItems_v5_movement_summary';
+const MARKET_COMPETITORS_CACHE='mivCompetitorInsightItems_v6_general_movements';
 const MARKET_COMPETITOR_NAMES_CACHE='mivCompetitorNames_v1';
 const MARKET_COMPETITOR_LINKS_CACHE='mivCompetitorChannelLinks_v1';
 let marketTrendAutoFillLimit=0;
@@ -300,21 +300,21 @@ function normalizeCompetitor(raw,i){const item={id:raw.id||`competitor-${assetSl
 const COMPETITOR_CHANNELS=['Instagram','Facebook','TikTok','Google Empresas','YouTube','Site ou landing page','Loja virtual ou marketplaces'];
 function competitorChannelGeneralDescription(channel,niche=state.profile.niche){
  const n=niche||'seu nicho',map={
-  instagram:`Em ${n}, o Instagram costuma concentrar Reels curtos, carrosséis educativos, bastidores, provas sociais, antes/depois quando permitido e chamadas para WhatsApp. É o canal mais forte para transformar dúvidas frequentes em confiança.`,
-  facebook:`Em ${n}, o Facebook tende a funcionar melhor para relacionamento local, grupos, avisos, depoimentos, bastidores e posts de utilidade. Muitas empresas usam menos este canal, então constância pode virar diferencial.`,
-  tiktok:`Em ${n}, o TikTok costuma premiar respostas rápidas, bastidores espontâneos, mitos e erros comuns. Quando poucos concorrentes estão ativos, existe espaço para ocupar descoberta com linguagem simples e frequência.`,
-  'google-empresas':`Em ${n}, o Google Empresas normalmente pesa em busca local: avaliações, fotos recentes, respostas, horários, serviços e posts rápidos ajudam o público a decidir antes de chamar no WhatsApp.`,
-  youtube:`Em ${n}, o YouTube costuma ser usado para autoridade: explicações mais completas, shorts, tutoriais, comparativos e respostas para dúvidas que nas redes sociais ficam rasas.`,
-  'site-ou-landing-page':`Em ${n}, sites e landing pages costumam vender confiança: promessa clara, serviços bem explicados, provas, perguntas frequentes, botões visíveis e conteúdo que ajuda a pessoa a escolher.`,
-  'loja-virtual-ou-marketplaces':`Em ${n}, lojas virtuais e marketplaces costumam disputar por foto, descrição, prova, avaliação, benefício, prazo e clareza da oferta. Pequenos detalhes de apresentação podem aumentar conversão.`
+  instagram:`Em ${n}, o Instagram costuma:\n- concentrar Reels curtos;\n- usar carrosséis educativos;\n- mostrar bastidores e provas sociais;\n- transformar dúvidas frequentes em confiança e chamadas para WhatsApp.`,
+  facebook:`Em ${n}, o Facebook costuma:\n- funcionar como relacionamento local;\n- reforçar grupos, avisos e depoimentos;\n- publicar bastidores e posts de utilidade;\n- virar diferencial quando poucos concorrentes mantêm constância.`,
+  tiktok:`Em ${n}, o TikTok costuma:\n- premiar respostas rápidas;\n- premiar bastidores espontâneos;\n- premiar mitos e erros comuns.\nQuando poucos concorrentes estão ativos, existe espaço para ocupar descoberta com linguagem simples e frequência.`,
+  'google-empresas':`Em ${n}, o Google Empresas costuma:\n- pesar na decisão local;\n- destacar avaliações e fotos recentes;\n- valorizar respostas públicas, horários, serviços e posts rápidos;\n- ajudar o público a decidir antes de chamar no WhatsApp.`,
+  youtube:`Em ${n}, o YouTube costuma:\n- construir autoridade;\n- explicar temas mais completos;\n- usar shorts, tutoriais e comparativos;\n- responder dúvidas que ficam rasas nas redes sociais.`,
+  'site-ou-landing-page':`Em ${n}, sites e landing pages costumam:\n- vender confiança;\n- explicar serviços com clareza;\n- mostrar provas, perguntas frequentes e botões visíveis;\n- ajudar a pessoa a escolher com menos dúvida.`,
+  'loja-virtual-ou-marketplaces':`Em ${n}, lojas virtuais e marketplaces costumam:\n- disputar por foto e descrição;\n- destacar prova, avaliação, benefício e prazo;\n- reduzir dúvidas antes da compra;\n- melhorar conversão com pequenos detalhes de apresentação.`
  };
  return map[assetSlug(channel)]||`Em ${n}, este canal costuma revelar temas, formatos, promessas e chamadas que ajudam a entender como o mercado se comunica.`;
 }
 function competitorChannelGeneralStrategy(channel,niche=state.profile.niche){
  const map={
-  instagram:'Comece com uma série de 5 conteúdos: dúvida comum, bastidor, prova social, erro frequente e convite para conversa. Melhore o que os concorrentes fazem deixando a promessa mais clara e o CTA mais direto.',
-  facebook:'Use posts de relacionamento, avisos úteis e provas locais. Para fazer melhor, crie constância semanal e responda comentários/mensagens com linguagem próxima.',
-  tiktok:'Teste vídeos de 20 a 40 segundos com ganchos simples. Para fazer melhor, transforme dúvidas reais em quadros repetíveis e reaproveite os melhores vídeos no Instagram.',
+  instagram:'- Comece com uma série de 5 conteúdos: dúvida comum, bastidor, prova social, erro frequente e convite para conversa.\nPara fazer melhor, deixe a promessa mais clara e o CTA mais direto.',
+  facebook:'- Use posts de relacionamento, avisos úteis e provas locais.\nPara fazer melhor, crie constância semanal e responda comentários/mensagens com linguagem próxima.',
+  tiktok:'- Teste vídeos de 20 a 40 segundos com ganchos simples.\nPara fazer melhor, transforme dúvidas reais em quadros repetíveis e reaproveite os melhores vídeos no Instagram.',
   'google-empresas':'Atualize fotos, serviços, descrição e avaliações. Para fazer melhor, responda avaliações com contexto e publique novidades que reforcem confiança local.',
   youtube:'Escolha temas que exigem mais explicação e grave um vídeo principal com cortes. Para fazer melhor, organize playlists por dor do cliente e use títulos objetivos.',
   'site-ou-landing-page':'Revise títulos, provas e botões. Para fazer melhor, crie uma página por serviço com perguntas frequentes, exemplos e chamada clara para contato.',
@@ -324,17 +324,11 @@ function competitorChannelGeneralStrategy(channel,niche=state.profile.niche){
 }
 function competitorChannelPlaceholder(name,i){return {id:`competitor-channel-${assetSlug(name)}`,cat:'Concorrentes',format:'Canal',access:'Grátis',icon:'⌕',tag:'RADAR',title:name,desc:competitorChannelGeneralDescription(name),mark_strategy:competitorChannelGeneralStrategy(name),importance:i<4?5:4,source:'Comportamento geral do nicho',source_url:'',special:'competitor-placeholder',channel:name,img:'assets/cards/analise-mercado.jpg'}}
 function competitorDescriptionHtml(text){return markEsc(text).replace(/(^|<br>|\n)([^:\n<]{2,80}:)/g,(m,p,n)=>`${p}<b>${n}</b>`).replace(/\n/g,'<br>')}
-function competitorLinkControls(channel,locked=false){
- if(locked)return '';
- const limit=competitorLimit(),links=competitorChannelLinks(channel).slice(0,limit),count=links.length;
- const rows=links.map((value,i)=>`<div class="competitor-link-row"><input type="url" value="${markEsc(value)}" placeholder="Cole o link do concorrente neste canal" data-competitor-link="${markEsc(channel)}" data-competitor-link-index="${i}"><button class="outline competitor-link-analyze" data-competitor-link-analyze="${markEsc(channel)}" data-competitor-link-index="${i}">Analisar</button></div>`).join('');
- return `<div class="competitor-link-box"><div class="competitor-link-head"><span>Links de concorrentes</span><small>${count}/${limit}</small><button class="outline competitor-add-link" ${count>=limit?'disabled':''} data-competitor-add-link="${markEsc(channel)}" aria-label="Adicionar link">+</button></div>${rows}</div>`;
-}
 function marketCard(item,index,limit,lockedLabel){
  const saved=state.favorites.includes(item.id),locked=index>=limit,needed=index>=15?'Premium':'PRO',isCompetitor=item.special==='competitor-insight'||item.special==='competitor-placeholder',channelClass=isCompetitor?`competitor-channel-card channel-${assetSlug(item.channel||item.title)}`:'',bodyClass=locked&&isCompetitor?'':locked?'blurred':'',descHtml=isCompetitor?competitorDescriptionHtml(item.desc):markEsc(item.desc);
  const channelName=item.channel||item.title;
- const actions=!locked&&item.special==='competitor-placeholder'?`<button class="primary market-card-action" data-competitor-channel="${markEsc(channelName)}">Buscar sinais públicos</button>`:!locked&&item.special==='competitor-insight'?`<div class="market-card-actions"><button class="primary market-card-action compact" data-competitor-channel="${markEsc(channelName)}">Atualizar sinais</button><button class="outline market-card-action compact" data-market-mark="${markEsc(item.title)}">Sugestões do MARK</button></div>`:'';
- return `<article class="market-card ${channelClass} ${locked?'locked':''} ${locked&&isCompetitor?'locked-channel':''}"><div class="market-card-top"><span class="market-stars" aria-label="${Number(item.importance)||0} de 5">${marketStars(item.importance)}</span><button class="heart ${saved?'saved':''}" ${locked?'data-scroll="planos"':`data-fav="${item.id}"`}>${locked?'🔒':saved?'♥':'♡'}</button></div><div class="market-card-body ${bodyClass}"><span class="meta-pill">${isCompetitor?'MOVIMENTO':item.cat}</span><h3>${markEsc(item.title)}</h3><p>${descHtml}</p><strong>Como fazer igual ou melhor</strong><p>${markEsc(item.mark_strategy)}</p></div>${actions}${isCompetitor?competitorLinkControls(channelName,locked):''}${item.source_url&&!locked?`<a class="source-link" href="${markEsc(item.source_url)}" target="_blank" rel="noopener">Fonte: ${markEsc(item.source||sourceHost(item.source_url))}</a>`:`<small class="source-link">${markEsc(item.source||'Fonte do radar')}</small>`}${locked?`<div class="market-lock"><b>${lockedLabel||`Libere no ${needed}`}</b><span>Assine para acessar mais cards do seu mercado.</span><button class="primary" data-scroll="planos">Ver planos</button></div>`:''}</article>`;
+ const actions=!locked&&isCompetitor?`<div class="market-card-actions"><button class="primary market-card-action compact" data-competitor-channel="${markEsc(channelName)}">${item.special==='competitor-placeholder'?'Buscar novidades':'Atualizar novidades'}</button><button class="outline market-card-action compact" data-market-mark="${markEsc(item.title)}">Pesquisar concorrente no MARK</button></div>`:'';
+ return `<article class="market-card ${channelClass} ${locked?'locked':''} ${locked&&isCompetitor?'locked-channel':''}"><div class="market-card-top"><span class="market-stars" aria-label="${Number(item.importance)||0} de 5">${marketStars(item.importance)}</span><button class="heart ${saved?'saved':''}" ${locked?'data-scroll="planos"':`data-fav="${item.id}"`}>${locked?'🔒':saved?'♥':'♡'}</button></div><div class="market-card-body ${bodyClass}"><span class="meta-pill">${isCompetitor?'MOVIMENTO':item.cat}</span><h3>${markEsc(item.title)}</h3><p>${descHtml}</p><strong>Como fazer igual ou melhor</strong><p>${markEsc(item.mark_strategy)}</p></div>${actions}${item.source_url&&!locked?`<a class="source-link" href="${markEsc(item.source_url)}" target="_blank" rel="noopener">Fonte: ${markEsc(item.source||sourceHost(item.source_url))}</a>`:`<small class="source-link">${markEsc(item.source||'Fonte do radar')}</small>`}${locked?`<div class="market-lock"><b>${lockedLabel||`Libere no ${needed}`}</b><span>Assine para acessar mais cards do seu mercado.</span><button class="primary" data-scroll="planos">Ver planos</button></div>`:''}</article>`;
 }
 function lockedMarketPlaceholder(i,type='trend'){return {id:`locked-${type}-${i}`,cat:type==='trend'?'Tendências':'Concorrentes',format:'Plano pago',access:'Pago',icon:'🔒',tag:'PLANOS',title:type==='trend'?(i>=15?'Tendência Premium':'Tendência PRO'):'Canal extra',desc:'Existe mais inteligência disponível para acompanhar seu mercado com mais profundidade.',mark_strategy:'Assine um plano pago para liberar mais cards, fontes e ideias de ação para seu negócio.',importance:i>=15?5:4,source:'Planos MIV',source_url:'',special:'market-locked',img:'assets/cards/analise-mercado.jpg'}}
 function ensureMarketTrendCapacity(limit){if(!mivUser||!accessState.ready||marketTrendItems.length>=limit||marketTrendAutoFillLimit===limit)return;marketTrendAutoFillLimit=limit;setTimeout(()=>refreshMarketTrends({silent:true,keepExisting:true}),180)}
@@ -363,15 +357,11 @@ async function refreshCompetitors(suggest=false,channel='',link=''){
  }
  if(!accessState.ready)await loadAccessFromSupabase();
  try{
-  let names=competitorNames(),limit=competitorLimit(),links=link?[link]:channel?competitorLinksForChannel(channel):[];
-  if(btn){btn.disabled=true;btn.textContent=suggest?'Sugerindo concorrentes...':channel?`Buscando sinais em ${channel}...`:'Buscando sinais públicos...'}
-  setCompetitorStatus(suggest?'Aguarde até 1 minutinho: o MARK está pesquisando concorrentes reais, ativos e úteis para inspiração no seu nicho.':link?`Lendo o link e buscando sinais públicos indexados sobre ele em ${channel}.`:channel?`Investigando sinais públicos indexados em ${channel}.`:'Investigando sinais públicos indexados nos principais meios de comunicação. Isso pode levar alguns segundos.')
+  let names=[],limit=competitorLimit(),links=[];
+  if(btn){btn.disabled=true;btn.textContent=suggest?'Abrindo MARK...':channel?`Buscando novidades em ${channel}...`:'Buscando novidades...'}
+  setCompetitorStatus(suggest?'Clique no MARK e informe o concorrente específico que você quer investigar.':channel?`Aguarde alguns segundos: o MARK está percorrendo fontes públicas da internet, buscando novidades e movimentos recentes em ${channel}.`:'Aguarde alguns segundos: o MARK está percorrendo fontes públicas da internet entre os meios de comunicação mais relevantes e buscando novidades recentes.')
   if(!suggest&&!channel&&track)track.innerHTML=marketLoadingCards(7,'meios de comunicação dos concorrentes');
-  if(!suggest&&channel)toast(`Atualizando movimentos em ${channel}.`);
-  if(names.length>limit)toast(`Seu plano permite acompanhar ${limit} concorrente(s). Vou usar os primeiros da lista.`);
-  if(links.length>limit)links=links.slice(0,limit);
-  names=names.slice(0,limit);
-  if(names.length)saveCompetitorNames(names);
+  if(!suggest&&channel)toast(`Buscando novidades em ${channel}.`);
   const token=await getAuthToken();
   const r=await fetch('/api/mark-ai',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({action:suggest?'suggest_competitors':'competitors',niche:state.profile.niche,competitors:names,competitor_links:links,limit,channel})});
   const data=await r.json().catch(()=>({}));
@@ -391,7 +381,7 @@ async function refreshCompetitors(suggest=false,channel='',link=''){
    return
   }
   const nextCards=(data.cards||[]).map((x,i)=>normalizeCompetitor(x,i)).filter(isLiveMarketItem).slice(0,7);
-  if(!nextCards.length)throw new Error('A busca veio sem canais publicáveis. Tente novamente ou cole um link de concorrente dentro do canal que deseja analisar.');
+  if(!nextCards.length)throw new Error('A busca veio sem movimentos publicáveis. Tente novamente em alguns instantes.');
   if(channel){
    const target=assetSlug(channel);
    const replacement=nextCards.find(x=>assetSlug(x.channel||x.title)===target);
@@ -403,8 +393,8 @@ async function refreshCompetitors(suggest=false,channel='',link=''){
   }
   saveMarketCache();
   renderCompetitorInsights();
-  setCompetitorStatus(channel?`${channel} atualizado com sinais públicos do mercado.`:'Todos os meios foram atualizados com sinais públicos do mercado.');
-  toast(channel?`${channel} atualizado.`:'Sinais públicos atualizados.');
+  setCompetitorStatus(channel?`${channel} atualizado com novidades e movimentos recentes.`:'Todos os meios foram atualizados com novidades e movimentos recentes.');
+  toast(channel?`${channel} atualizado.`:'Novidades e movimentos atualizados.');
  }catch(e){
   console.warn('[Competitors]',e);
   setCompetitorStatus(e.message||'A busca de concorrentes não concluiu.');
@@ -412,13 +402,13 @@ async function refreshCompetitors(suggest=false,channel='',link=''){
   if(!competitorInsightItems.length)renderCompetitorInsights()
  }finally{
   if(suggestBtn){suggestBtn.disabled=false;suggestBtn.textContent='Sugerir concorrentes'}
-  if(refreshBtn){refreshBtn.disabled=false;refreshBtn.textContent='Buscar sinais públicos'}
+  if(refreshBtn){refreshBtn.disabled=false;refreshBtn.textContent='Buscar novidades e movimentos recentes'}
  }
 }
 function renderTracks(){document.getElementById('recTitle').textContent=`Mais úteis agora para ${state.profile.niche}`;renderShelf('recTrack',recommended());renderShelf('marketingTrack',bases.marketing);renderMarketTrends();renderCompetitorInsights();renderShelf('brandTrack',bases.brand);renderShelf('salesTrack',bases.sales);renderShelf('consultTrack',bases.consult);renderShelf('mivcastTrack',bases.mivcast);renderTools();renderLearn()}
 function renderTools(){let arr=bases.tools.map(getItem).filter(Boolean);if(state.toolFilter!=='Todos'){arr=arr.filter(i=>state.toolFilter==='Grátis'?i.access==='Grátis':state.toolFilter==='Pago'?i.access!=='Grátis':i.cat===state.toolFilter)}document.getElementById('toolsTrack').innerHTML=arr.map(card).join('');bindCards()}
 function renderLearn(){let arr=bases.learn.map(getItem).filter(Boolean);if(state.learnFilter!=='Todos'){arr=arr.filter(i=>state.learnFilter==='Grátis'?i.access==='Grátis':state.learnFilter==='Pago'?i.access!=='Grátis':i.format===state.learnFilter)}const q=(document.getElementById('learnSearch')?.value||'').trim().toLowerCase(),area=document.getElementById('learnArea')?.value||'Todos',level=document.getElementById('learnLevel')?.value||'Todos';if(q)arr=arr.filter(i=>[i.title,i.desc,i.cat,i.tag,i.format].join(' ').toLowerCase().includes(q));if(area!=='Todos')arr=arr.filter(i=>(i.learningArea||i.cat)===area);if(level!=='Todos')arr=arr.filter(i=>(i.learningLevel||'Todos')===level||!i._learning);document.getElementById('learnTrack').innerHTML=arr.map(card).join('');bindCards()}
-function bindCards(){document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openItem(b.dataset.open));document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=e=>{e.stopPropagation();toggleFav(b.dataset.fav)});document.querySelectorAll('[data-competitor-channel]').forEach(b=>b.onclick=e=>{e.stopPropagation();refreshCompetitors(false,b.dataset.competitorChannel)});document.querySelectorAll('[data-market-mark]').forEach(b=>b.onclick=e=>{e.stopPropagation();openMarketMarkSuggestion(b.dataset.marketMark)});document.querySelectorAll('[data-competitor-link]').forEach(input=>input.oninput=()=>{const channel=input.dataset.competitorLink,links=competitorChannelLinks(channel);links[Number(input.dataset.competitorLinkIndex)||0]=input.value;saveCompetitorChannelLinks(channel,links)});document.querySelectorAll('[data-competitor-add-link]').forEach(b=>b.onclick=e=>{e.stopPropagation();const channel=b.dataset.competitorAddLink,links=competitorChannelLinks(channel),limit=competitorLimit();if(links.length>=limit){toast(`Seu plano permite ${limit} link(s) por meio de comunicação.`);return}links.push('');saveCompetitorChannelLinks(channel,links);renderCompetitorInsights()});document.querySelectorAll('[data-competitor-link-analyze]').forEach(b=>b.onclick=e=>{e.stopPropagation();const channel=b.dataset.competitorLinkAnalyze,links=competitorChannelLinks(channel),idx=Number(b.dataset.competitorLinkIndex)||0,link=String(links[idx]||'').trim();if(!link){toast('Cole o link do concorrente antes de analisar.');return}refreshCompetitors(false,channel,link)})}
+function bindCards(){document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openItem(b.dataset.open));document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=e=>{e.stopPropagation();toggleFav(b.dataset.fav)});document.querySelectorAll('[data-competitor-channel]').forEach(b=>b.onclick=e=>{e.stopPropagation();refreshCompetitors(false,b.dataset.competitorChannel)});document.querySelectorAll('[data-market-mark]').forEach(b=>b.onclick=e=>{e.stopPropagation();openMarketMarkSuggestion(b.dataset.marketMark)})}
 async function toggleFav(id){const adding=!state.favorites.includes(id);state.favorites=adding?[...state.favorites,id]:state.favorites.filter(x=>x!==id);save();renderTracks();maybeRenderCentral();if(state.current?.id===id)document.getElementById('favBtn').textContent=adding?'♥ Salvo':'♡ Salvar';toast(adding?'Salvo na Minha Central':'Removido dos favoritos');if(mivUser&&mivSupabase){try{await persistFavorite('item',id,adding)}catch(err){console.error('[MIV favorite]',err);toast('Favorito alterado aqui, mas não sincronizou.')}}}
 
 
@@ -1846,7 +1836,7 @@ document.getElementById('closeVideoModal')?.addEventListener('click',closeLearni
 const mark=document.getElementById('mark'),overlay=document.getElementById('overlay');document.getElementById('markFab').onclick=()=>{mark.classList.add('open');overlay.classList.add('show');updateMark()};function closeMark(){mark.classList.remove('open');if(!document.getElementById('paywall').classList.contains('show'))overlay.classList.remove('show')}document.getElementById('closeMark').onclick=closeMark;document.getElementById('closePaywall').onclick=closePaywall;overlay.onclick=()=>{closeMark();closePaywall()};document.getElementById('buySingle').onclick=startMercadoPagoSinglePurchase;document.getElementById('applyCoupon').onclick=applyCouponPreview;document.getElementById('couponCode').addEventListener('input',()=>{const f=document.getElementById('couponFeedback');if(f){f.style.display='none';f.textContent=''};if(state.current)document.getElementById('singlePrice').textContent=state.current.price||'Plano Pro'});document.getElementById('goPlans').onclick=()=>{closePaywall();route('home');setTimeout(()=>document.getElementById('planos').scrollIntoView({behavior:'smooth'}),80)};
 let markConversation=[];
 function markEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function openMarketMarkSuggestion(channel){if(!hasProAccess()){openPlanPaywall('Sugestões extras do MARK para concorrentes');return}document.getElementById('markFab')?.click();setTimeout(()=>{const ta=document.querySelector('#markForm textarea');if(ta){ta.value=`Pesquise e sugira concorrentes ou referências reais para eu acompanhar no canal ${channel}, considerando meu nicho ${state.profile.niche}. Traga nomes, links públicos quando encontrar e explique quais deles valem observar. Depois sugira quais eu deveria adicionar nos cards para analisar, sem copiar literalmente ninguém.`;ta.focus()}},150)}
+function openMarketMarkSuggestion(channel){if(!hasProAccess()){openPlanPaywall('Pesquisa específica de concorrente pelo MARK');return}document.getElementById('markFab')?.click();setTimeout(()=>{const ta=document.querySelector('#markForm textarea');if(ta){ta.value=`Quero pesquisar um concorrente específico no canal ${channel}. Vou colar o nome, perfil ou link público dele abaixo. Analise somente sinais públicos disponíveis e me diga o que ele parece estar fazendo nesse canal, quais formatos/temas/chamadas usa e como minha marca pode fazer igual ou melhor sem copiar.\n\nConcorrente ou link: `;ta.focus()}},150)}
 function markAnswerHtml(text,sources=[]){const body=markEsc(text).replace(/\n/g,'<br>');const refs=Array.isArray(sources)&&sources.length?`<span class="markSources"><small>Fontes consultadas</small>${sources.map(x=>`<a href="${markEsc(x.url)}" target="_blank" rel="noopener">${markEsc(x.title||x.url)}</a>`).join('')}</span>`:'';return `<p>${body}${refs}</p>`}
 async function sendMarkQuestion(q){
  const m=document.getElementById('messages');
