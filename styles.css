@@ -460,8 +460,10 @@ body[data-theme="auto"] .fullReportChecklistGroup .report-status-pending{backgro
 .marketPulse,.competitorSec{position:relative}
 .pulseActions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:-6px 0 16px}
 .pulseActions small,.competitorPanel small{color:var(--muted);font-size:10px}
-.competitorPanel{display:grid;grid-template-columns:minmax(320px,1fr) auto;gap:10px;align-items:stretch;margin:-4px 0 16px;border:1px solid color-mix(in srgb,var(--accent) 20%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--surface) 82%,transparent),color-mix(in srgb,var(--accent-soft) 58%,transparent));border-radius:18px;padding:14px;box-shadow:0 16px 42px color-mix(in srgb,var(--accent) 9%,transparent)}
+.competitorPanel{display:grid;grid-template-columns:minmax(320px,1fr) auto auto;gap:10px;align-items:stretch;margin:-4px 0 16px;border:1px solid color-mix(in srgb,var(--accent) 20%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--surface) 82%,transparent),color-mix(in srgb,var(--accent-soft) 58%,transparent));border-radius:18px;padding:14px;box-shadow:0 16px 42px color-mix(in srgb,var(--accent) 9%,transparent)}
 .competitorPanel textarea{border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--text);padding:12px;resize:vertical;min-height:76px}
+.competitorSavedList{grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:11px;font-weight:800}
+.competitorSavedList button{border:1px solid color-mix(in srgb,var(--accent) 22%,var(--line));background:color-mix(in srgb,var(--accent-soft) 72%,var(--surface));color:var(--accent);border-radius:999px;padding:7px 10px;font-size:10px;font-weight:950;cursor:pointer}
 .market-card{flex:0 0 330px;position:relative;border:1px solid color-mix(in srgb,var(--accent) 22%,var(--line));border-radius:18px;background:linear-gradient(145deg,color-mix(in srgb,var(--surface) 88%,transparent),color-mix(in srgb,var(--accent-soft) 56%,transparent));box-shadow:0 18px 48px color-mix(in srgb,var(--accent) 10%,transparent);padding:16px;min-height:350px;overflow:hidden;display:flex;flex-direction:column}
 .market-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .market-card-top .heart{position:static;background:color-mix(in srgb,var(--accent-soft) 72%,var(--surface));color:var(--accent);border-color:color-mix(in srgb,var(--accent) 25%,var(--line))}
@@ -478,6 +480,8 @@ body[data-theme="auto"] .fullReportChecklistGroup .report-status-pending{backgro
 .market-card.competitor-channel-card .meta-pill{background:rgba(255,255,255,.18);color:#fff}
 .market-card.competitor-channel-card .heart{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.36)}
 .market-card.competitor-channel-card .market-card-action{background:rgba(255,255,255,.94);color:#13203a;border-color:rgba(255,255,255,.94)}
+.market-card-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:auto}
+.market-card-action.compact{padding:9px 11px;font-size:10px;min-height:auto}
 .market-card.channel-instagram{background:linear-gradient(145deg,#833ab4,#e1306c 48%,#f77737)}
 .market-card.channel-facebook{background:linear-gradient(145deg,#0b4ea2,#1877f2)}
 .market-card.channel-tiktok{background:linear-gradient(145deg,#111827,#010101 55%,#00f2ea)}

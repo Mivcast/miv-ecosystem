@@ -88,7 +88,9 @@
     <div class="titleRow"><div><span class="eyebrow">ACOMPANHE SEUS CONCORRENTES</span><h2>Veja sinais do mercado para se inspirar com inteligência.</h2><p>Informe concorrentes ou deixe o MARK sugerir nomes e ideias de observação para o seu nicho.</p></div><div class="arrows"><button data-prev="competitorTrack">‹</button><button data-next="competitorTrack">›</button></div></div>
     <div class="competitorPanel">
       <textarea id="competitorNames" rows="3" placeholder="Digite concorrentes, um por linha. Grátis: 3 · PRO: 5 · Premium: 10"></textarea>
+      <button class="primary" id="refreshCompetitors">Atualizar todos os canais</button>
       <button class="outline" id="suggestCompetitors">Sugerir concorrentes</button>
+      <div class="competitorSavedList" id="competitorSavedList"></div>
     </div>
     <div class="shelf" id="competitorTrack"></div>
   </section>
@@ -142,7 +144,7 @@
     <div class="filterbar" id="learnFilters">
       <button class="active" data-learn-filter="Todos">Todos</button><button data-learn-filter="Curso">Cursos</button><button data-learn-filter="Guia">Guias</button><button data-learn-filter="Livro">Livros</button><button data-learn-filter="Vídeo">Vídeos</button><i></i><button data-learn-filter="Grátis">Grátis</button><button data-learn-filter="Pago">Pagos</button>
     </div>
-    <div class="learnDiscovery"><input id="learnSearch" placeholder="Buscar conteúdo, tema ou assunto"><select id="learnArea"><option value="Todos">Todas as áreas</option></select><select id="learnLevel"><option value="Todos">Todos os níveis</option><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select></div><div class="shelf" id="learnTrack"></div><div id="learningTracks" class="learningTracks"></div>
+    <div class="learnDiscovery"><input id="learnSearch" placeholder="Buscar conteúdo, tema ou assunto"><select id="learnArea"><option value="Todos">Todas as áreas</option></select><select id="learnLevel"><option value="Todos">Todos os níveis</option><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select></div><div class="shelf" id="learnTrack"></div>
   </section>
 
   <section class="credibility" id="credibilidade">

@@ -73,7 +73,7 @@ async function generateMarketIntel(gk,model,prompt,maxOutputTokens=5200){
   return {obj:safeJson(text)||{},sources:extractSources(data),model};
 }
 function cleanTrend(x){return {title:clean(x.title,160),description:clean(x.description,520),mark_strategy:clean(x.mark_strategy||x.strategy,720),importance:Math.max(0,Math.min(5,Number(x.importance)||3)),source:clean(x.source,140),source_url:clean(x.source_url||x.url,600)}}
-function cleanMarketCard(x){return {competitor:clean(x.competitor,120),title:clean(x.title,180),description:clean(x.description,520),mark_strategy:clean(x.mark_strategy||x.strategy,720),importance:Math.max(0,Math.min(5,Number(x.importance)||3)),source:clean(x.source,140),source_url:clean(x.source_url||x.url,600)}}
+function cleanMarketCard(x){return {competitor:clean(x.competitor,120),channel:clean(x.channel||x.title,80),title:clean(x.title,180),description:clean(x.description,520),mark_strategy:clean(x.mark_strategy||x.strategy,720),importance:Math.max(0,Math.min(5,Number(x.importance)||3)),source:clean(x.source,140),source_url:clean(x.source_url||x.url,600)}}
 function sourceSearchUrl(card,fallback=''){
   return `https://www.google.com/search?q=${encodeURIComponent([card.title,card.source,fallback].filter(Boolean).join(' '))}`;
 }
@@ -121,6 +121,7 @@ function uniqueNews(rows){
 function cleanNewsTitle(title,source){
   return clean(String(title||'').replace(new RegExp(`\\s+-\\s+${String(source||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}$`,'i'),''),160);
 }
+function simpleSlug(value){return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
 function newsDateLabel(pubDate){
   const d=pubDate?new Date(pubDate):null;
   return d&&!Number.isNaN(d.getTime())?` em ${d.toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'})}`:' recentemente';
@@ -237,14 +238,17 @@ function channelStrategy(channel,niche){
   };
   return map[channel.key]||`Use este canal para observar o que chama atenção no mercado e adaptar uma publicação própria para ${niche}.`;
 }
-async function channelCompetitorCards(niche,competitors){
+async function channelCompetitorCards(niche,competitors,focus=''){
   const list=(competitors.length?competitors:['Referência local','Referência de conteúdo','Referência nacional']).slice(0,10);
   const cards=[];
-  for(const [i,channel] of COMMUNICATION_CHANNELS.entries()){
+  const focused=simpleSlug(focus);
+  const channels=focus?COMMUNICATION_CHANNELS.filter(x=>simpleSlug(x.label)===focused||x.key===focused):COMMUNICATION_CHANNELS;
+  for(const [i,channel] of channels.entries()){
     const query=[channel.query,niche,...list,'Brasil últimos 30 dias'].join(' ');
     const news=await googleNews(query,Math.max(3,list.length));
     cards.push(cleanMarketCard({
       competitor:list.join(', '),
+      channel:channel.label,
       title:channel.label,
       description:channelDescription(channel,niche,list,news),
       mark_strategy:channelStrategy(channel,niche),
@@ -285,10 +289,10 @@ async function fallbackTrendCards(niche,limit){
   for(const q of queries){found.push(...await googleNews(q,limit*2));if(uniqueNews(found).length>=limit)break}
   return uniqueNews(found).slice(0,limit).map((n,i)=>newsTrendCard(n,niche,i));
 }
-async function fallbackCompetitorCards(niche,names,max,suggest){
+async function fallbackCompetitorCards(niche,names,max,suggest,channelFocus=''){
   const discovered=names.length?[]:await suggestCompetitorNames(niche,max);
   const suggested=(names.length?names.slice(0,max):discovered.length?discovered:['Referência local','Referência de conteúdo','Referência nacional'].slice(0,Math.min(3,max)));
-  const cards=await channelCompetitorCards(niche,suggested);
+  const cards=await channelCompetitorCards(niche,suggested,channelFocus);
   const competitors=suggest?suggested:[];
   return {competitors,cards};
 }
@@ -326,7 +330,7 @@ async function handleMarketIntel(req,res,{su,sk,gk,user}){
     let competitors=(Array.isArray(obj.competitors)?obj.competitors:[]).map(x=>clean(x,120)).filter(Boolean).slice(0,max);
     let cards=(Array.isArray(obj.cards)?obj.cards:[]).map((x,i)=>attachSource(cleanMarketCard(x),sources,i,niche)).filter(x=>x.title&&x.description&&(x.source||x.source_url)).slice(0,7);
     const validChannels=new Set(COMMUNICATION_CHANNELS.map(x=>x.label.toLowerCase()));
-    if(cards.length<7||cards.some(x=>!validChannels.has(String(x.title||'').toLowerCase()))){const fallback=await fallbackCompetitorCards(niche,names.length?names:competitors,max,action==='suggest_competitors');competitors=competitors.length?competitors:fallback.competitors;cards=fallback.cards}
+    if(cards.length<(channelFocus?1:7)||cards.some(x=>!validChannels.has(String(x.title||'').toLowerCase()))){const fallback=await fallbackCompetitorCards(niche,names.length?names:competitors,max,action==='suggest_competitors',channelFocus);competitors=competitors.length?competitors:fallback.competitors;cards=fallback.cards}
     return send(res,200,{competitors,cards,sources,model:used});
   }
   return send(res,400,{error:'Ação inválida.'});
