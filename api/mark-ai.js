@@ -92,7 +92,7 @@ async function userPlan(su,sk,userId){
   return 'free';
 }
 function planTrendLimit(plan){return plan==='premium'?30:plan==='pro'?15:5}
-function planCompetitorLimit(plan){return plan==='premium'?10:plan==='pro'?5:3}
+function planCompetitorLimit(plan){return plan==='premium'?10:plan==='pro'?3:1}
 function decodeXml(s=''){
   return clean(s).replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,'$1').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>');
 }
@@ -198,8 +198,8 @@ function isPlausibleCompetitorName(value){
   if(!v||v.length<4||v.length>70)return false;
   if(/https?:|www\.|\.com|\.com\.br|instagram\.com|facebook\.com|tiktok\.com|youtube\.com/i.test(v))return false;
   if(/[?]|!|;/.test(v))return false;
-  if(/\b(por que|porque|saiba|entenda|confira|redes sociais|desinformação|ampliam|libera|anuncia|estudo|pesquisa|notícia|noticia|últimos|ultimos|dias|quando|onde|como)\b/i.test(v))return false;
-  if(/google news|g1|uol|terra|metrópoles|metropoles|cnn|bbc|folha|estadão|estadao|veja|r7|portal|prefeitura|governo|trt|globo|valor|exame/i.test(v))return false;
+  if(/\b(por que|porque|saiba|entenda|confira|redes sociais|desinformação|ampliam|libera|anuncia|estudo|pesquisa|notícia|noticia|últimos|ultimos|dias|quando|onde|como|ipos?|esbanjam|matéria|materia)\b/i.test(v))return false;
+  if(/google news|g1|uol|terra|metrópoles|metropoles|cnn|bbc|folha|estadão|estadao|veja|r7|portal|prefeitura|governo|trt|globo|valor|exame|brazil journal|medicina integrativa/i.test(v))return false;
   const words=v.split(/\s+/).filter(Boolean);
   if(words.length>7)return false;
   return /(^|\s)(dr\.?|dra\.?|cl[ií]nica|instituto|centro|grupo|studio|est[uú]dio|academia|hospital|laborat[oó]rio|[A-ZÁÉÍÓÚÂÊÔÃÕÇ][a-záéíóúâêôãõç]{2,})/.test(v);
@@ -210,7 +210,7 @@ function filterCompetitorNames(values,max){
     const name=readableCompetitorName(raw);
     if(!isPlausibleCompetitorName(name))continue;
     if(!found.some(x=>x.toLowerCase()===name.toLowerCase()))found.push(name);
-    if(found.length>=Math.min(3,max))break;
+    if(found.length>=max)break;
   }
   return found;
 }
@@ -231,7 +231,7 @@ async function suggestCompetitorNames(niche,max){
       for(const c of candidates){
         if(!isPlausibleCompetitorName(c))continue;
         if(!found.some(x=>x.toLowerCase()===c.toLowerCase()))found.push(c);
-        if(found.length>=Math.min(3,max))return found;
+        if(found.length>=max)return found;
       }
     }
   }
@@ -345,7 +345,7 @@ async function handleMarketIntel(req,res,{su,sk,gk,user}){
     const channelFocus=clean(req.body?.channel,80);
     const channelList=COMMUNICATION_CHANNELS.map(x=>x.label).join(', ');
     const prompt=action==='suggest_competitors'
-      ?`Hoje é ${today}. Pesquise até 3 referências/concorrentes brasileiros reais e relevantes para o nicho abaixo. Concorrente deve ser nome de profissional, clínica, empresa, marca, instituto, perfil ou canal reconhecível. NÃO coloque manchetes, perguntas, assuntos, domínios, URLs ou nomes de portais jornalísticos como concorrente. Depois gere exatamente 7 cards, um por canal de comunicação: ${channelList}.\n\n${marketCompanyText(company,profile,niche)}\n\nEm cada card, compare os concorrentes sugeridos naquele canal. Exemplo de descrição desejada:\nConcorrente A: está fazendo tal coisa no Instagram.\nConcorrente B: não encontrei atualização clara nos últimos 30 dias.\nConcorrente C: está usando tal formato.\n\nRegras obrigatórias:\n- O array competitors deve ter apenas nomes reais de concorrentes/referências, nunca frases de notícias.\n- Use fontes públicas reais e source_url clicável quando encontrar evidência.\n- Não invente post, métrica, campanha ou frequência. Se não encontrar, diga que não encontrou atualização pública clara nos últimos 30 dias.\n- Cada card deve ter como title exatamente um destes canais: ${channelList}.\n- mark_strategy deve orientar o que o usuário pode fazer naquele canal.\n- Retorne SOMENTE JSON válido: {"competitors":["..."],"cards":[{"competitor":"nomes separados por vírgula","title":"Instagram","description":"...","mark_strategy":"...","importance":0-5,"source":"nome da fonte ou busca pública","source_url":"https://..."}]}.`
+      ?`Hoje é ${today}. Pesquise até ${max} referências/concorrentes brasileiros reais, ativos e relevantes para o nicho abaixo. Concorrente deve ser nome de profissional, clínica, empresa, marca, instituto, perfil ou canal reconhecível. NÃO coloque manchetes, perguntas, assuntos, domínios, URLs ou nomes de portais jornalísticos como concorrente. Priorize nomes que tenham sinal público recente em Instagram, Facebook, TikTok, Google Empresas, YouTube, site ou marketplace. Depois gere exatamente 7 cards, um por canal de comunicação: ${channelList}.\n\n${marketCompanyText(company,profile,niche)}\n\nEm cada card, compare os concorrentes sugeridos naquele canal. Exemplo de descrição desejada:\nConcorrente A: está fazendo tal coisa no Instagram.\nConcorrente B: não encontrei atualização clara nos últimos 30 dias.\nConcorrente C: está usando tal formato.\n\nRegras obrigatórias:\n- O array competitors deve ter apenas nomes reais de concorrentes/referências, nunca frases de notícias.\n- Só sugira concorrentes que tenham pelo menos um canal público encontrado; se não tiver segurança, retorne menos nomes.\n- Use fontes públicas reais e source_url clicável quando encontrar evidência.\n- Não invente post, métrica, campanha ou frequência. Se não encontrar, diga que não encontrou atualização pública clara nos últimos 30 dias.\n- Cada card deve ter como title exatamente um destes canais: ${channelList}.\n- mark_strategy deve orientar o que o usuário pode fazer naquele canal.\n- Retorne SOMENTE JSON válido: {"competitors":["..."],"cards":[{"competitor":"nomes separados por vírgula","title":"Instagram","description":"...","mark_strategy":"...","importance":0-5,"source":"nome da fonte ou busca pública","source_url":"https://..."}]}.`
       :`Hoje é ${today}. Pesquise os concorrentes abaixo e gere exatamente 7 cards, um por canal de comunicação: ${channelList}.\n\n${marketCompanyText(company,profile,niche)}\nConcorrentes: ${names.length?names.join(', '):'não informados'}\nCanal que o usuário clicou primeiro: ${channelFocus||'não informado'}\n\nEm cada card, compare o que cada concorrente faz naquele canal nos últimos 30 dias. Se não encontrar atualização pública clara, escreva isso explicitamente para aquele concorrente/canal. Dê prioridade de profundidade para o canal clicado primeiro, mas mantenha os outros canais úteis.\n\nRegras obrigatórias:\n- Use fontes públicas reais e source_url clicável quando encontrar evidência.\n- Não invente post, métrica, campanha ou frequência.\n- Cada card deve ter como title exatamente um destes canais: ${channelList}.\n- mark_strategy deve orientar o que o usuário pode adaptar naquele canal sem copiar literalmente.\n- Retorne SOMENTE JSON válido: {"cards":[{"competitor":"nomes separados por vírgula","title":"Instagram","description":"...","mark_strategy":"...","importance":0-5,"source":"nome da fonte ou busca pública","source_url":"https://..."}]}.`;
     let obj={},sources=[],used=model;
     if(gk)try{({obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,5200))}catch(e){console.warn('[MARKET INTEL competitors fallback]',e.message)}
