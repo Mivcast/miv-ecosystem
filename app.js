@@ -271,7 +271,7 @@ function recommended(){
 function renderShelf(id,ids){const el=document.getElementById(id);if(!el)return;el.innerHTML=ids.map(i=>getItem(i)).filter(Boolean).map(card).join('');bindCards()}
 function sourceHost(url,label='Fonte'){try{return new URL(url).hostname.replace(/^www\./,'')}catch(e){return label||'Fonte'}}
 function sourceSearchUrl(item){return `https://www.google.com/search?q=${encodeURIComponent([item.title,item.source,state.profile.niche].filter(Boolean).join(' '))}`}
-function currentPlanKey(){return String(accessState.plan||'free').trim().toLowerCase()}
+function currentPlanKey(){return String(accessState.plan||accessState.subscription?.plan||'free').trim().toLowerCase()}
 function hasPremiumAccess(){return currentPlanKey().includes('premium')}
 function trendLimit(){return hasPremiumAccess()?30:hasProAccess()?15:5}
 function competitorLimit(){return hasPremiumAccess()?10:hasProAccess()?5:3}
@@ -305,9 +305,11 @@ function renderMarketTrends(){const el=document.getElementById('trendsTrack');if
 function renderCompetitorInsights(){const el=document.getElementById('competitorTrack');if(!el)return;const items=competitorInsightItems.length?competitorInsightItems.slice(0,7):COMPETITOR_CHANNELS.map(competitorChannelPlaceholder);el.innerHTML=items.map((x,i)=>marketCard(x,i,competitorCardLimit(),'Concorrentes no PRO')).join('');bindCards();bindPlanScrolls()}
 function bindMarketEmptyActions(){document.querySelectorAll('[data-click]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.click)?.click());document.querySelectorAll('[data-auth-market]').forEach(b=>b.onclick=()=>{if(!pendingAuthAction)pendingAuthAction={type:b.dataset.authMarket==='competitors'?'refreshCompetitors':'refreshTrends',suggest:b.dataset.authMarket==='competitors'};openAuth('login')})}
 function bindPlanScrolls(){document.querySelectorAll('[data-scroll="planos"]').forEach(b=>b.onclick=()=>{route('home');setTimeout(()=>document.getElementById('planos')?.scrollIntoView({behavior:'smooth'}),80)})}
-function competitorNames(){return (document.getElementById('competitorNames')?.value||'').split(/\n|,/).map(x=>x.trim()).filter(Boolean)}
-function savedCompetitorNames(){try{return (JSON.parse(localStorage.getItem(MARKET_COMPETITOR_NAMES_CACHE)||'[]')||[]).map(x=>String(x).trim()).filter(Boolean)}catch(e){return[]}}
-function saveCompetitorNames(names=competitorNames()){localStorage.setItem(MARKET_COMPETITOR_NAMES_CACHE,JSON.stringify([...new Set((names||[]).map(x=>String(x).trim()).filter(Boolean))]));renderCompetitorNameChips()}
+function isReasonableCompetitorName(value){const v=String(value||'').trim();return v.length>=3&&v.length<=80&&!/https?:|www\.|\.com|\.com\.br|instagram\.com|facebook\.com|tiktok\.com|youtube\.com|[?!;]/i.test(v)&&!/\b(por que|saiba|entenda|confira|redes sociais|desinformação|ampliam|notícia|noticia|quando|onde|como)\b/i.test(v)}
+function cleanCompetitorList(names){return [...new Set((names||[]).map(x=>String(x).trim()).filter(isReasonableCompetitorName))]}
+function competitorNames(){return cleanCompetitorList((document.getElementById('competitorNames')?.value||'').split(/\n|,/))}
+function savedCompetitorNames(){try{return cleanCompetitorList(JSON.parse(localStorage.getItem(MARKET_COMPETITOR_NAMES_CACHE)||'[]')||[])}catch(e){return[]}}
+function saveCompetitorNames(names=competitorNames()){localStorage.setItem(MARKET_COMPETITOR_NAMES_CACHE,JSON.stringify(cleanCompetitorList(names)));renderCompetitorNameChips()}
 function hydrateCompetitorNames(){const el=document.getElementById('competitorNames');if(!el)return;const names=savedCompetitorNames();if(!el.value.trim()&&names.length)el.value=names.join('\n');renderCompetitorNameChips()}
 function renderCompetitorNameChips(){const box=document.getElementById('competitorSavedList'),el=document.getElementById('competitorNames');if(!box)return;const names=competitorNames();box.innerHTML=names.length?`<span>Concorrentes no radar:</span>${names.map(n=>`<button type="button" data-remove-competitor="${markEsc(n)}">${markEsc(n)} ×</button>`).join('')}`:'<span>Digite ou peça sugestões para salvar concorrentes no radar.</span>';box.querySelectorAll('[data-remove-competitor]').forEach(b=>b.onclick=()=>{const next=competitorNames().filter(n=>n!==b.dataset.removeCompetitor);if(el)el.value=next.join('\n');saveCompetitorNames(next)})}
 async function getAuthToken(){if(!mivSupabase||!mivUser)return'';const {data}=await mivSupabase.auth.getSession();return data?.session?.access_token||''}
@@ -1891,7 +1893,7 @@ async function loadAccessFromSupabase(){
  ]);
  if(se)console.warn('[MIV access subscription]',se);if(be)console.warn('[MIV access purchases]',be);
  const sub=(subs||[])[0]||null;
- if(sub?.status==='active'&&(!sub.current_period_end||sub.current_period_end>now)){accessState.plan=normalizePlanValue(sub.plan);accessState.subscription=sub}
+ if(sub?.status==='active'&&['pro','premium'].includes(normalizePlanValue(sub.plan))){accessState.plan=normalizePlanValue(sub.plan);accessState.subscription=sub}
  else if(sub?.status==='pending'){accessState.plan='pending';accessState.subscription=sub}
  else if(sub?.status==='past_due'){accessState.plan='past_due';accessState.subscription=sub}
  accessState.purchases=new Set((buys||[]).map(x=>normalizeAccessItemId(x.item_id)));

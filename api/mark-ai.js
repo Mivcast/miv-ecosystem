@@ -85,10 +85,10 @@ function attachSource(card,sources,index,fallback=''){
 }
 function normalizePlan(plan){const key=String(plan||'').trim().toLowerCase();return key.includes('premium')?'premium':key.includes('pro')?'pro':'free'}
 async function userPlan(su,sk,userId){
-  const now=new Date();
   const activeSubs=await rows(su,sk,`user_subscriptions?user_id=eq.${userId}&status=eq.active&select=plan,current_period_end,created_at&order=created_at.desc&limit=1`);
   const sub=activeSubs[0];
-  if(sub&&(!sub.current_period_end||new Date(sub.current_period_end)>now))return normalizePlan(sub.plan);
+  const plan=normalizePlan(sub?.plan);
+  if(sub&&['pro','premium'].includes(plan))return plan;
   return 'free';
 }
 function planTrendLimit(plan){return plan==='premium'?30:plan==='pro'?15:5}
@@ -193,6 +193,27 @@ function readableCompetitorName(value){
     .replace(/^notícia\s*:?\s*/i,'')
     .replace(/\s+/g,' '),80);
 }
+function isPlausibleCompetitorName(value){
+  const v=readableCompetitorName(value);
+  if(!v||v.length<4||v.length>70)return false;
+  if(/https?:|www\.|\.com|\.com\.br|instagram\.com|facebook\.com|tiktok\.com|youtube\.com/i.test(v))return false;
+  if(/[?]|!|;/.test(v))return false;
+  if(/\b(por que|porque|saiba|entenda|confira|redes sociais|desinformação|ampliam|libera|anuncia|estudo|pesquisa|notícia|noticia|últimos|ultimos|dias|quando|onde|como)\b/i.test(v))return false;
+  if(/google news|g1|uol|terra|metrópoles|metropoles|cnn|bbc|folha|estadão|estadao|veja|r7|portal|prefeitura|governo|trt|globo|valor|exame/i.test(v))return false;
+  const words=v.split(/\s+/).filter(Boolean);
+  if(words.length>7)return false;
+  return /(^|\s)(dr\.?|dra\.?|cl[ií]nica|instituto|centro|grupo|studio|est[uú]dio|academia|hospital|laborat[oó]rio|[A-ZÁÉÍÓÚÂÊÔÃÕÇ][a-záéíóúâêôãõç]{2,})/.test(v);
+}
+function filterCompetitorNames(values,max){
+  const found=[];
+  for(const raw of values||[]){
+    const name=readableCompetitorName(raw);
+    if(!isPlausibleCompetitorName(name))continue;
+    if(!found.some(x=>x.toLowerCase()===name.toLowerCase()))found.push(name);
+    if(found.length>=Math.min(3,max))break;
+  }
+  return found;
+}
 async function suggestCompetitorNames(niche,max){
   const queries=[
     `"${niche}" Instagram YouTube Brasil`,
@@ -208,13 +229,13 @@ async function suggestCompetitorNames(niche,max){
         readableCompetitorName(n.source)
       ].filter(Boolean);
       for(const c of candidates){
-        if(c.length<4||/google news|g1|uol|terra|metrópoles|metropoles|cnn|bbc|folha|estadão|estadao|veja|r7|portal|prefeitura|governo/i.test(c))continue;
+        if(!isPlausibleCompetitorName(c))continue;
         if(!found.some(x=>x.toLowerCase()===c.toLowerCase()))found.push(c);
         if(found.length>=Math.min(3,max))return found;
       }
     }
   }
-  return found.slice(0,Math.min(3,max));
+  return filterCompetitorNames(found,max);
 }
 function channelDescription(channel,niche,competitors,news){
   const names=competitors.length?competitors:['Concorrente A','Concorrente B','Concorrente C'];
@@ -291,7 +312,8 @@ async function fallbackTrendCards(niche,limit){
 }
 async function fallbackCompetitorCards(niche,names,max,suggest,channelFocus=''){
   const discovered=names.length?[]:await suggestCompetitorNames(niche,max);
-  const suggested=(names.length?names.slice(0,max):discovered.length?discovered:['Referência local','Referência de conteúdo','Referência nacional'].slice(0,Math.min(3,max)));
+  const suggested=names.length?names.slice(0,max):discovered;
+  if(suggest&&!suggested.length)return {competitors:[],cards:[]};
   const cards=await channelCompetitorCards(niche,suggested,channelFocus);
   const competitors=suggest?suggested:[];
   return {competitors,cards};
@@ -323,11 +345,11 @@ async function handleMarketIntel(req,res,{su,sk,gk,user}){
     const channelFocus=clean(req.body?.channel,80);
     const channelList=COMMUNICATION_CHANNELS.map(x=>x.label).join(', ');
     const prompt=action==='suggest_competitors'
-      ?`Hoje é ${today}. Pesquise até 3 referências/concorrentes brasileiros relevantes para o nicho abaixo. Depois gere exatamente 7 cards, um por canal de comunicação: ${channelList}.\n\n${marketCompanyText(company,profile,niche)}\n\nEm cada card, compare os concorrentes sugeridos naquele canal. Exemplo de descrição desejada:\nConcorrente A: está fazendo tal coisa no Instagram.\nConcorrente B: não encontrei atualização clara nos últimos 30 dias.\nConcorrente C: está usando tal formato.\n\nRegras obrigatórias:\n- Use fontes públicas reais e source_url clicável quando encontrar evidência.\n- Não invente post, métrica, campanha ou frequência. Se não encontrar, diga que não encontrou atualização pública clara nos últimos 30 dias.\n- Cada card deve ter como title exatamente um destes canais: ${channelList}.\n- mark_strategy deve orientar o que o usuário pode fazer naquele canal.\n- Retorne SOMENTE JSON válido: {"competitors":["..."],"cards":[{"competitor":"nomes separados por vírgula","title":"Instagram","description":"...","mark_strategy":"...","importance":0-5,"source":"nome da fonte ou busca pública","source_url":"https://..."}]}.`
+      ?`Hoje é ${today}. Pesquise até 3 referências/concorrentes brasileiros reais e relevantes para o nicho abaixo. Concorrente deve ser nome de profissional, clínica, empresa, marca, instituto, perfil ou canal reconhecível. NÃO coloque manchetes, perguntas, assuntos, domínios, URLs ou nomes de portais jornalísticos como concorrente. Depois gere exatamente 7 cards, um por canal de comunicação: ${channelList}.\n\n${marketCompanyText(company,profile,niche)}\n\nEm cada card, compare os concorrentes sugeridos naquele canal. Exemplo de descrição desejada:\nConcorrente A: está fazendo tal coisa no Instagram.\nConcorrente B: não encontrei atualização clara nos últimos 30 dias.\nConcorrente C: está usando tal formato.\n\nRegras obrigatórias:\n- O array competitors deve ter apenas nomes reais de concorrentes/referências, nunca frases de notícias.\n- Use fontes públicas reais e source_url clicável quando encontrar evidência.\n- Não invente post, métrica, campanha ou frequência. Se não encontrar, diga que não encontrou atualização pública clara nos últimos 30 dias.\n- Cada card deve ter como title exatamente um destes canais: ${channelList}.\n- mark_strategy deve orientar o que o usuário pode fazer naquele canal.\n- Retorne SOMENTE JSON válido: {"competitors":["..."],"cards":[{"competitor":"nomes separados por vírgula","title":"Instagram","description":"...","mark_strategy":"...","importance":0-5,"source":"nome da fonte ou busca pública","source_url":"https://..."}]}.`
       :`Hoje é ${today}. Pesquise os concorrentes abaixo e gere exatamente 7 cards, um por canal de comunicação: ${channelList}.\n\n${marketCompanyText(company,profile,niche)}\nConcorrentes: ${names.length?names.join(', '):'não informados'}\nCanal que o usuário clicou primeiro: ${channelFocus||'não informado'}\n\nEm cada card, compare o que cada concorrente faz naquele canal nos últimos 30 dias. Se não encontrar atualização pública clara, escreva isso explicitamente para aquele concorrente/canal. Dê prioridade de profundidade para o canal clicado primeiro, mas mantenha os outros canais úteis.\n\nRegras obrigatórias:\n- Use fontes públicas reais e source_url clicável quando encontrar evidência.\n- Não invente post, métrica, campanha ou frequência.\n- Cada card deve ter como title exatamente um destes canais: ${channelList}.\n- mark_strategy deve orientar o que o usuário pode adaptar naquele canal sem copiar literalmente.\n- Retorne SOMENTE JSON válido: {"cards":[{"competitor":"nomes separados por vírgula","title":"Instagram","description":"...","mark_strategy":"...","importance":0-5,"source":"nome da fonte ou busca pública","source_url":"https://..."}]}.`;
     let obj={},sources=[],used=model;
     if(gk)try{({obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,5200))}catch(e){console.warn('[MARKET INTEL competitors fallback]',e.message)}
-    let competitors=(Array.isArray(obj.competitors)?obj.competitors:[]).map(x=>clean(x,120)).filter(Boolean).slice(0,max);
+    let competitors=filterCompetitorNames(Array.isArray(obj.competitors)?obj.competitors:[],max);
     let cards=(Array.isArray(obj.cards)?obj.cards:[]).map((x,i)=>attachSource(cleanMarketCard(x),sources,i,niche)).filter(x=>x.title&&x.description&&(x.source||x.source_url)).slice(0,7);
     const validChannels=new Set(COMMUNICATION_CHANNELS.map(x=>x.label.toLowerCase()));
     if(cards.length<(channelFocus?1:7)||cards.some(x=>!validChannels.has(String(x.title||'').toLowerCase()))){const fallback=await fallbackCompetitorCards(niche,names.length?names:competitors,max,action==='suggest_competitors',channelFocus);competitors=competitors.length?competitors:fallback.competitors;cards=fallback.cards}
