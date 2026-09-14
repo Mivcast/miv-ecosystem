@@ -277,7 +277,7 @@ function trendLimit(){return hasPremiumAccess()?30:hasProAccess()?15:5}
 function competitorLimit(){return hasPremiumAccess()?10:hasProAccess()?3:1}
 function competitorCardLimit(){return 7}
 const MARKET_TRENDS_CACHE='mivMarketTrendItems_v2_sourced';
-const MARKET_COMPETITORS_CACHE='mivCompetitorInsightItems_v7_strategy_checklist';
+const MARKET_COMPETITORS_CACHE='mivCompetitorInsightItems_v8_strict_checklist';
 const MARKET_COMPETITOR_NAMES_CACHE='mivCompetitorNames_v1';
 const MARKET_COMPETITOR_LINKS_CACHE='mivCompetitorChannelLinks_v1';
 let marketTrendAutoFillLimit=0;
