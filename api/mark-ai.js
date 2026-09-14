@@ -110,6 +110,33 @@ async function googleNews(query,limit=10){
   }
   return items;
 }
+function firstMatch(text,patterns){
+ for(const pattern of patterns){const m=String(text||'').match(pattern);if(m?.[1])return stripHtml(m[1])}
+ return '';
+}
+function metaContent(html,key){
+ const safe=String(key||'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+ return firstMatch(html,[
+  new RegExp(`<meta[^>]+(?:property|name)=["']${safe}["'][^>]+content=["']([^"']+)["']`,'i'),
+  new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["']${safe}["']`,'i')
+ ]);
+}
+async function publicLinkSummary(url){
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),7000);
+ try{
+  const r=await fetch(url,{signal:controller.signal,headers:{'User-Agent':'Mozilla/5.0 (compatible; MIVMarketRadar/1.0)','Accept':'text/html,application/xhtml+xml'}});
+  const html=await r.text().catch(()=>'');
+  if(!r.ok||!html)return {url,title:'',description:'',text:''};
+  const title=metaContent(html,'og:title')||metaContent(html,'twitter:title')||firstMatch(html,[/<title[^>]*>([\s\S]*?)<\/title>/i]);
+  const description=metaContent(html,'og:description')||metaContent(html,'description')||metaContent(html,'twitter:description');
+  const text=stripHtml(html.replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ')).slice(0,900);
+  return {url,title:clean(title,180),description:clean(description,420),text:clean(text,900)};
+ }catch(e){
+  return {url,title:'',description:'',text:''};
+ }finally{
+  clearTimeout(timer);
+ }
+}
 function uniqueNews(rows){
   const seen=new Set(),out=[];
   for(const x of rows){
@@ -244,6 +271,7 @@ function channelDescription(channel,niche,competitors,news){
   return names.map((name,idx)=>{
     const n=evidence.get(name),title=n?cleanNewsTitle(n.title,n.source):'';
     if(n)return `${name}: encontrei um sinal público que pode ajudar a observar ${channel.label}: “${title}”. Veja a fonte, repare no formato, na promessa, na frequência e no tipo de chamada usada.`;
+    if(/^https?:\/\//i.test(name))return `${name}: o link foi informado para análise, mas a leitura automática completa pode estar limitada pela própria plataforma. Use este canal para verificar manualmente bio, destaques, Reels/posts recentes, legendas, prova social e chamadas; depois transforme os padrões observados em uma versão própria para ${niche}.`;
     return `${name}: não encontrei atualização pública clara em ${channel.label} nos últimos 30 dias. Isso pode ser uma oportunidade para você ocupar melhor esse canal no nicho de ${niche}.`;
   }).join('\n');
 }
@@ -343,11 +371,13 @@ async function handleMarketIntel(req,res,{su,sk,gk,user}){
     const max=Math.max(1,Math.min(planCompetitorLimit(plan),Number(req.body?.limit)||planCompetitorLimit(plan)));
     const names=(Array.isArray(req.body?.competitors)?req.body.competitors:[]).map(x=>clean(x,120)).filter(Boolean).slice(0,max);
     const links=(Array.isArray(req.body?.competitor_links)?req.body.competitor_links:[]).map(x=>clean(x,300)).filter(x=>/^https?:\/\//i.test(x)).slice(0,max);
+    const linkSummaries=links.length?await Promise.all(links.map(publicLinkSummary)):[];
+    const linkContext=linkSummaries.length?linkSummaries.map((x,i)=>`Link ${i+1}: ${x.url}\nTítulo público: ${x.title||'não identificado'}\nDescrição pública: ${x.description||'não identificada'}\nTexto público extraído: ${x.text||'não identificado'}`).join('\n\n'):'nenhum link analisado previamente';
     const channelFocus=clean(req.body?.channel,80);
     const channelList=COMMUNICATION_CHANNELS.map(x=>x.label).join(', ');
     const prompt=action==='suggest_competitors'
       ?`Hoje é ${today}. Pesquise até ${max} referências/concorrentes brasileiros reais, ativos e relevantes para o nicho abaixo. Concorrente deve ser nome de profissional, clínica, empresa, marca, instituto, perfil ou canal reconhecível. NÃO coloque manchetes, perguntas, assuntos, domínios, URLs ou nomes de portais jornalísticos como concorrente. Priorize nomes que tenham sinal público recente em Instagram, Facebook, TikTok, Google Empresas, YouTube, site ou marketplace. Depois gere exatamente 7 cards, um por canal de comunicação: ${channelList}.\n\n${marketCompanyText(company,profile,niche)}\n\nEm cada card, compare os concorrentes sugeridos naquele canal. Exemplo de descrição desejada:\nConcorrente A: está fazendo tal coisa no Instagram.\nConcorrente B: não encontrei atualização clara nos últimos 30 dias.\nConcorrente C: está usando tal formato.\n\nRegras obrigatórias:\n- O array competitors deve ter apenas nomes reais de concorrentes/referências, nunca frases de notícias.\n- Só sugira concorrentes que tenham pelo menos um canal público encontrado; se não tiver segurança, retorne menos nomes.\n- Use fontes públicas reais e source_url clicável quando encontrar evidência.\n- Não invente post, métrica, campanha ou frequência. Se não encontrar, diga que não encontrou atualização pública clara nos últimos 30 dias.\n- Cada card deve ter como title exatamente um destes canais: ${channelList}.\n- mark_strategy deve orientar o que o usuário pode fazer naquele canal.\n- Retorne SOMENTE JSON válido: {"competitors":["..."],"cards":[{"competitor":"nomes separados por vírgula","title":"Instagram","description":"...","mark_strategy":"...","importance":0-5,"source":"nome da fonte ou busca pública","source_url":"https://..."}]}.`
-      :`Hoje é ${today}. Pesquise movimentos públicos de comunicação e gere exatamente ${channelFocus?'1 card para o canal clicado':'7 cards, um por canal de comunicação'}: ${channelFocus||channelList}.\n\n${marketCompanyText(company,profile,niche)}\nConcorrentes informados por nome: ${names.length?names.join(', '):'não informados'}\nLinks de concorrentes informados pelo usuário: ${links.length?links.join(', '):'não informados'}\nCanal que o usuário clicou primeiro: ${channelFocus||'não informado'}\n\nObjetivo do resultado:\n- Primeiro parágrafo do card: diga que empresas relevantes como X, Y e Z estão fazendo tal coisa nesse canal. Se houver links informados, priorize esses links e cite o que for possível observar neles. Se não houver nomes nem links, pesquise referências reais e relevantes do nicho.\n- Segundo parágrafo / mark_strategy: dê sugestões do que o usuário pode fazer igual ou melhor, sem copiar literalmente.\n\nRegras obrigatórias:\n- Use fontes públicas reais e source_url clicável quando encontrar evidência.\n- Não invente post, métrica, campanha, frequência ou resultado. Se não encontrar atualização pública clara, escreva isso explicitamente e transforme em oportunidade.\n- Cada card deve ter title exatamente igual ao canal analisado, usando estes nomes: ${channelList}.\n- description deve comparar os movimentos por canal em texto claro, citando empresas ou links quando houver evidência.\n- mark_strategy deve orientar o que o usuário pode adaptar naquele canal sem copiar literalmente.\n- Retorne SOMENTE JSON válido: {"cards":[{"competitor":"nomes ou links separados por vírgula","title":"Instagram","description":"...","mark_strategy":"...","importance":0-5,"source":"nome da fonte ou busca pública","source_url":"https://..."}]}.`;
+      :`Hoje é ${today}. Pesquise movimentos públicos de comunicação e gere exatamente ${channelFocus?'1 card para o canal clicado':'7 cards, um por canal de comunicação'}: ${channelFocus||channelList}.\n\n${marketCompanyText(company,profile,niche)}\nConcorrentes informados por nome: ${names.length?names.join(', '):'não informados'}\nLinks de concorrentes informados pelo usuário: ${links.length?links.join(', '):'não informados'}\nLeitura técnica prévia dos links públicos:\n${linkContext}\nCanal que o usuário clicou primeiro: ${channelFocus||'não informado'}\n\nObjetivo do resultado:\n- Primeiro parágrafo do card: diga o que empresas relevantes ou os links informados parecem comunicar nesse canal. Se houver links informados, priorize os sinais públicos extraídos deles e complemente com pesquisa web.\n- Segundo parágrafo / mark_strategy: dê sugestões do que o usuário pode fazer igual ou melhor, sem copiar literalmente.\n\nRegras obrigatórias:\n- Use fontes públicas reais e source_url clicável quando encontrar evidência.\n- Não invente post, métrica, campanha, frequência ou resultado. Se o Instagram/TikTok não permitir leitura completa de stories/reels, diga que os sinais públicos encontrados são limitados e use o que apareceu em bio, descrição, indexação ou páginas públicas relacionadas.\n- Evite responder apenas “não encontrei”. Se a leitura direta for limitada, transforme em hipótese prática: formatos prováveis do canal + o que verificar manualmente + como o usuário pode fazer melhor.\n- Cada card deve ter title exatamente igual ao canal analisado, usando estes nomes: ${channelList}.\n- description deve comparar os movimentos por canal em texto claro, citando empresas ou links quando houver evidência.\n- mark_strategy deve orientar o que o usuário pode adaptar naquele canal sem copiar literalmente.\n- Retorne SOMENTE JSON válido: {"cards":[{"competitor":"nomes ou links separados por vírgula","title":"Instagram","description":"...","mark_strategy":"...","importance":0-5,"source":"nome da fonte ou busca pública","source_url":"https://..."}]}.`;
     let obj={},sources=[],used=model;
     if(gk)try{({obj,sources,model:used}=await generateMarketIntel(gk,model,prompt,5200))}catch(e){console.warn('[MARKET INTEL competitors fallback]',e.message)}
     let competitors=filterCompetitorNames(Array.isArray(obj.competitors)?obj.competitors:[],max);
