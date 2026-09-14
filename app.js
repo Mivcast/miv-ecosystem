@@ -277,7 +277,7 @@ function trendLimit(){return hasPremiumAccess()?30:hasProAccess()?15:5}
 function competitorLimit(){return hasPremiumAccess()?10:hasProAccess()?3:1}
 function competitorCardLimit(){return 7}
 const MARKET_TRENDS_CACHE='mivMarketTrendItems_v2_sourced';
-const MARKET_COMPETITORS_CACHE='mivCompetitorInsightItems_v3_channel_general';
+const MARKET_COMPETITORS_CACHE='mivCompetitorInsightItems_v4_public_signals';
 const MARKET_COMPETITOR_NAMES_CACHE='mivCompetitorNames_v1';
 const MARKET_COMPETITOR_LINKS_CACHE='mivCompetitorChannelLinks_v1';
 let marketTrendAutoFillLimit=0;
@@ -333,7 +333,7 @@ function competitorLinkControls(channel,locked=false){
 function marketCard(item,index,limit,lockedLabel){
  const saved=state.favorites.includes(item.id),locked=index>=limit,needed=index>=15?'Premium':'PRO',isCompetitor=item.special==='competitor-insight'||item.special==='competitor-placeholder',channelClass=isCompetitor?`competitor-channel-card channel-${assetSlug(item.channel||item.title)}`:'',bodyClass=locked&&isCompetitor?'':locked?'blurred':'',descHtml=isCompetitor?competitorDescriptionHtml(item.desc):markEsc(item.desc);
  const channelName=item.channel||item.title;
- const actions=!locked&&item.special==='competitor-placeholder'?`<button class="primary market-card-action" data-competitor-channel="${markEsc(channelName)}">Ver movimento deste canal</button>`:!locked&&item.special==='competitor-insight'?`<div class="market-card-actions"><button class="primary market-card-action compact" data-competitor-channel="${markEsc(channelName)}">Atualizar movimento</button><button class="outline market-card-action compact" data-market-mark="${markEsc(item.title)}">Sugestões do MARK</button></div>`:'';
+ const actions=!locked&&item.special==='competitor-placeholder'?`<button class="primary market-card-action" data-competitor-channel="${markEsc(channelName)}">Buscar sinais públicos</button>`:!locked&&item.special==='competitor-insight'?`<div class="market-card-actions"><button class="primary market-card-action compact" data-competitor-channel="${markEsc(channelName)}">Atualizar sinais</button><button class="outline market-card-action compact" data-market-mark="${markEsc(item.title)}">Sugestões do MARK</button></div>`:'';
  return `<article class="market-card ${channelClass} ${locked?'locked':''} ${locked&&isCompetitor?'locked-channel':''}"><div class="market-card-top"><span class="market-stars" aria-label="${Number(item.importance)||0} de 5">${marketStars(item.importance)}</span><button class="heart ${saved?'saved':''}" ${locked?'data-scroll="planos"':`data-fav="${item.id}"`}>${locked?'🔒':saved?'♥':'♡'}</button></div><div class="market-card-body ${bodyClass}"><span class="meta-pill">${isCompetitor?'MOVIMENTO':item.cat}</span><h3>${markEsc(item.title)}</h3><p>${descHtml}</p><strong>Como fazer igual ou melhor</strong><p>${markEsc(item.mark_strategy)}</p></div>${actions}${isCompetitor?competitorLinkControls(channelName,locked):''}${item.source_url&&!locked?`<a class="source-link" href="${markEsc(item.source_url)}" target="_blank" rel="noopener">Fonte: ${markEsc(item.source||sourceHost(item.source_url))}</a>`:`<small class="source-link">${markEsc(item.source||'Fonte do radar')}</small>`}${locked?`<div class="market-lock"><b>${lockedLabel||`Libere no ${needed}`}</b><span>Assine para acessar mais cards do seu mercado.</span><button class="primary" data-scroll="planos">Ver planos</button></div>`:''}</article>`;
 }
 function lockedMarketPlaceholder(i,type='trend'){return {id:`locked-${type}-${i}`,cat:type==='trend'?'Tendências':'Concorrentes',format:'Plano pago',access:'Pago',icon:'🔒',tag:'PLANOS',title:type==='trend'?(i>=15?'Tendência Premium':'Tendência PRO'):'Canal extra',desc:'Existe mais inteligência disponível para acompanhar seu mercado com mais profundidade.',mark_strategy:'Assine um plano pago para liberar mais cards, fontes e ideias de ação para seu negócio.',importance:i>=15?5:4,source:'Planos MIV',source_url:'',special:'market-locked',img:'assets/cards/analise-mercado.jpg'}}
@@ -364,8 +364,8 @@ async function refreshCompetitors(suggest=false,channel='',link=''){
  if(!accessState.ready)await loadAccessFromSupabase();
  try{
   let names=competitorNames(),limit=competitorLimit(),links=link?[link]:channel?competitorLinksForChannel(channel):[];
-  if(btn){btn.disabled=true;btn.textContent=suggest?'Sugerindo concorrentes...':channel?`Atualizando ${channel}...`:'Buscando movimentos...'}
-  setCompetitorStatus(suggest?'Aguarde até 1 minutinho: o MARK está pesquisando concorrentes reais, ativos e úteis para inspiração no seu nicho.':link?`Lendo sinais públicos do link informado em ${channel}.`:channel?`Investigando movimentos públicos em ${channel}.`:'Investigando movimentos públicos nos principais meios de comunicação. Isso pode levar alguns segundos.')
+  if(btn){btn.disabled=true;btn.textContent=suggest?'Sugerindo concorrentes...':channel?`Buscando sinais em ${channel}...`:'Buscando sinais públicos...'}
+  setCompetitorStatus(suggest?'Aguarde até 1 minutinho: o MARK está pesquisando concorrentes reais, ativos e úteis para inspiração no seu nicho.':link?`Lendo o link e buscando sinais públicos indexados sobre ele em ${channel}.`:channel?`Investigando sinais públicos indexados em ${channel}.`:'Investigando sinais públicos indexados nos principais meios de comunicação. Isso pode levar alguns segundos.')
   if(!suggest&&!channel&&track)track.innerHTML=marketLoadingCards(7,'meios de comunicação dos concorrentes');
   if(!suggest&&channel)toast(`Atualizando movimentos em ${channel}.`);
   if(names.length>limit)toast(`Seu plano permite acompanhar ${limit} concorrente(s). Vou usar os primeiros da lista.`);
@@ -403,8 +403,8 @@ async function refreshCompetitors(suggest=false,channel='',link=''){
   }
   saveMarketCache();
   renderCompetitorInsights();
-  setCompetitorStatus(channel?`${channel} atualizado com movimentos do mercado.`:'Todos os meios foram atualizados com movimentos do mercado.');
-  toast(channel?`${channel} atualizado.`:'Movimentos do mercado atualizados.');
+  setCompetitorStatus(channel?`${channel} atualizado com sinais públicos do mercado.`:'Todos os meios foram atualizados com sinais públicos do mercado.');
+  toast(channel?`${channel} atualizado.`:'Sinais públicos atualizados.');
  }catch(e){
   console.warn('[Competitors]',e);
   setCompetitorStatus(e.message||'A busca de concorrentes não concluiu.');
@@ -412,7 +412,7 @@ async function refreshCompetitors(suggest=false,channel='',link=''){
   if(!competitorInsightItems.length)renderCompetitorInsights()
  }finally{
   if(suggestBtn){suggestBtn.disabled=false;suggestBtn.textContent='Sugerir concorrentes'}
-  if(refreshBtn){refreshBtn.disabled=false;refreshBtn.textContent='Ver todos os movimentos'}
+  if(refreshBtn){refreshBtn.disabled=false;refreshBtn.textContent='Buscar sinais públicos'}
  }
 }
 function renderTracks(){document.getElementById('recTitle').textContent=`Mais úteis agora para ${state.profile.niche}`;renderShelf('recTrack',recommended());renderShelf('marketingTrack',bases.marketing);renderMarketTrends();renderCompetitorInsights();renderShelf('brandTrack',bases.brand);renderShelf('salesTrack',bases.sales);renderShelf('consultTrack',bases.consult);renderShelf('mivcastTrack',bases.mivcast);renderTools();renderLearn()}
