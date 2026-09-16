@@ -277,7 +277,7 @@ function trendLimit(){return hasPremiumAccess()?30:hasProAccess()?15:5}
 function competitorLimit(){return hasPremiumAccess()?10:hasProAccess()?3:1}
 function competitorCardLimit(){return 7}
 const MARKET_TRENDS_CACHE='mivMarketTrendItems_v2_sourced';
-const MARKET_COMPETITORS_CACHE='mivCompetitorInsightItems_v8_strict_checklist';
+const MARKET_COMPETITORS_CACHE='mivCompetitorInsightItems_v9_layered_checklist';
 const MARKET_COMPETITOR_NAMES_CACHE='mivCompetitorNames_v1';
 const MARKET_COMPETITOR_LINKS_CACHE='mivCompetitorChannelLinks_v1';
 let marketTrendAutoFillLimit=0;
@@ -300,34 +300,50 @@ function normalizeCompetitor(raw,i){const item={id:raw.id||`competitor-${assetSl
 const COMPETITOR_CHANNELS=['Instagram','Facebook','TikTok','Google Empresas','YouTube','Site ou landing page','Loja virtual ou marketplaces'];
 function competitorChannelGeneralDescription(channel,niche=state.profile.niche){
  const n=niche||'seu nicho',map={
-  instagram:`Em ${n}, o Instagram costuma:\n- concentrar Reels curtos;\n- usar carrosséis educativos;\n- mostrar bastidores e provas sociais;\n- transformar dúvidas frequentes em confiança e chamadas para WhatsApp.`,
-  facebook:`Em ${n}, o Facebook costuma:\n- funcionar como relacionamento local;\n- reforçar grupos, avisos e depoimentos;\n- publicar bastidores e posts de utilidade;\n- virar diferencial quando poucos concorrentes mantêm constância.`,
-  tiktok:`Em ${n}, o TikTok costuma:\n- premiar respostas rápidas;\n- premiar bastidores espontâneos;\n- premiar mitos e erros comuns.\nQuando poucos concorrentes estão ativos, existe espaço para ocupar descoberta com linguagem simples e frequência.`,
-  'google-empresas':`Em ${n}, o Google Empresas costuma:\n- pesar na decisão local;\n- destacar avaliações e fotos recentes;\n- valorizar respostas públicas, horários, serviços e posts rápidos;\n- ajudar o público a decidir antes de chamar no WhatsApp.`,
-  youtube:`Em ${n}, o YouTube costuma:\n- construir autoridade;\n- explicar temas mais completos;\n- usar shorts, tutoriais e comparativos;\n- responder dúvidas que ficam rasas nas redes sociais.`,
-  'site-ou-landing-page':`Em ${n}, sites e landing pages costumam:\n- vender confiança;\n- explicar serviços com clareza;\n- mostrar provas, perguntas frequentes e botões visíveis;\n- ajudar a pessoa a escolher com menos dúvida.`,
-  'loja-virtual-ou-marketplaces':`Em ${n}, lojas virtuais e marketplaces costumam:\n- disputar por foto e descrição;\n- destacar prova, avaliação, benefício e prazo;\n- reduzir dúvidas antes da compra;\n- melhorar conversão com pequenos detalhes de apresentação.`
+  instagram:`Checklist — Posicionamento e Marketing de ${n} no Instagram\n☐ Posicionamento claro na bio — deixar evidente especialidade, promessa, localização e caminho de contato.\n☐ Perfil com rosto e voz — usar a pessoa, equipe ou marca como protagonista, não apenas artes prontas.\n☐ Reels educativos — transformar dúvidas reais em vídeos curtos com uma ideia central.\n☐ Ganchos de identificação — começar por sintomas, desejos, erros, medos ou situações que o público reconhece.\n☐ Carrosséis salváveis — organizar sinais, passos, mitos e checklists em posts que a pessoa queira guardar.\n☐ Stories de relacionamento — usar bastidores, enquetes, perguntas e pequenos comentários do dia.\n☐ Prova social e autoridade — mostrar rotina, credenciais, avaliações, eventos, bastidores e resultados permitidos.\n☐ CTA simples — pedir para salvar, compartilhar, comentar dúvida ou chamar no WhatsApp sem transformar tudo em propaganda.`,
+  facebook:`Checklist — Posicionamento e Marketing de ${n} no Facebook\n☐ Presença local consistente — manter página ativa com avisos, bastidores, utilidade e relacionamento.\n☐ Conteúdo de comunidade — publicar temas que gerem comentários, marcações, perguntas e compartilhamentos.\n☐ Reaproveitamento inteligente — adaptar os melhores Reels, posts e provas do Instagram para público local.\n☐ Autoridade acessível — explicar assuntos complexos com linguagem simples e exemplos do cotidiano.\n☐ Provas e depoimentos — reforçar confiança com avaliações, histórias e bastidores permitidos.\n☐ Datas e oportunidades sazonais — usar campanhas, semanas temáticas e acontecimentos locais com contexto.\n☐ Atendimento pelo inbox — conduzir conversas para mensagem, WhatsApp, agendamento ou orçamento.\n☐ Frequência simples — aparecer toda semana mesmo quando o Facebook não é o canal principal.`,
+  tiktok:`Checklist — Posicionamento e Marketing de ${n} no TikTok\n☐ Ganchos rápidos — abrir com dúvida, mito, erro comum, situação cotidiana ou frase de impacto.\n☐ Bastidores espontâneos — mostrar processo, rotina, opinião e contexto sem excesso de formalidade.\n☐ Quadros repetíveis — criar séries curtas que o público reconheça e queira acompanhar.\n☐ Mitos e verdades — corrigir crenças populares com linguagem simples e exemplos práticos.\n☐ Respostas a comentários — transformar perguntas reais em novos vídeos de descoberta.\n☐ Conteúdo de identificação — fazer a pessoa pensar “isso acontece comigo” antes de explicar.\n☐ Ritmo de teste — repetir o mesmo tema com ganchos diferentes para descobrir o que prende atenção.\n☐ Reaproveitamento — levar os melhores vídeos para Reels, Shorts, Stories e carrosséis.`,
+  'google-empresas':`Checklist — Posicionamento e Marketing de ${n} no Google Empresas\n☐ Perfil completo — manter serviços, descrição, horários, fotos, área de atendimento e links atualizados.\n☐ Prova social visível — estimular e responder avaliações com cuidado, contexto e linguagem humana.\n☐ Fotos recentes — mostrar ambiente, equipe, produto, processo ou evidências permitidas para reduzir dúvida.\n☐ Serviços pesquisáveis — nomear ofertas com termos que o cliente realmente usa no Google.\n☐ Posts de decisão — publicar novidades, orientações e diferenciais para quem está comparando opções.\n☐ Respostas humanizadas — responder elogios e críticas sem parecer automático.\n☐ Caminho de contato — facilitar rota, telefone, WhatsApp, agendamento ou pedido de orçamento.\n☐ Sinais locais — reforçar bairro, cidade, região atendida e diferenciais próximos do cliente.`,
+  youtube:`Checklist — Posicionamento e Marketing de ${n} no YouTube\n☐ Autoridade aprofundada — explicar temas que precisam de mais contexto do que um post curto permite.\n☐ Títulos pesquisáveis — usar perguntas que o público digitaria no Google ou YouTube.\n☐ Séries por dor do cliente — organizar vídeos e playlists por dúvidas, sintomas, objetivos ou problemas.\n☐ Cortes reaproveitáveis — transformar vídeos longos em Shorts, Reels, carrosséis e trechos para Stories.\n☐ Explicação com exemplos — trocar teoria abstrata por situações reais do cotidiano do público.\n☐ Conteúdo evergreen — criar vídeos que continuem úteis por meses.\n☐ Collabs e entrevistas — trazer profissionais complementares para ampliar autoridade e alcance.\n☐ CTA de relacionamento — convidar para comentário, inscrição, WhatsApp, página de serviço ou material gratuito.`,
+  'site-ou-landing-page':`Checklist — Posicionamento e Marketing de ${n} em site ou landing page\n☐ Página por intenção — explicar serviços, diferenciais, provas e próximos passos sem depender só da rede social.\n☐ Promessa específica — deixar claro para quem é, qual dor resolve e por que escolher sua empresa.\n☐ Conteúdo pesquisável — criar artigos, FAQs ou páginas que respondam dúvidas do Google.\n☐ Conversão clara — facilitar WhatsApp, agendamento, compra ou orçamento com botões visíveis.\n☐ Provas e credenciais — mostrar diferenciais, avaliações, cases, portfólio ou autoridade permitida.\n☐ Perguntas frequentes — responder objeções antes do contato.\n☐ Jornada simples — reduzir distrações entre entender a oferta e tomar a próxima ação.\n☐ Páginas por serviço — evitar uma única página genérica para tudo que a empresa vende.`,
+  'loja-virtual-ou-marketplaces':`Checklist — Posicionamento e Marketing de ${n} em loja virtual ou marketplaces\n☐ Oferta fácil de comparar — destacar benefício, prova, prazo, preço e diferencial logo no início.\n☐ Fotos e descrição fortes — reduzir dúvidas antes da compra com detalhes objetivos e úteis.\n☐ Título pesquisável — usar termos que o comprador realmente procura.\n☐ Benefício antes de característica — explicar o ganho prático, não só a especificação.\n☐ Avaliações como argumento — usar reputação, perguntas respondidas e comentários para gerar confiança.\n☐ Combos e variações — facilitar escolha e aumentar ticket quando fizer sentido.\n☐ Respostas rápidas — transformar dúvidas frequentes em melhoria da descrição.\n☐ Pós-venda visível — reforçar prazo, troca, garantia, suporte e segurança da compra.`
  };
- return map[assetSlug(channel)]||`Em ${n}, este canal costuma revelar temas, formatos, promessas e chamadas que ajudam a entender como o mercado se comunica.`;
+ return map[assetSlug(channel)]||`Checklist — Posicionamento e Marketing de ${n} em ${channel}\n☐ Clareza de posicionamento — mostrar para quem é, qual problema resolve e por que confiar.\n☐ Conteúdo útil — responder dúvidas reais do público com linguagem simples.\n☐ Prova e autoridade — reforçar confiança com sinais legítimos de experiência.\n☐ CTA objetivo — facilitar o próximo passo sem depender de esforço do cliente.`;
 }
 function competitorChannelGeneralStrategy(channel,niche=state.profile.niche){
+ const n=niche||'seu nicho';
  const map={
-  instagram:'- Comece com uma série de 5 conteúdos: dúvida comum, bastidor, prova social, erro frequente e convite para conversa.\nPara fazer melhor, deixe a promessa mais clara e o CTA mais direto.',
-  facebook:'- Use posts de relacionamento, avisos úteis e provas locais.\nPara fazer melhor, crie constância semanal e responda comentários/mensagens com linguagem próxima.',
-  tiktok:'- Teste vídeos de 20 a 40 segundos com ganchos simples.\nPara fazer melhor, transforme dúvidas reais em quadros repetíveis e reaproveite os melhores vídeos no Instagram.',
-  'google-empresas':'Atualize fotos, serviços, descrição e avaliações. Para fazer melhor, responda avaliações com contexto e publique novidades que reforcem confiança local.',
-  youtube:'Escolha temas que exigem mais explicação e grave um vídeo principal com cortes. Para fazer melhor, organize playlists por dor do cliente e use títulos objetivos.',
-  'site-ou-landing-page':'Revise títulos, provas e botões. Para fazer melhor, crie uma página por serviço com perguntas frequentes, exemplos e chamada clara para contato.',
-  'loja-virtual-ou-marketplaces':'Melhore fotos, descrições, combos e diferenciais. Para fazer melhor, destaque benefícios práticos e reduza dúvidas antes da compra.'
+  instagram:`Como eu aplicaria isso: eu dividiria o Instagram de ${n} em identificação, educação, autoridade e conversa. Usaria Reels com ganchos como “3 sinais de que você precisa rever isso”, carrosséis salváveis com checklists, Stories com bastidores e caixas de perguntas, e CTAs simples para salvar, compartilhar ou chamar no WhatsApp.`,
+  facebook:`Como eu aplicaria isso: eu usaria o Facebook de ${n} como canal de presença local e relacionamento. Publicaria avisos úteis, provas, bastidores e conteúdos reaproveitados do Instagram, sempre puxando comentários, mensagens e encaminhamento para atendimento.`,
+  tiktok:`Como eu aplicaria isso: eu testaria vídeos de 20 a 40 segundos com ganchos simples, quadros fixos e linguagem direta. Para fazer melhor, transformaria dúvidas reais em séries como “parece normal, mas...”, “mito ou verdade?” e “o erro que muita gente comete”.`,
+  'google-empresas':`Como eu aplicaria isso: eu trataria o Google Empresas de ${n} como vitrine de decisão. Atualizaria fotos, serviços e descrição, responderia avaliações com contexto e publicaria novidades curtas que ajudem quem está comparando opções agora.`,
+  youtube:`Como eu aplicaria isso: eu escolheria temas que exigem explicação mais completa, gravaria vídeos principais e depois cortaria trechos para Shorts, Reels e carrosséis. O canal ficaria organizado por dúvidas reais, problemas e decisões importantes do cliente.`,
+  'site-ou-landing-page':`Como eu aplicaria isso: eu criaria páginas claras para os serviços mais importantes de ${n}, com promessa específica, provas, perguntas frequentes e CTA visível. A função da página seria transformar interesse vindo das redes em confiança e contato.`,
+  'loja-virtual-ou-marketplaces':`Como eu aplicaria isso: eu melhoraria apresentação antes de pensar só em preço. Fotos, título, benefícios, descrição, avaliações, perguntas respondidas e informações de entrega precisam reduzir dúvida e aumentar confiança na compra.`
  };
- return map[assetSlug(channel)]||'Use este canal para observar padrões do mercado e criar uma versão própria, mais clara, útil e alinhada com sua marca.';
+ return map[assetSlug(channel)]||`Como eu aplicaria isso: eu escolheria os temas mais úteis para ${n}, transformaria em conteúdo claro e frequente, e conectaria cada publicação a uma chamada de ação simples.`;
 }
-function competitorChannelPlaceholder(name,i){return {id:`competitor-channel-${assetSlug(name)}`,cat:'Concorrentes',format:'Canal',access:'Grátis',icon:'⌕',tag:'RADAR',title:name,desc:competitorChannelGeneralDescription(name),mark_strategy:competitorChannelGeneralStrategy(name),importance:i<4?5:4,source:'Comportamento geral do nicho',source_url:'',special:'competitor-placeholder',channel:name,img:'assets/cards/analise-mercado.jpg'}}
+function competitorChannelPlaceholder(name,i){return {id:`competitor-channel-${assetSlug(name)}`,cat:'Concorrentes',format:'Canal',access:'Grátis',icon:'⌕',tag:'RADAR',title:name,desc:competitorChannelGeneralDescription(name),mark_strategy:competitorChannelGeneralStrategy(name),importance:i<4?5:4,source:'Estratégias consolidadas do nicho',source_url:'',special:'competitor-placeholder',channel:name,img:'assets/cards/analise-mercado.jpg'}}
+function stripRecentCompetitorSection(text=''){return String(text||'').split(/\n\nMovimentos intensificados nos últimos 30 dias:/)[0].trim()}
+function cleanRecentCompetitorSection(text=''){
+ let raw=String(text||'').trim();
+ raw=raw.replace(/^Checklist\s+—[^\n]*\n?/i,'').trim();
+ raw=raw.replace(/^Movimentos intensificados nos últimos 30 dias:\s*/i,'').trim();
+ return raw||'☐ Movimento recente aparente — monitore temas atuais do nicho e transforme os melhores sinais em conteúdo útil.';
+}
+function mergeCompetitorRecent(base,recent){
+ const baseDesc=stripRecentCompetitorSection(base.desc||base.description);
+ const recentDesc=cleanRecentCompetitorSection(recent.desc||recent.description);
+ const baseStrategy=String(base.mark_strategy||base.strategy||'').trim();
+ const recentStrategy=String(recent.mark_strategy||recent.strategy||'').trim();
+ return {...base,...recent,id:base.id||recent.id,title:base.title||recent.title,channel:base.channel||recent.channel||recent.title,desc:`${baseDesc}\n\nMovimentos intensificados nos últimos 30 dias:\n${recentDesc}`,mark_strategy:[baseStrategy,recentStrategy].filter(Boolean).join('\n\n'),source:recent.source||base.source,source_url:recent.source_url||base.source_url,special:'competitor-insight'};
+}
 function competitorDescriptionHtml(text){return markEsc(text).replace(/(^|<br>|\n)([^:\n<]{2,80}:)/g,(m,p,n)=>`${p}<b>${n}</b>`).replace(/\n/g,'<br>')}
 function marketCard(item,index,limit,lockedLabel){
  const saved=state.favorites.includes(item.id),locked=index>=limit,needed=index>=15?'Premium':'PRO',isCompetitor=item.special==='competitor-insight'||item.special==='competitor-placeholder',channelClass=isCompetitor?`competitor-channel-card channel-${assetSlug(item.channel||item.title)}`:'',bodyClass=locked&&isCompetitor?'':locked?'blurred':'',descHtml=isCompetitor?competitorDescriptionHtml(item.desc):markEsc(item.desc);
  const channelName=item.channel||item.title;
- const actions=!locked&&isCompetitor?`<div class="market-card-actions"><button class="primary market-card-action compact" data-competitor-channel="${markEsc(channelName)}">${item.special==='competitor-placeholder'?'Buscar novidades':'Atualizar novidades'}</button><button class="outline market-card-action compact" data-market-mark="${markEsc(item.title)}">Pesquisar concorrente no MARK</button></div>`:'';
+ const premiumMark=hasPremiumAccess()?`<button class="outline market-card-action compact" data-market-mark="${markEsc(item.title)}">Conversar com MARK</button>`:'';
+ const actions=!locked&&isCompetitor?`<div class="market-card-actions"><button class="primary market-card-action compact" data-competitor-channel="${markEsc(channelName)}">${item.special==='competitor-placeholder'?'Buscar movimentos 30 dias':'Atualizar movimentos 30 dias'}</button>${premiumMark}</div>`:'';
  return `<article class="market-card ${channelClass} ${locked?'locked':''} ${locked&&isCompetitor?'locked-channel':''}"><div class="market-card-top"><span class="market-stars" aria-label="${Number(item.importance)||0} de 5">${marketStars(item.importance)}</span><button class="heart ${saved?'saved':''}" ${locked?'data-scroll="planos"':`data-fav="${item.id}"`}>${locked?'🔒':saved?'♥':'♡'}</button></div><div class="market-card-body ${bodyClass}"><span class="meta-pill">${isCompetitor?'MOVIMENTO':item.cat}</span><h3>${markEsc(item.title)}</h3><p>${descHtml}</p><strong>Como fazer igual ou melhor</strong><p>${markEsc(item.mark_strategy)}</p></div>${actions}${item.source_url&&!locked?`<a class="source-link" href="${markEsc(item.source_url)}" target="_blank" rel="noopener">Fonte: ${markEsc(item.source||sourceHost(item.source_url))}</a>`:`<small class="source-link">${markEsc(item.source||'Fonte do radar')}</small>`}${locked?`<div class="market-lock"><b>${lockedLabel||`Libere no ${needed}`}</b><span>Assine para acessar mais cards do seu mercado.</span><button class="primary" data-scroll="planos">Ver planos</button></div>`:''}</article>`;
 }
 function lockedMarketPlaceholder(i,type='trend'){return {id:`locked-${type}-${i}`,cat:type==='trend'?'Tendências':'Concorrentes',format:'Plano pago',access:'Pago',icon:'🔒',tag:'PLANOS',title:type==='trend'?(i>=15?'Tendência Premium':'Tendência PRO'):'Canal extra',desc:'Existe mais inteligência disponível para acompanhar seu mercado com mais profundidade.',mark_strategy:'Assine um plano pago para liberar mais cards, fontes e ideias de ação para seu negócio.',importance:i>=15?5:4,source:'Planos MIV',source_url:'',special:'market-locked',img:'assets/cards/analise-mercado.jpg'}}
@@ -356,9 +372,14 @@ async function refreshCompetitors(suggest=false,channel='',link=''){
   openAuth('login');toast('Entre na sua conta para buscar concorrentes reais.');return
  }
  if(!accessState.ready)await loadAccessFromSupabase();
+ if(!hasProAccess()){
+  openPlanPaywall('Movimentos recentes da concorrência');
+  toast('A pesquisa dos últimos 30 dias está disponível nos planos PRO e Premium.');
+  return
+ }
  try{
   let names=[],limit=competitorLimit(),links=[];
-  if(btn){btn.disabled=true;btn.textContent=suggest?'Abrindo MARK...':channel?`Buscando novidades em ${channel}...`:'Buscando novidades...'}
+  if(btn){btn.disabled=true;btn.textContent=suggest?'Abrindo MARK...':channel?`Buscando movimentos em ${channel}...`:'Buscando movimentos...'}
   setCompetitorStatus(suggest?'Clique no MARK e informe o concorrente específico que você quer investigar.':channel?`Aguarde alguns segundos: o MARK está percorrendo fontes públicas da internet, buscando novidades e movimentos recentes em ${channel}.`:'Aguarde alguns segundos: o MARK está percorrendo fontes públicas da internet entre os meios de comunicação mais relevantes e buscando novidades recentes.')
   if(!suggest&&!channel&&track)track.innerHTML=marketLoadingCards(7,'meios de comunicação dos concorrentes');
   if(!suggest&&channel)toast(`Buscando novidades em ${channel}.`);
@@ -386,10 +407,14 @@ async function refreshCompetitors(suggest=false,channel='',link=''){
    const target=assetSlug(channel);
    const replacement=nextCards.find(x=>assetSlug(x.channel||x.title)===target);
    const base=competitorInsightItems.length?competitorInsightItems:COMPETITOR_CHANNELS.map(competitorChannelPlaceholder);
-   if(replacement)competitorInsightItems=base.map(x=>assetSlug(x.channel||x.title)===target?replacement:x);
-   else competitorInsightItems=nextCards.length===1?base:nextCards;
+   if(replacement)competitorInsightItems=base.map(x=>assetSlug(x.channel||x.title)===target?mergeCompetitorRecent(x,replacement):x);
+   else competitorInsightItems=base;
   }else{
-   competitorInsightItems=nextCards;
+   const base=competitorInsightItems.length?competitorInsightItems:COMPETITOR_CHANNELS.map(competitorChannelPlaceholder);
+   competitorInsightItems=base.map(x=>{
+    const match=nextCards.find(card=>assetSlug(card.channel||card.title)===assetSlug(x.channel||x.title));
+    return match?mergeCompetitorRecent(x,match):x;
+   });
   }
   saveMarketCache();
   renderCompetitorInsights();
@@ -402,7 +427,7 @@ async function refreshCompetitors(suggest=false,channel='',link=''){
   if(!competitorInsightItems.length)renderCompetitorInsights()
  }finally{
   if(suggestBtn){suggestBtn.disabled=false;suggestBtn.textContent='Sugerir concorrentes'}
-  if(refreshBtn){refreshBtn.disabled=false;refreshBtn.textContent='Buscar novidades e movimentos recentes'}
+  if(refreshBtn){refreshBtn.disabled=false;refreshBtn.textContent='Pesquisar movimentos dos últimos 30 dias'}
  }
 }
 function renderTracks(){document.getElementById('recTitle').textContent=`Mais úteis agora para ${state.profile.niche}`;renderShelf('recTrack',recommended());renderShelf('marketingTrack',bases.marketing);renderMarketTrends();renderCompetitorInsights();renderShelf('brandTrack',bases.brand);renderShelf('salesTrack',bases.sales);renderShelf('consultTrack',bases.consult);renderShelf('mivcastTrack',bases.mivcast);renderTools();renderLearn()}
@@ -1836,7 +1861,7 @@ document.getElementById('closeVideoModal')?.addEventListener('click',closeLearni
 const mark=document.getElementById('mark'),overlay=document.getElementById('overlay');document.getElementById('markFab').onclick=()=>{mark.classList.add('open');overlay.classList.add('show');updateMark()};function closeMark(){mark.classList.remove('open');if(!document.getElementById('paywall').classList.contains('show'))overlay.classList.remove('show')}document.getElementById('closeMark').onclick=closeMark;document.getElementById('closePaywall').onclick=closePaywall;overlay.onclick=()=>{closeMark();closePaywall()};document.getElementById('buySingle').onclick=startMercadoPagoSinglePurchase;document.getElementById('applyCoupon').onclick=applyCouponPreview;document.getElementById('couponCode').addEventListener('input',()=>{const f=document.getElementById('couponFeedback');if(f){f.style.display='none';f.textContent=''};if(state.current)document.getElementById('singlePrice').textContent=state.current.price||'Plano Pro'});document.getElementById('goPlans').onclick=()=>{closePaywall();route('home');setTimeout(()=>document.getElementById('planos').scrollIntoView({behavior:'smooth'}),80)};
 let markConversation=[];
 function markEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function openMarketMarkSuggestion(channel){if(!hasProAccess()){openPlanPaywall('Pesquisa específica de concorrente pelo MARK');return}document.getElementById('markFab')?.click();setTimeout(()=>{const ta=document.querySelector('#markForm textarea');if(ta){ta.value=`Quero pesquisar um concorrente específico no canal ${channel}. Vou colar o nome, perfil ou link público dele abaixo. Analise somente sinais públicos disponíveis e me diga o que ele parece estar fazendo nesse canal, quais formatos/temas/chamadas usa e como minha marca pode fazer igual ou melhor sem copiar.\n\nConcorrente ou link: `;ta.focus()}},150)}
+function openMarketMarkSuggestion(channel){if(!hasPremiumAccess()){openPlanPaywall('Chat Premium com MARK sobre movimentos da concorrência');return}document.getElementById('markFab')?.click();setTimeout(()=>{const ta=document.querySelector('#markForm textarea');if(ta){ta.value=`Quero exemplos práticos para aplicar as estratégias do canal ${channel} no nicho ${state.profile.niche}. Explique quais pilares priorizar, quais formatos usar, quais ganchos funcionariam, como me diferenciar e como transformar isso em autoridade, alcance, relacionamento e geração de clientes. Use exemplos concretos de títulos, quadros, CTAs e abordagens sem copiar concorrentes.`;ta.focus()}},150)}
 function markAnswerHtml(text,sources=[]){const body=markEsc(text).replace(/\n/g,'<br>');const refs=Array.isArray(sources)&&sources.length?`<span class="markSources"><small>Fontes consultadas</small>${sources.map(x=>`<a href="${markEsc(x.url)}" target="_blank" rel="noopener">${markEsc(x.title||x.url)}</a>`).join('')}</span>`:'';return `<p>${body}${refs}</p>`}
 async function sendMarkQuestion(q){
  const m=document.getElementById('messages');
