@@ -439,7 +439,7 @@ async function refreshCompetitors(suggest=false,channel='',link=''){
   if(refreshBtn){refreshBtn.disabled=false;refreshBtn.textContent='Pesquisar movimentos dos últimos 30 dias'}
  }
 }
-function renderTracks(){document.getElementById('recTitle').textContent=`Mais úteis agora para ${state.profile.niche}`;renderShelf('recTrack',recommended());renderShelf('marketingTrack',bases.marketing);renderMarketTrends();renderCompetitorInsights();renderShelf('brandTrack',bases.brand);renderShelf('salesTrack',bases.sales);renderShelf('consultTrack',bases.consult);renderShelf('mivcastTrack',bases.mivcast);renderTools();renderLearn()}
+function renderTracks(){document.getElementById('recTitle').textContent=`Mais úteis agora para ${state.profile.niche}`;renderShelf('recTrack',recommended());renderShelf('marketingTrack',bases.marketing);renderMarketTrends();renderCompetitorInsights();renderShelf('brandTrack',bases.brand);renderShelf('salesTrack',bases.sales);renderShelf('consultTrack',bases.consult);renderShelf('mivcastTrack',bases.mivcast);renderTools();renderLearn();try{renderMonthlyPlanControls()}catch(e){}}
 function renderTools(){let arr=bases.tools.map(getItem).filter(Boolean);if(state.toolFilter!=='Todos'){arr=arr.filter(i=>state.toolFilter==='Grátis'?i.access==='Grátis':state.toolFilter==='Pago'?i.access!=='Grátis':i.cat===state.toolFilter)}document.getElementById('toolsTrack').innerHTML=arr.map(card).join('');bindCards()}
 function renderLearn(){let arr=bases.learn.map(getItem).filter(Boolean);if(state.learnFilter!=='Todos'){arr=arr.filter(i=>state.learnFilter==='Grátis'?i.access==='Grátis':state.learnFilter==='Pago'?i.access!=='Grátis':i.format===state.learnFilter)}const q=(document.getElementById('learnSearch')?.value||'').trim().toLowerCase(),area=document.getElementById('learnArea')?.value||'Todos',level=document.getElementById('learnLevel')?.value||'Todos';if(q)arr=arr.filter(i=>[i.title,i.desc,i.cat,i.tag,i.format].join(' ').toLowerCase().includes(q));if(area!=='Todos')arr=arr.filter(i=>(i.learningArea||i.cat)===area);if(level!=='Todos')arr=arr.filter(i=>(i.learningLevel||'Todos')===level||!i._learning);document.getElementById('learnTrack').innerHTML=arr.map(card).join('');bindCards()}
 function bindCards(){document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openItem(b.dataset.open));document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=e=>{e.stopPropagation();toggleFav(b.dataset.fav)});document.querySelectorAll('[data-competitor-channel]').forEach(b=>b.onclick=e=>{e.stopPropagation();refreshCompetitors(false,b.dataset.competitorChannel)});document.querySelectorAll('[data-market-mark]').forEach(b=>b.onclick=e=>{e.stopPropagation();openMarketMarkSuggestion(b.dataset.marketMark)})}
@@ -1702,6 +1702,7 @@ function saveAndOpenReport(report,shouldPrint=false){
 }
 function currentReportShareText(){
  const r=state.currentReport||{};const m=r.meta||{};let parts=[r.name||'Relatório MIV Ecosystem'];
+ if(m.type==='monthly-strategy-plan'){parts.push(`Dossiê de ${m.month}/${m.year} para ${m.niche}`);if(Array.isArray(m.weeks))parts.push('Plano por semana: '+m.weeks.join(' | '));parts.push('MIV Ecosystem');return parts.join('\n')}
  if(m.score!=null)parts.push(`Pontuação: ${m.score}%`);
  else if(m.progress!=null)parts.push(`Progresso: ${m.progress}%`);
  const priorities=Array.isArray(m.priorities)?m.priorities:(Array.isArray(m.checklist)?m.checklist.filter(x=>x.status==='improve').map(x=>x.point).slice(0,3):[]);
@@ -1742,6 +1743,12 @@ function renderFullSavedReport(report){
  if(!report)return;
  const meta=report.meta||{}, rows=reportMetricRows(meta), body=document.getElementById('fullSavedReport');if(!body)return;
  const date=report.date||new Date(report.created_at||Date.now()).toLocaleDateString('pt-BR');
+ if(meta.type==='monthly-strategy-plan'){
+  const actions=`<div class="reportActionPanel"><button type="button" class="outline" data-report-action="back-analysis">Voltar para Central</button><button type="button" class="outline" data-report-action="print">Imprimir relatório</button><button type="button" class="outline" data-report-action="pdf">Salvar como PDF</button><button type="button" class="primary" data-report-action="whatsapp">Enviar pelo WhatsApp</button></div>`;
+  body.innerHTML=`<header class="fullReportHeader"><span class="eyebrow">RELATÓRIO SALVO</span><h1>${report.name||'Plano Estratégico do Mês'}</h1><p>${String(report.status||'Salvo')} · ${date}</p></header>${actions}<div class="fullReportMonthly">${monthlyPlanReportHtml(meta,false)}</div>`;
+  body.querySelectorAll('[data-report-action]').forEach(btn=>btn.onclick=()=>btn.dataset.reportAction==='back-analysis'?route('central'):({print:printCurrentReport,pdf:saveCurrentReportPdf,whatsapp:shareCurrentReportWhatsApp}[btn.dataset.reportAction]||(()=>{}))());
+  return;
+ }
  const answers=Array.isArray(meta.answers)?meta.answers:[];
  const checklist=Array.isArray(meta.checklist)?meta.checklist:[];
  const visibleChecklist=filterReportChecklist(checklist);
@@ -1890,6 +1897,96 @@ document.getElementById('markForm').onsubmit=e=>{e.preventDefault();const i=docu
 function suggestByNeed(){const el=document.getElementById('needInput');if(!el)return;const q=el.value.toLowerCase().trim();if(!q){toast('Conte em uma frase o que você precisa resolver.');return}let ids=[];const rules=[[['whatsapp','chamam','atendimento','lead','contato'],['whatsapp','followup','video-vendas-base']], [['vender','vendas','conversão','converter'],['vendas-tecnicas','oferta','ticket','followup','video-vendas-base']], [['divulgar','marketing','anúncio','trafego','tráfego'],['canais','local','video-marketing-base','calendario']], [['marca','profissional','branding','identidade'],['identidade','branding-digital','branding-fisico','diferenciacao']], [['google','local','mapa'],['local','tool-calendario','video-marketing-base']], [['conteúdo','conteudo','post','criativo','instagram'],['canais','calendario','video-conteudo-base','clientes-marketing']], [['preço','preco','barato','ticket'],['ticket','oferta','diferenciacao']], [['cliente','fidelizar','recompra','indicação'],['clientes-marketing','followup','whatsapp','ticket']]];for(const [keys,vals] of rules)if(keys.some(k=>q.includes(k)))ids.push(...vals);ids=[...new Set([...ids,...recommended()])].slice(0,8);renderShelf('recTrack',ids);document.getElementById('recTitle').textContent='Sugestões para o que você descreveu';document.getElementById('needStatus').textContent=`MARK encontrou ${ids.length} caminhos iniciais e reorganizou o carrossel acima.`;document.getElementById('recTrack').scrollIntoView({behavior:'smooth',block:'center'});toast('Recomendações reorganizadas para sua necessidade')}
 const needBtn=document.getElementById('needSuggest');if(needBtn)needBtn.onclick=suggestByNeed;
 
+const monthlyPlanItem={id:'monthly-strategy-plan',title:'Plano Estratégico do Mês',price:'R$ 99,00'};
+function hasMonthlyPlanAccess(){return hasPremiumAccess()||accessState.purchases.has('monthly-strategy-plan')}
+function renderMonthlyPlanControls(){
+ const n=document.getElementById('monthlyPlanNiche'),m=document.getElementById('monthlyPlanMonth'),y=document.getElementById('monthlyPlanYear'),access=document.getElementById('monthlyPlanAccess'),buy=document.getElementById('buyMonthlyPlan');
+ if(!n||!m||!y)return;
+ n.value=state.profile.niche||'Visão geral para negócios';
+ if(!m.options.length)m.innerHTML=calMonths.map((x,i)=>`<option value="${i+1}">${x}</option>`).join('');
+ if(!y.options.length){const yr=new Date().getFullYear();y.innerHTML=Array.from({length:5},(_,i)=>yr+i).map(v=>`<option value="${v}">${v}</option>`).join('')}
+ if(!m.value)m.value=String(new Date().getMonth()+1);
+ const ok=hasMonthlyPlanAccess();
+ if(access){access.innerHTML=ok?'<strong>Acesso liberado</strong><small>Gere quantos planos precisar enquanto o acesso estiver ativo.</small>':'<strong>Premium ou R$ 99,00</strong><small>Assinantes Premium acessam sem compra avulsa.</small>'}
+ if(buy)buy.hidden=ok;
+}
+function openMonthlyPlanPaywall(){if(!mivUser){openAuth('login');toast('Entre na sua conta para comprar ou acessar o plano mensal.');return}openPaywall(monthlyPlanItem)}
+function monthlyPlanProfileSummary(useProfile){
+ const p=getCompanyProfile(),pct=companyProfileCompletion();
+ if(!useProfile||pct<10)return {label:'Somente nicho',text:`O plano será gerado com base no nicho ${state.profile.niche}. Para mais precisão, complete os dados da empresa na Minha Central.`};
+ const bits=[p.business&&`empresa ${p.business}`,p.city&&`atuação em ${p.city}`,p.offers&&`ofertas: ${p.offers}`,p.audience&&`público: ${p.audience}`,p.goals&&`objetivos: ${p.goals}`,p.problems&&`dificuldades: ${p.problems}`,p.channels&&`canais: ${p.channels}`].filter(Boolean);
+ return {label:`Perfil ${pct}% preenchido`,text:bits.join(' · ')};
+}
+function monthEventsFor(month,year){
+ const days=new Date(year,month,0).getDate(),rows=[];
+ for(let d=1;d<=days;d++){
+  const fixed=(calEvents[`${month}-${d}`]||[]).map(name=>({day:d,name,type:'base'}));
+  const custom=(customCalendarEvents()[`${month}-${d}`]||[]).map(name=>({day:d,name,type:'custom'}));
+  const dyn=calDynamicEvents.filter(e=>String(e.date||'').startsWith(`${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`)).map(e=>({day:d,name:e.name,type:e.type||'niche',reason:e.reason||''}));
+  rows.push(...fixed,...custom,...dyn);
+ }
+ return rows;
+}
+function monthlyCampaignRows(month,year,niche){
+ const events=monthEventsFor(month,year).slice(0,18);
+ if(!events.length)return [{title:'Campanha própria do mês',text:`Crie uma ação central de ${niche} para relacionamento, oferta ou autoridade, mesmo sem uma data comemorativa forte.`}];
+ return events.map(e=>({title:`Dia ${String(e.day).padStart(2,'0')} · ${e.name}`,text:`Use a data para um criativo de ${niche}: post educativo, Story com pergunta, mensagem de WhatsApp e uma chamada simples para conversa ou oferta coerente.`}));
+}
+function defActionIdeas(id,limit=5){
+ const item=getItem(id),def=marketingStrategyDefinitions[id]||businessChecklistDefinitions[id],items=[];
+ if(def?.sections)def.sections.forEach(sec=>(sec.items||[]).slice(0,2).forEach(x=>items.push(`${plainChecklistTitle(x[1]||x[0])}: ${x[2]||'transforme em ação prática neste mês.'}`)));
+ if(!items.length&&item)items.push(item.desc);
+ return {title:item?.title||id,desc:item?.desc||'',ideas:items.slice(0,limit)};
+}
+function monthlyTrendIdeas(){
+ const trends=(marketTrendItems||[]).slice(0,5).map(x=>`${x.title}: ${x.mark_strategy||x.desc}`);
+ return trends.length?trends:['Atualize tendências do mercado para acrescentar notícias e movimentos atuais ao plano mensal.'];
+}
+function monthlyCompetitorIdeas(){
+ const base=(competitorInsightItems.length?competitorInsightItems:COMPETITOR_CHANNELS.map(competitorChannelPlaceholder)).slice(0,7);
+ return base.map(x=>`${x.title}: ${stripRecentCompetitorSection(x.desc).split('\n').slice(0,3).join(' ')}`);
+}
+function buildMonthlyPlanData(){
+ const month=Number(document.getElementById('monthlyPlanMonth')?.value||new Date().getMonth()+1),year=Number(document.getElementById('monthlyPlanYear')?.value||new Date().getFullYear()),niche=state.profile.niche||'seu nicho',useProfile=!!document.getElementById('monthlyUseProfile')?.checked,profile=monthlyPlanProfileSummary(useProfile);
+ const marketingIds=['local','equipe-marketing','clientes-marketing','parcerias','brindes'],salesIds=['ticket','vendas-tecnicas','followup','fidelizacao','whatsapp','oferta'];
+ const campaigns=monthlyCampaignRows(month,year,niche),marketing=marketingIds.map(id=>defActionIdeas(id,4)),sales=salesIds.map(id=>defActionIdeas(id,3)),trends=monthlyTrendIdeas(),competitors=monthlyCompetitorIdeas();
+ const weeks=[`Semana 1: escolha 1 campanha principal de ${calMonths[month-1]}, ajuste promessa, criativo e CTA.`,`Semana 2: publique conteúdos educativos e de identificação nos canais mais fortes do nicho.`,`Semana 3: ative vendas com WhatsApp, follow-up, oferta, ticket médio e prova social.`,`Semana 4: revise métricas, salve aprendizados, reative contatos e prepare o próximo mês.`];
+ const checklist=['Escolher campanha principal do mês','Separar 4 pautas de conteúdo','Definir oferta ou chamada comercial','Organizar WhatsApp e follow-up','Atualizar Google/Instagram/site quando aplicável','Salvar aprendizados para o próximo mês'];
+ return {type:'monthly-strategy-plan',month:calMonths[month-1],monthNumber:month,year,niche,profile,campaigns,marketing,sales,trends,competitors,weeks,checklist};
+}
+function monthlyPlanReportHtml(data,actions=true){
+ const list=arr=>`<ul>${(arr||[]).map(x=>`<li>${markEsc(typeof x==='string'?x:x.text||x.title||'')}</li>`).join('')}</ul>`;
+ const strategyBlock=x=>`<section class="monthlyReportSection"><h4>${markEsc(x.title)}</h4><p>${markEsc(x.desc||'')}</p>${list(x.ideas)}</section>`;
+ const profile=data.profile||{label:'Contexto do nicho',text:`Plano gerado para ${data.niche||'seu nicho'}.`};
+ return `<div class="monthlyReportHeader"><span class="eyebrow">PLANO ESTRATÉGICO DO MÊS</span><h3>Dossiê de ${markEsc(data.month)} de ${markEsc(data.year)} para ${markEsc(data.niche)}</h3><p><b>${markEsc(profile.label)}:</b> ${markEsc(profile.text)}</p></div>
+ <div class="monthlyReportGrid">
+  <section class="monthlyReportSection full"><h4>Leitura estratégica do mês</h4><p>Este plano reúne calendário, estratégias do ecossistema, movimentos de mercado e vendas para orientar o dono do negócio sobre o que priorizar em ${markEsc(data.month)}. A recomendação é escolher poucas ações, executar com consistência e revisar o resultado semanalmente.</p></section>
+  <section class="monthlyReportSection full"><h4>Campanhas para o mês</h4>${list(data.campaigns.slice(0,10).map(x=>`${x.title}: ${x.text}`))}</section>
+  ${(data.marketing||[]).map(strategyBlock).join('')}
+  <section class="monthlyReportSection full"><h4>Tendências do seu mercado</h4>${list(data.trends)}</section>
+  <section class="monthlyReportSection full"><h4>Movimentos do mercado em cada canal</h4>${list(data.competitors)}</section>
+  ${(data.sales||[]).map(strategyBlock).join('')}
+  <section class="monthlyReportSection full"><h4>Plano por semana</h4><div class="monthlyWeekGrid">${(data.weeks||[]).map((x,i)=>`<div><strong>Semana ${i+1}</strong><p>${markEsc(x.replace(/^Semana \d:\s*/,'')).replace(/\n/g,'<br>')}</p></div>`).join('')}</div></section>
+  <section class="monthlyReportSection full"><h4>Checklist final do mês</h4>${list(data.checklist)}</section>
+ </div>${actions?`<div class="monthlyReportActions"><button class="primary" id="saveMonthlyPlan">Salvar na Minha Central</button><button class="outline" id="printMonthlyPlan">Salvar em PDF</button><button class="outline" id="whatsappMonthlyPlan">Compartilhar no WhatsApp</button></div>`:''}`;
+}
+function generateMonthlyStrategyPlan(){
+ if(!mivUser){openAuth('login');toast('Entre na sua conta para gerar o plano mensal.');return}
+ if(!hasMonthlyPlanAccess()){openMonthlyPlanPaywall();toast('O Plano Estratégico do Mês é Premium ou avulso por R$ 99,00.');return}
+ const data=buildMonthlyPlanData(),box=document.getElementById('monthlyPlanResult');
+ if(!box)return;
+ box.classList.add('show');box.innerHTML=monthlyPlanReportHtml(data,true);box.scrollIntoView({behavior:'smooth',block:'start'});
+ document.getElementById('saveMonthlyPlan')?.addEventListener('click',()=>{const row=addReport({name:`Plano Estratégico · ${data.month}/${data.year} · ${data.niche}`,date:new Date().toLocaleDateString('pt-BR'),status:'Concluído',meta:data});toast('Plano salvo na Minha Central.');openSavedReport(row)});
+ document.getElementById('printMonthlyPlan')?.addEventListener('click',()=>{const row=addReport({name:`Plano Estratégico · ${data.month}/${data.year} · ${data.niche}`,date:new Date().toLocaleDateString('pt-BR'),status:'Concluído',meta:data});openSavedReport(row);setTimeout(()=>window.print(),350)});
+ document.getElementById('whatsappMonthlyPlan')?.addEventListener('click',()=>{const text=`Plano Estratégico de ${data.month}/${data.year} para ${data.niche}\nPrioridades:\n- ${data.weeks.join('\n- ')}`;window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank','noopener')});
+}
+function bindMonthlyPlan(){
+ renderMonthlyPlanControls();
+ document.getElementById('generateMonthlyPlan')?.addEventListener('click',generateMonthlyStrategyPlan);
+ document.getElementById('buyMonthlyPlan')?.addEventListener('click',openMonthlyPlanPaywall);
+ document.getElementById('monthlyEditProfile')?.addEventListener('click',goCompanyProfile);
+}
+
 
 
 let calDate=new Date();
@@ -1933,6 +2030,7 @@ async function generateCalendarIdeas(event,d,btn){if(!mivUser){toast('Entre na s
 async function saveCalendarIdea(event,d,idea){if(!mivUser||!mivSupabase)return;const {error}=await mivSupabase.from('marketing_calendar_saved_ideas').upsert({user_id:mivUser.id,event_date:calEventDate(d),event_name:event.name,event_type:event.type||'base',idea},{onConflict:'user_id,event_date,event_name'});if(error){console.warn(error);toast('Não foi possível salvar agora.');return}toast('Ideia salva no seu calendário.');}
 function bindCalendar(){document.getElementById('calClose')?.addEventListener('click',()=>document.getElementById('calendarModal').classList.remove('open'));document.getElementById('calPrev')?.addEventListener('click',()=>{calDate=new Date(calDate.getFullYear(),calDate.getMonth()-1,1);fillCalSelectors();renderCalendar();updateCalSavedStatus()});document.getElementById('calNext')?.addEventListener('click',()=>{calDate=new Date(calDate.getFullYear(),calDate.getMonth()+1,1);fillCalSelectors();renderCalendar();updateCalSavedStatus()});document.getElementById('calToday')?.addEventListener('click',()=>{calDate=new Date();fillCalSelectors();renderCalendar();updateCalSavedStatus()});document.getElementById('calMonth')?.addEventListener('change',e=>{calDate=new Date(calDate.getFullYear(),Number(e.target.value),1);renderCalendar();updateCalSavedStatus()});document.getElementById('calYear')?.addEventListener('change',e=>{calDate=new Date(Number(e.target.value),calDate.getMonth(),1);renderCalendar();updateCalSavedStatus()});document.getElementById('calSaveImportant')?.addEventListener('click',saveImportantCalendarDates);document.getElementById('calRefreshResearch')?.addEventListener('click',refreshCalendarResearch);bindNicheSelectWithOther('calNiche',renderCalendar);document.getElementById('calendarModal')?.addEventListener('click',e=>{if(e.target.id==='calendarModal')e.currentTarget.classList.remove('open')})}
 bindCalendar();
+bindMonthlyPlan();
 
 // V13.4 — autenticação real via Supabase
 const authModal=document.getElementById('authModal');

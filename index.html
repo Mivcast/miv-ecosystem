@@ -152,6 +152,48 @@
     <div class="learnDiscovery"><input id="learnSearch" placeholder="Buscar conteúdo, tema ou assunto"><select id="learnArea"><option value="Todos">Todas as áreas</option></select><select id="learnLevel"><option value="Todos">Todos os níveis</option><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select></div><div class="shelf" id="learnTrack"></div>
   </section>
 
+  <section class="wrap monthlyPlanSec" id="plano-mensal">
+    <div class="monthlyPlanHero">
+      <div>
+        <span class="eyebrow">DOSSIÊ PREMIUM</span>
+        <h2>Plano Estratégico do Mês</h2>
+        <p>Um relatório consultivo para transformar calendário, estratégias, tendências, movimentos do mercado e vendas em um plano de ação mensal para o seu nicho.</p>
+        <div class="monthlyPlanBadges"><span>Premium liberado</span><span>Avulso R$ 99,00</span><span>PDF + WhatsApp</span></div>
+      </div>
+      <div class="monthlyPlanAccess" id="monthlyPlanAccess"><strong>Acesso Premium</strong><small>Ou compre este dossiê individualmente.</small></div>
+    </div>
+    <div class="monthlyPlanBuilder">
+      <div class="monthlyPlanControls">
+        <label>Nicho confirmado<input id="monthlyPlanNiche" readonly></label>
+        <label>Mês da análise<select id="monthlyPlanMonth"></select></label>
+        <label>Ano<select id="monthlyPlanYear"></select></label>
+        <div class="monthlyPlanProfileChoice">
+          <strong>Personalização</strong>
+          <p>Você pode gerar apenas com o nicho ou usar as informações da empresa para deixar o plano mais específico.</p>
+          <label><input type="checkbox" id="monthlyUseProfile" checked> Usar dados da empresa quando disponíveis</label>
+          <button class="outline" id="monthlyEditProfile" type="button">Completar informações da empresa</button>
+        </div>
+        <div class="monthlyPlanActions">
+          <button class="primary" id="generateMonthlyPlan">Gerar plano do mês</button>
+          <button class="outline" id="buyMonthlyPlan">Comprar avulso R$ 99,00</button>
+        </div>
+        <small id="monthlyPlanStatus"></small>
+      </div>
+      <div class="monthlyPlanPreview" id="monthlyPlanPreview">
+        <span class="eyebrow">O QUE O DOSSIÊ ENTREGA</span>
+        <h3>Uma visão de consultoria para executar no mês escolhido.</h3>
+        <ul>
+          <li>Campanhas e datas do mês com ideias de criativos.</li>
+          <li>Estratégias de marketing local, equipe, clientes, parcerias e brindes.</li>
+          <li>Tendências do mercado e movimentos por canal de comunicação.</li>
+          <li>Ações de vendas, fidelização, WhatsApp, oferta e ticket médio.</li>
+          <li>Plano por semana, checklist final e relatório salvo na Central.</li>
+        </ul>
+      </div>
+    </div>
+    <div id="monthlyPlanResult" class="monthlyPlanResult"></div>
+  </section>
+
   <section class="credibility" id="credibilidade">
     <div class="wrap">
       <span class="eyebrow center">TRAJETÓRIA & PROVA</span>

@@ -1,4 +1,4 @@
-const FALLBACK_ITEM_CATALOG={whatsapp:{title:'Script inteligente de WhatsApp',unit_price:19.90,item_type:'card'}};
+const FALLBACK_ITEM_CATALOG={whatsapp:{title:'Script inteligente de WhatsApp',unit_price:19.90,item_type:'card'},'monthly-strategy-plan':{title:'Plano Estratégico do Mês',unit_price:99.00,item_type:'card'}};
 const send=(res,s,b)=>res.status(s).json(b);const norm=v=>({'script-whatsapp':'whatsapp','whatsapp-script':'whatsapp'}[String(v||'').trim().toLowerCase()]||String(v||'').trim().toLowerCase());
 async function sbFetch(url,key,path,opt={}){return fetch(`${url}/rest/v1/${path}`,{...opt,headers:{apikey:key,'Content-Type':'application/json',...(opt.headers||{})}})}
 async function getCatalogItem(su,sk,itemId){const r=await sbFetch(su,sk,`ecosystem_cards?item_id=eq.${encodeURIComponent(itemId)}&active=eq.true&select=item_id,title,price_cents,price_label,access_level`);if(r.ok){const rows=await r.json();const x=rows?.[0];if(x&&Number.isInteger(x.price_cents)&&x.price_cents>=0)return {title:x.title,unit_price:x.price_cents/100,item_type:'card'};}return FALLBACK_ITEM_CATALOG[itemId]||null;}
