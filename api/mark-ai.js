@@ -302,15 +302,15 @@ function movementFromSignals(channel,niche,signals){
     marketplaces:[`☐ Oferta fácil de comparar — destacar benefício, prova, prazo, preço e diferenciais logo no início.`,`☐ Fotos e descrições fortes — reduzir dúvidas antes da compra com detalhes objetivos.`,`☐ Reputação como argumento — usar avaliações e perguntas respondidas para aumentar confiança.`,`☐ Título pesquisável — incluir termos que o comprador realmente usa.`,`☐ Benefício antes de característica — explicar o ganho prático do produto ou serviço.`,`☐ Combos e variações — facilitar escolha e aumentar ticket quando fizer sentido.`,`☐ Respostas rápidas — transformar dúvidas frequentes em melhoria de descrição.`,`☐ Pós-venda visível — reforçar garantia, prazo, troca ou suporte para reduzir medo.`]
   };
   const fallbackRecent=[
-    `☐ Reforço de vídeos curtos — transformar dúvidas recorrentes de ${niche} em conteúdo rápido, direto e fácil de compartilhar.`,
-    `☐ Conteúdos de identificação — começar por situações do cotidiano para aproximar o tema da realidade do público.`,
-    `☐ Prova e bastidores — mostrar rotina, processo, atualização profissional ou evidências permitidas para sustentar confiança.`,
-    `☐ Ganchos por pergunta — usar títulos que parecem dúvida real, como “quando isso vira problema?” ou “o que quase ninguém percebe?”.`,
-    `☐ Reaproveitamento de pauta — pegar o melhor tema do canal e transformar em post, vídeo, Stories e chamada para conversa.`,
-    `☐ CTA de relacionamento — estimular salvamentos, compartilhamentos, perguntas e contato sem parecer venda forçada.`
+    `• Reforço de vídeos curtos — transformar dúvidas recorrentes de ${niche} em conteúdo rápido, direto e fácil de compartilhar.`,
+    `• Conteúdos de identificação — começar por situações do cotidiano para aproximar o tema da realidade do público.`,
+    `• Prova e bastidores — mostrar rotina, processo, atualização profissional ou evidências permitidas para sustentar confiança.`,
+    `• Ganchos por pergunta — usar títulos que parecem dúvida real, como “quando isso vira problema?” ou “o que quase ninguém percebe?”.`,
+    `• Reaproveitamento de pauta — pegar o melhor tema do canal e transformar em post, vídeo, Stories e chamada para conversa.`,
+    `• CTA de relacionamento — estimular salvamentos, compartilhamentos, perguntas e contato sem parecer venda forçada.`
   ];
   const recent=usableSignals.length?[...new Set(usableSignals.map(x=>movementBullet(x,channel,niche)))].slice(0,6):fallbackRecent;
-  return `Checklist — Movimentos recentes de ${niche} no ${channel.label}\n${recent.join('\n')}`;
+  return `Movimentação do mercado de ${niche} nos últimos dias\n${recent.join('\n').replace(/☐\s*/g,'• ')}`;
 }
 async function publicSignalSearch(channel,niche,competitors,limit=6){
   const names=(competitors||[]).filter(x=>!/^https?:\/\//i.test(x)).slice(0,4);
