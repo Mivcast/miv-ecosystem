@@ -1929,8 +1929,8 @@ function monthEventsFor(month,year){
 }
 function monthlyCampaignRows(month,year,niche){
  const events=monthEventsFor(month,year).slice(0,18);
- if(!events.length)return [{title:'Campanha própria do mês',text:`Crie uma ação central de ${niche} para relacionamento, oferta ou autoridade, mesmo sem uma data comemorativa forte.`}];
- return events.map(e=>({title:`Dia ${String(e.day).padStart(2,'0')} · ${e.name}`,text:`Use a data para um criativo de ${niche}: post educativo, Story com pergunta, mensagem de WhatsApp e uma chamada simples para conversa ou oferta coerente.`}));
+ if(!events.length)return [{title:'Campanha própria do mês',text:`Crie uma ação central de ${niche} para relacionamento, autoridade ou venda consultiva, mesmo sem uma data comemorativa forte. Use uma promessa clara, uma história curta e um convite simples para conversa.`}];
+ return events.map(e=>({title:`Dia ${String(e.day).padStart(2,'0')} · ${e.name}`,text:`Transforme esta data em uma peça simples para ${niche}: um post de contexto, um Story com pergunta, uma mensagem curta no WhatsApp e uma chamada coerente para conversa, agendamento ou oferta.`}));
 }
 function defActionIdeas(id,limit=5){
  const item=getItem(id),def=marketingStrategyDefinitions[id]||businessChecklistDefinitions[id],items=[];
@@ -1954,20 +1954,36 @@ function buildMonthlyPlanData(){
  const checklist=['Escolher campanha principal do mês','Separar 4 pautas de conteúdo','Definir oferta ou chamada comercial','Organizar WhatsApp e follow-up','Atualizar Google/Instagram/site quando aplicável','Salvar aprendizados para o próximo mês'];
  return {type:'monthly-strategy-plan',month:calMonths[month-1],monthNumber:month,year,niche,profile,campaigns,marketing,sales,trends,competitors,weeks,checklist};
 }
+function monthlySplitInsight(text){
+ const raw=String(text||'').trim(),parts=raw.split(':');
+ if(parts.length<2)return {title:raw,text:''};
+ return {title:parts.shift().trim(),text:parts.join(':').trim()};
+}
+function monthlyInsightCards(arr,kind='insight'){
+ return `<div class="monthlyInsightList">${(arr||[]).map(item=>{
+  const value=typeof item==='string'?monthlySplitInsight(item):{title:item.title||'',text:item.text||item.desc||''};
+  return `<article class="monthlyInsightCard ${kind}"><strong>${markEsc(value.title||'Ação recomendada')}</strong>${value.text?`<p>${markEsc(value.text)}</p>`:''}</article>`;
+ }).join('')}</div>`;
+}
 function monthlyPlanReportHtml(data,actions=true){
- const list=arr=>`<ul>${(arr||[]).map(x=>`<li>${markEsc(typeof x==='string'?x:x.text||x.title||'')}</li>`).join('')}</ul>`;
- const strategyBlock=x=>`<section class="monthlyReportSection"><h4>${markEsc(x.title)}</h4><p>${markEsc(x.desc||'')}</p>${list(x.ideas)}</section>`;
+ const strategyBlock=x=>`<section class="monthlyReportSection monthlyPrintBlock"><div class="monthlySectionTitle"><span>Estratégia</span><h4>${markEsc(x.title)}</h4></div>${x.desc?`<p class="monthlySectionLead">${markEsc(x.desc)}</p>`:''}${monthlyInsightCards(x.ideas,'strategy')}</section>`;
  const profile=data.profile||{label:'Contexto do nicho',text:`Plano gerado para ${data.niche||'seu nicho'}.`};
- return `<div class="monthlyReportHeader"><span class="eyebrow">PLANO ESTRATÉGICO DO MÊS</span><h3>Dossiê de ${markEsc(data.month)} de ${markEsc(data.year)} para ${markEsc(data.niche)}</h3><p><b>${markEsc(profile.label)}:</b> ${markEsc(profile.text)}</p></div>
+ return `<div class="monthlyReportCover monthlyPrintBlock">
+  <span class="eyebrow">RELATÓRIO CONSULTIVO MIV</span>
+  <h3>Plano Estratégico de ${markEsc(data.month)} de ${markEsc(data.year)}</h3>
+  <p>Nossa equipe aprofundou as principais oportunidades do mês, cruzando calendário comercial, estratégias de marketing, movimentos de mercado e ações de vendas para transformar informação em uma rota prática de execução.</p>
+  <div class="monthlyReportMeta"><span>Nicho: <b>${markEsc(data.niche)}</b></span><span>Mês analisado: <b>${markEsc(data.month)}/${markEsc(data.year)}</b></span><span>Personalização: <b>${markEsc(profile.label)}</b></span></div>
+  <p class="monthlyProfileNote"><b>Contexto usado:</b> ${markEsc(profile.text)}</p>
+ </div>
  <div class="monthlyReportGrid">
-  <section class="monthlyReportSection full"><h4>Leitura estratégica do mês</h4><p>Este plano reúne calendário, estratégias do ecossistema, movimentos de mercado e vendas para orientar o dono do negócio sobre o que priorizar em ${markEsc(data.month)}. A recomendação é escolher poucas ações, executar com consistência e revisar o resultado semanalmente.</p></section>
-  <section class="monthlyReportSection full"><h4>Campanhas para o mês</h4>${list(data.campaigns.slice(0,10).map(x=>`${x.title}: ${x.text}`))}</section>
+  <section class="monthlyReportSection full monthlyPrintBlock"><div class="monthlySectionTitle warm"><span>Direção do mês</span><h4>O que priorizar agora</h4></div><p class="monthlySectionLead">Este dossiê foi pensado como uma conversa de consultoria: escolha poucas ações, execute com consistência, acompanhe o retorno semanalmente e transforme os aprendizados do mês em repertório para o próximo ciclo.</p></section>
+  <section class="monthlyReportSection full monthlyPrintBlock"><div class="monthlySectionTitle campaign"><span>Calendário estratégico</span><h4>Campanhas para o mês</h4></div><div class="monthlyActionList">${(data.campaigns||[]).slice(0,10).map(x=>`<article><small>Campanha sugerida</small><strong>${markEsc(x.title)}</strong><p>${markEsc(x.text)}</p></article>`).join('')}</div></section>
   ${(data.marketing||[]).map(strategyBlock).join('')}
-  <section class="monthlyReportSection full"><h4>Tendências do seu mercado</h4>${list(data.trends)}</section>
-  <section class="monthlyReportSection full"><h4>Movimentos do mercado em cada canal</h4>${list(data.competitors)}</section>
+  <section class="monthlyReportSection full monthlyPrintBlock"><div class="monthlySectionTitle trend"><span>Leitura externa</span><h4>Tendências do seu mercado</h4></div>${monthlyInsightCards(data.trends,'trend')}</section>
+  <section class="monthlyReportSection full monthlyPrintBlock"><div class="monthlySectionTitle channel"><span>Comunicação</span><h4>Movimentos do mercado em cada canal</h4></div>${monthlyInsightCards(data.competitors,'channel')}</section>
   ${(data.sales||[]).map(strategyBlock).join('')}
-  <section class="monthlyReportSection full"><h4>Plano por semana</h4><div class="monthlyWeekGrid">${(data.weeks||[]).map((x,i)=>`<div><strong>Semana ${i+1}</strong><p>${markEsc(x.replace(/^Semana \d:\s*/,'')).replace(/\n/g,'<br>')}</p></div>`).join('')}</div></section>
-  <section class="monthlyReportSection full"><h4>Checklist final do mês</h4>${list(data.checklist)}</section>
+  <section class="monthlyReportSection full monthlyPrintBlock"><div class="monthlySectionTitle week"><span>Execução</span><h4>Ritmo sugerido por semana</h4></div><div class="monthlyWeekGrid">${(data.weeks||[]).map((x,i)=>`<div><strong>Semana ${i+1}</strong><p>${markEsc(x.replace(/^Semana \d:\s*/,'')).replace(/\n/g,'<br>')}</p></div>`).join('')}</div></section>
+  <section class="monthlyReportSection full monthlyPrintBlock"><div class="monthlySectionTitle check"><span>Fechamento</span><h4>Checklist final do mês</h4></div><div class="monthlyChecklist">${(data.checklist||[]).map(x=>`<label><span>✓</span>${markEsc(x)}</label>`).join('')}</div></section>
  </div>${actions?`<div class="monthlyReportActions"><button class="primary" id="saveMonthlyPlan">Salvar na Minha Central</button><button class="outline" id="printMonthlyPlan">Salvar em PDF</button><button class="outline" id="whatsappMonthlyPlan">Compartilhar no WhatsApp</button></div>`:''}`;
 }
 function generateMonthlyStrategyPlan(){
