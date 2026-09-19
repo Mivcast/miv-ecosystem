@@ -49,7 +49,7 @@
         <a href="#tendencias"><span class="help-circle-img icon-circle trends">↗</span><h3>Tendências do seu mercado</h3><p>Notícias recentes com ideias de publicação.</p></a>
         <a href="#concorrentes"><span class="help-circle-img icon-circle competitors">⌕</span><h3>Concorrentes para se inspirar</h3><p>Canais e movimentos públicos para observar.</p></a>
         <a href="#marca"><span class="help-circle-img icon-circle brand">◇</span><h3>Posicionamento e marca</h3><p>Autoridade, identidade e percepção profissional.</p></a>
-        <a href="#vendas"><span class="help-circle-img icon-circle sales">＋</span><h3>Vendas e crescimento</h3><p>Conversão, recompra, ticket e relacionamento.</p></a>
+        <a href="#marketing"><span class="help-circle-img icon-circle sales">＋</span><h3>Vendas e crescimento</h3><p>Conversão, recompra, ticket e relacionamento.</p></a>
         <a href="#ferramentas"><span class="help-circle-img icon-circle tools">◫</span><h3>Ferramentas</h3><p>Recursos práticos para rotina e produtividade.</p></a>
         <a href="#analises"><span class="help-circle-img icon-circle analysis">◎</span><h3>Análises</h3><p>Auditorias para decidir o que melhorar primeiro.</p></a>
         <a href="#aprender"><span class="help-circle-img icon-circle learn">▣</span><h3>Aprendizados</h3><p>Conteúdos para estudar e aplicar no negócio.</p></a>
@@ -74,13 +74,8 @@
     <div class="current-niche" id="currentNiche"><span>Experiência atual</span><strong>Visão geral para negócios</strong><small>Tema clean neutro</small></div>
   </section>
 
-  <section class="wrap shelfSec" id="recomendados">
-    <div class="titleRow"><div><span class="eyebrow">RECOMENDADO PARA VOCÊ</span><h2 id="recTitle">Uma seleção para começar sem se perder.</h2><p>Itens com maior aderência ao nicho e ao objetivo selecionados.</p></div><div class="arrows"><button data-prev="recTrack">‹</button><button data-next="recTrack">›</button></div></div>
-    <div class="shelf" id="recTrack"></div>
-  </section>
-
   <section class="wrap shelfSec" id="marketing">
-    <div class="titleRow"><div><span class="eyebrow">ESTRATÉGIAS DE MARKETING</span><h2>Divulgação por objetivo, canal e momento.</h2><p>Da visibilidade à recompra: ideias para digital, físico, relacionamento e mídia.</p></div><div class="arrows"><button data-prev="marketingTrack">‹</button><button data-next="marketingTrack">›</button></div></div>
+    <div class="titleRow"><div><span class="eyebrow">ESTRATÉGIAS DE MARKETING · VENDAS & CRESCIMENTO</span><h2>Divulgação, conversão, recompra e crescimento em uma só trilha.</h2><p>Campanhas, canais, relacionamento, oferta, WhatsApp, ticket médio, pós-venda e ações para transformar atenção em clientes.</p></div><div class="arrows"><button data-prev="marketingTrack">‹</button><button data-next="marketingTrack">›</button></div></div>
     <div class="shelf" id="marketingTrack"></div>
   </section>
 
@@ -103,11 +98,6 @@
   <section class="wrap shelfSec" id="marca">
     <div class="titleRow"><div><span class="eyebrow">POSICIONAMENTO & MARCA</span><h2>Faça a empresa parecer tão profissional quanto ela merece ser.</h2><p>Branding físico e digital, identidade, diferenciação, autoridade e experiência.</p></div><div class="arrows"><button data-prev="brandTrack">‹</button><button data-next="brandTrack">›</button></div></div>
     <div class="shelf" id="brandTrack"></div>
-  </section>
-
-  <section class="wrap shelfSec" id="vendas">
-    <div class="titleRow"><div><span class="eyebrow">VENDAS & CRESCIMENTO</span><h2>Mais conversão, ticket, recompra e indicação.</h2><p>Ferramentas e estratégias para o comercial funcionar melhor antes de colocar mais dinheiro em divulgação.</p></div><div class="arrows"><button data-prev="salesTrack">‹</button><button data-next="salesTrack">›</button></div></div>
-    <div class="shelf" id="salesTrack"></div>
   </section>
 
   <section class="wrap shelfSec tools-section" id="ferramentas">
@@ -153,45 +143,45 @@
   </section>
 
   <section class="wrap monthlyPlanSec" id="plano-mensal">
-    <div class="monthlyPlanHero">
-      <div class="monthlyPlanHeroCopy">
+    <div class="monthlyPlanUnified">
+      <div class="monthlyPlanContent">
         <span class="eyebrow">DOSSIÊ PREMIUM</span>
         <h2>Plano Estratégico do Mês</h2>
         <p>Um relatório consultivo para transformar calendário, estratégias, tendências, movimentos do mercado e vendas em um plano de ação mensal para o seu nicho.</p>
         <div class="monthlyPlanBadges"><span>Premium liberado</span><span>Avulso R$ 99,00</span><span>PDF + WhatsApp</span></div>
+        <div class="monthlyPlanAccess" id="monthlyPlanAccess"><strong>Acesso Premium</strong><small>Ou compre este dossiê individualmente.</small></div>
+        <div class="monthlyPlanBuilder">
+          <div class="monthlyPlanControls">
+            <label>Nicho confirmado<input id="monthlyPlanNiche" readonly></label>
+            <label>Mês da análise<select id="monthlyPlanMonth"></select></label>
+            <label>Ano<select id="monthlyPlanYear"></select></label>
+            <div class="monthlyPlanProfileChoice">
+              <strong>Personalização</strong>
+              <p>Você pode gerar apenas com o nicho ou usar as informações da empresa para deixar o plano mais específico.</p>
+              <label><input type="checkbox" id="monthlyUseProfile" checked> Usar dados da empresa quando disponíveis</label>
+              <button class="outline" id="monthlyEditProfile" type="button">Completar informações da empresa</button>
+            </div>
+            <div class="monthlyPlanActions">
+              <button class="primary" id="generateMonthlyPlan">Gerar plano do mês</button>
+              <button class="outline" id="buyMonthlyPlan">Comprar avulso R$ 99,00</button>
+            </div>
+            <small id="monthlyPlanStatus"></small>
+          </div>
+          <div class="monthlyPlanPreview" id="monthlyPlanPreview">
+            <span class="eyebrow">O QUE O DOSSIÊ ENTREGA</span>
+            <h3>Uma visão de consultoria para executar no mês escolhido.</h3>
+            <ul>
+              <li>Campanhas e datas do mês com ideias de criativos.</li>
+              <li>Estratégias de marketing local, equipe, clientes, parcerias e brindes.</li>
+              <li>Tendências do mercado e movimentos por canal de comunicação.</li>
+              <li>Ações de vendas, fidelização, WhatsApp, oferta e ticket médio.</li>
+              <li>Plano por semana, checklist final e relatório salvo na Central.</li>
+            </ul>
+          </div>
+        </div>
       </div>
       <div class="monthlyPlanHeroVisual">
         <img src="assets/sections/como-miv-ajuda.png" alt="" loading="lazy">
-        <div class="monthlyPlanAccess" id="monthlyPlanAccess"><strong>Acesso Premium</strong><small>Ou compre este dossiê individualmente.</small></div>
-      </div>
-    </div>
-    <div class="monthlyPlanBuilder">
-      <div class="monthlyPlanControls">
-        <label>Nicho confirmado<input id="monthlyPlanNiche" readonly></label>
-        <label>Mês da análise<select id="monthlyPlanMonth"></select></label>
-        <label>Ano<select id="monthlyPlanYear"></select></label>
-        <div class="monthlyPlanProfileChoice">
-          <strong>Personalização</strong>
-          <p>Você pode gerar apenas com o nicho ou usar as informações da empresa para deixar o plano mais específico.</p>
-          <label><input type="checkbox" id="monthlyUseProfile" checked> Usar dados da empresa quando disponíveis</label>
-          <button class="outline" id="monthlyEditProfile" type="button">Completar informações da empresa</button>
-        </div>
-        <div class="monthlyPlanActions">
-          <button class="primary" id="generateMonthlyPlan">Gerar plano do mês</button>
-          <button class="outline" id="buyMonthlyPlan">Comprar avulso R$ 99,00</button>
-        </div>
-        <small id="monthlyPlanStatus"></small>
-      </div>
-      <div class="monthlyPlanPreview" id="monthlyPlanPreview">
-        <span class="eyebrow">O QUE O DOSSIÊ ENTREGA</span>
-        <h3>Uma visão de consultoria para executar no mês escolhido.</h3>
-        <ul>
-          <li>Campanhas e datas do mês com ideias de criativos.</li>
-          <li>Estratégias de marketing local, equipe, clientes, parcerias e brindes.</li>
-          <li>Tendências do mercado e movimentos por canal de comunicação.</li>
-          <li>Ações de vendas, fidelização, WhatsApp, oferta e ticket médio.</li>
-          <li>Plano por semana, checklist final e relatório salvo na Central.</li>
-        </ul>
       </div>
     </div>
     <div id="monthlyPlanResult" class="monthlyPlanResult"></div>
@@ -253,6 +243,11 @@
       <div class="need-copy"><span class="eyebrow">NÃO ENCONTROU O QUE PRECISA?</span><h3>Conte para o MARK o que você gostaria de resolver agora.</h3><p>Escreva sua dúvida, dor ou objetivo com suas próprias palavras. A vitrine reorganiza as sugestões e mostra os conteúdos, ferramentas e análises mais próximos da sua necessidade.</p></div>
       <div class="need-action"><textarea id="needInput" rows="3" placeholder="Ex.: estou divulgando bastante, mas poucas pessoas chamam no WhatsApp... ou: preciso vender mais sem baixar meus preços."></textarea><button class="primary" id="needSuggest">Encontrar soluções para mim</button><small id="needStatus">Você não precisa saber qual ferramenta procurar.</small></div>
     </div>
+  </section>
+
+  <section class="wrap shelfSec" id="recomendados">
+    <div class="titleRow"><div><span class="eyebrow">RECOMENDADO PARA VOCÊ</span><h2 id="recTitle">Uma seleção para começar sem se perder.</h2><p>Itens com maior aderência ao nicho, ao objetivo selecionado e ao que você acabou de pedir ao MARK.</p></div><div class="arrows"><button data-prev="recTrack">‹</button><button data-next="recTrack">›</button></div></div>
+    <div class="shelf" id="recTrack"></div>
   </section>
 
   <section class="wrap faq">
