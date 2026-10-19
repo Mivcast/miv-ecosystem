@@ -1,5 +1,13 @@
 # Limite de funcoes da publicacao de teste
 
+Atualizacao de seguranca: o projeto agora publica somente a pasta public/
+gerada por scripts/build-public.cjs. Arquivos privados nunca entram nessa
+pasta. As regras abaixo foram substituidas por routes ordenadas como defesa
+adicional, pois rewrites nao bloqueavam arquivos estaticos existentes.
+Ver INCIDENTE_PREVIA_PRIVADOS_2026-10-19.md para evidencias hospedadas.
+
+## Historico do ajuste inicial
+
 Em 2026-10-19 a previa do commit 6a25594 falhou porque o projeto tinha 13
 entrypoints Node em api/, acima das 12 funcoes permitidas na publicacao Hobby
 mostrada pelo painel. Nao foi um erro de compilacao nem de banco de dados.

@@ -1,5 +1,13 @@
 # Validacao de lancamento em 19/10/2026
 
+Atualizacao posterior: o smoke hospedado foi executado e aprovado na previa
+do commit a55a131167f4f547eda46dd9b84c7e45d7077f64, depois da correcao de
+exposicao estatica registrada em INCIDENTE_PREVIA_PRIVADOS_2026-10-19.md.
+As quatro previas anteriores afetadas foram removidas com autorizacao do usuario.
+O bloqueio local de CLI descrito abaixo foi superado apos a inicializacao da
+CLI 64.5.0 no terminal do usuario; a inspecao e o curl autenticado funcionam.
+Esse smoke nao substitui login real, Central entre sessoes e pagamento sandbox.
+
 ## Confirmado
 
 - A CLI oficial autenticada acessou o projeto mivcast/miv-ecosystem:
@@ -18,7 +26,7 @@
 - A verificacao desta rodada nao criou contas, compras, respostas nem consumiu
   cortesias. A leitura agregada encontrou zero desbloqueios e zero workspaces.
 
-## Bloqueio da verificacao hospedada
+## Historico do bloqueio da verificacao hospedada
 
 A integracao OAuth continua negando acesso ao time, mas o login do usuario na
 CLI funciona para consultar projeto, publicacao e nomes das variaveis.
