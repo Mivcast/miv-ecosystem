@@ -14,7 +14,7 @@ test('deployment stays within twelve Node function entrypoints',()=>{
 test('private paths are denied before the filesystem can serve existing files',()=>{
  assert.equal(config.rewrites,undefined);
  const [deny]=config.routes;
- assert.equal(deny.status,404);assert.equal(deny.dest,undefined);assert.notEqual(deny.continue,true);
+ assert.equal(deny.status,404);assert.equal(deny.dest,'/api/diagnoses?blocked_source=1');assert.notEqual(deny.continue,true);
  assert.equal(deny.headers['Cache-Control'],'private, no-store');
  const match=new RegExp(deny.src);
  for(const name of ['/private','/private/','/private/diagnosis-content.json','/private/diagnosis-service.cjs'])assert(match.test(name),name);

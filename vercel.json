@@ -1,6 +1,6 @@
 {
   "routes": [
-    {"src": "^/private(?:/.*)?$", "status": 404, "headers": {"Cache-Control": "private, no-store"}},
+    {"src": "^/private(?:/.*)?$", "dest": "/api/diagnoses?blocked_source=1", "status": 404, "headers": {"Cache-Control": "private, no-store"}},
     {"src": "^/api/config$", "dest": "/api/diagnoses?action=public-config"},
     {"handle": "filesystem"}
   ],

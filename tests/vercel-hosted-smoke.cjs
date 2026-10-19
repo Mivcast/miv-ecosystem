@@ -11,7 +11,8 @@ if(!packagePath&&!process.env.MIV_VERCEL_CLI)throw new Error('Run with npm exec 
 const pkg=packagePath?JSON.parse(fs.readFileSync(packagePath,'utf8')):null;
 const cli=process.env.MIV_VERCEL_CLI||path.resolve(path.dirname(packagePath),typeof pkg.bin==='string'?pkg.bin:pkg.bin.vercel);
 function request(route,method='GET',body){
- const args=[cli,'curl',route,'--deployment',deployment,'--scope',scope,'--','--silent','--show-error','--max-time','30','--request',method,'--write-out','\n__MIV_STATUS__:%{http_code}'];
+ const args=[cli,'curl',route,'--deployment',deployment,'--scope',scope,'--','--silent','--show-error','--max-time','30','--write-out','\n__MIV_STATUS__:%{http_code}'];
+ if(method==='HEAD')args.push('--head');else args.push('--request',method);
  if(body)args.push('--header','Content-Type: application/json','--data',JSON.stringify(body));
  const raw=execFileSync(process.execPath,args,{encoding:'utf8',timeout:60000,maxBuffer:4000000,stdio:['ignore','pipe','pipe']});
  const marker=raw.lastIndexOf('\n__MIV_STATUS__:');
