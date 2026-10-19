@@ -1,0 +1,13 @@
+{
+  "rewrites": [
+    {"source": "/private/:path*", "destination": "/api/diagnoses?blocked_source=1"}
+  ],
+  "functions": {
+    "api/diagnoses.js": {"includeFiles": "private/**"},
+    "api/mark-ai.js": {"includeFiles": "private/**"},
+    "api/analysis-ai.js": {"includeFiles": "private/**"},
+    "api/create-mercadopago-preference.js": {"includeFiles": "private/**"},
+    "api/validate-coupon.js": {"includeFiles": "private/**"},
+    "api/mercadopago/webhook.js": {"includeFiles": "private/**"}
+  }
+}

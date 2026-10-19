@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const diagnosisCatalog = require('../../private/diagnosis-service.cjs').catalogItem;
 
 const FALLBACK_ITEM_CATALOG = {
   whatsapp: {
@@ -168,6 +169,7 @@ async function getMercadoPagoPayment(paymentId, accessToken) {
 }
 
 async function getCatalogItem({ supabaseUrl, secretKey, itemId }) {
+  if (itemId.startsWith('diagnosis:')) return diagnosisCatalog(supabaseUrl,secretKey,itemId);
   const response = await fetch(`${supabaseUrl}/rest/v1/ecosystem_cards?item_id=eq.${encodeURIComponent(itemId)}&active=eq.true&select=item_id,title,price_cents,access_level&limit=1`, {
     headers: { apikey: secretKey }
   });

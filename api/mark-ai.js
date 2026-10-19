@@ -1,5 +1,6 @@
 const send=(res,status,body)=>{res.setHeader('Cache-Control','no-store');return res.status(status).json(body)};
 const clean=(v,max=50000)=>String(v??'').trim().slice(0,max);
+const diagnosisService=require('../private/diagnosis-service.cjs');
 async function sbFetch(url,key,path,opt={}){
   return fetch(`${url}/rest/v1/${path}`,{...opt,headers:{apikey:key,'Content-Type':'application/json',...(opt.headers||{})}});
 }
@@ -13,7 +14,7 @@ async function hasContextItemAccess(su,sk,userId,plan,item){
   if(!item)return true;
   const level=String(item.access_level||'').trim().toLowerCase();
   if(['free','gratis','grátis',''].includes(level))return true;
-  if(['pro','premium'].includes(plan))return true;
+  if(plan==='premium'||plan==='pro'&&level!=='premium')return true;
   const itemId=normItem(item.item_id);
   const buys=await rows(su,sk,`user_purchases?user_id=eq.${userId}&status=eq.paid&item_id=eq.${encodeURIComponent(itemId)}&select=id&limit=1`);
   return buys.length>0;
@@ -490,6 +491,10 @@ module.exports=async function handler(req,res){
     const ur=await fetch(`${su}/auth/v1/user`,{headers:{apikey:pk,Authorization:`Bearer ${token}`}});
     if(!ur.ok)return send(res,401,{error:'Sua sessão expirou. Entre novamente.'});
     const user=await ur.json();
+    const diagnosisId=clean(req.body?.context?.diagnosis_point_id,160);
+    const diagnosisContext=diagnosisId||String(req.body?.context?.item_id||'').startsWith('diagnosis:')||req.body?.context?.route==='analysis';
+    if(diagnosisContext&&!(await diagnosisService.markAllowed(su,sk,user.id)))return send(res,403,{error:'Seu plano não inclui MARK.IA dentro das análises.',code:'diagnosis_mark_required'});
+    if(diagnosisId&&!diagnosisService.points.has(diagnosisId))return send(res,400,{error:'Ponto de análise inválido.'});
     const marketAction=clean(req.body?.action,40);
     if(['trends','competitors','suggest_competitors'].includes(marketAction))return handleMarketIntel(req,res,{su,sk,gk,user});
     if(!gk)return send(res,503,{error:'MARK.IA ainda não possui GEMINI_API_KEY configurada no servidor.',code:'gemini_not_configured'});
@@ -501,7 +506,8 @@ module.exports=async function handler(req,res){
     if(activeSub&&(!activeSub.current_period_end||new Date(activeSub.current_period_end)>now)&&['pro','premium'].includes(activeSub.plan)){
       plan=activeSub.plan;
       const planRows=await rows(su,sk,`subscription_plans?plan_key=eq.${plan}&select=mark_monthly_limit&limit=1`);
-      markLimit=Number(planRows[0]?.mark_monthly_limit||(plan==='premium'?300:80));
+      const configuredLimit=planRows[0]?.mark_monthly_limit;
+      markLimit=Number.isSafeInteger(configuredLimit)&&configuredLimit>=0?configuredLimit:(plan==='premium'?300:80);
     }
     const usageRows=await rows(su,sk,`mark_ai_usage?user_id=eq.${user.id}&period_month=eq.${periodMonth}&select=interactions&limit=1`);
     const used=Number(usageRows[0]?.interactions||0);

@@ -1,5 +1,6 @@
 const send=(res,status,body)=>{res.setHeader('Cache-Control','no-store');return res.status(status).json(body)};
 const clean=(v,max=50000)=>String(v??'').trim().slice(0,max);
+const diagnosisMarkAllowed=require('../private/diagnosis-service.cjs').markAllowed;
 async function sbFetch(url,key,path,opt={}){return fetch(`${url}/rest/v1/${path}`,{...opt,headers:{apikey:key,'Content-Type':'application/json',...(opt.headers||{})}})}
 async function rows(url,key,path){const r=await sbFetch(url,key,path);const data=await r.json().catch(()=>[]);if(!r.ok)throw new Error(`Supabase ${r.status}: ${JSON.stringify(data).slice(0,300)}`);return Array.isArray(data)?data:[]}
 function companyBlock(company,profile){
@@ -7,10 +8,7 @@ function companyBlock(company,profile){
   return Object.entries(fields).filter(([,v])=>v!==null&&v!==undefined&&String(v).trim()!=='').map(([k,v])=>`${k}: ${v}`).join('\n')||'Perfil empresarial ainda pouco preenchido.';
 }
 async function hasAnalysisAiAccess(su,sk,userId){
-  const now=new Date().toISOString();
-  const subs=await rows(su,sk,`user_subscriptions?user_id=eq.${userId}&status=eq.active&select=plan,current_period_end&order=created_at.desc&limit=1`);
-  const s=subs[0];
-  return !!(s&&['pro','premium'].includes(s.plan)&&(!s.current_period_end||s.current_period_end>now));
+  return diagnosisMarkAllowed(su,sk,userId);
 }
 function safeJson(text){try{return JSON.parse(text)}catch(e){const m=String(text||'').match(/\{[\s\S]*\}/);if(m)try{return JSON.parse(m[0])}catch(_){ }return null}}
 module.exports=async function handler(req,res){
@@ -23,7 +21,7 @@ module.exports=async function handler(req,res){
     const ur=await fetch(`${su}/auth/v1/user`,{headers:{apikey:pk,Authorization:`Bearer ${token}`}});if(!ur.ok)return send(res,401,{error:'Sua sessão expirou. Entre novamente.'});
     const user=await ur.json();
     const analysisTitle=clean(req.body?.analysis_title,500),areaId=clean(req.body?.analysis_id,100),sub=clean(req.body?.sub,500),score=Math.max(0,Math.min(100,Number(req.body?.score)||0));
-    if(!(await hasAnalysisAiAccess(su,sk,user.id)))return send(res,403,{error:'A interpretação completa com IA das análises é liberada nos planos PRO e Premium.',code:'analysis_pro_required'});
+    if(!(await hasAnalysisAiAccess(su,sk,user.id)))return send(res,403,{error:'Seu plano não inclui MARK.IA nas análises. Consulte os benefícios do Premium.',code:'analysis_mark_required'});
     const answers=Array.isArray(req.body?.answers)?req.body.answers.slice(0,30):[];
     const checklist=Array.isArray(req.body?.checklist)?req.body.checklist.slice(0,80):[];
     const settings=(await rows(su,sk,'mark_ai_settings?id=eq.global&select=*'))[0]||{};
