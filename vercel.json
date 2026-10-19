@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    {"source": "/api/config", "destination": "/api/diagnoses?action=public-config"},
     {"source": "/private/:path*", "destination": "/api/diagnoses?blocked_source=1"}
   ],
   "functions": {

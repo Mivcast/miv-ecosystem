@@ -6,6 +6,10 @@ const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 module.exports=async function(req,res){
   if(req.query?.blocked_source==='1')return res.status(404).end();
   if(!['GET','POST'].includes(req.method))return send(res,405,{error:'Método não permitido.'});
+  if(req.method==='GET'&&req.query?.action==='public-config'){
+    res.setHeader('Cache-Control','no-store');
+    return res.status(200).json({supabaseUrl:process.env.SUPABASE_URL||'',supabasePublishableKey:process.env.SUPABASE_PUBLISHABLE_KEY||''});
+  }
   try{
     const url=process.env.SUPABASE_URL,key=process.env.SUPABASE_SECRET_KEY,pub=process.env.SUPABASE_PUBLISHABLE_KEY;
     if(!url||!key||!pub)return send(res,503,{error:'Conexão das análises indisponível.'});

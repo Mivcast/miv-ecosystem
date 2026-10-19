@@ -38,6 +38,18 @@ test('unauthenticated solution requests are denied',async()=>{
 test('public rules never include private content',async()=>{
  const result=await run(handler,{method:'GET',headers:{},query:{action:'rules'}});assert.equal(result.status,200);assert.equal(result.data.solutions,undefined);
 });
+
+test('public config preserves the browser contract without authentication or database calls',async()=>{
+ const result=await run(handler,{method:'GET',headers:{},query:{action:'public-config'}});
+ assert.equal(result.status,200);
+ assert.deepEqual(result.data,{supabaseUrl:'test-only',supabasePublishableKey:'test-only'});
+ assert.equal(result.calls.length,0);
+});
+
+test('private source remains blocked even when requesting public config',async()=>{
+ const result=await run(handler,{method:'GET',headers:{},query:{action:'public-config',blocked_source:'1'}});
+ assert.equal(result.status,404);assert.equal(result.data,undefined);assert.equal(result.calls.length,0);
+});
 test('free snapshot and denied unlock never include solution text',async()=>{
  const snap=await run(handler,{method:'GET',query:{niche:'QA'}});assert.deepEqual(snap.data.solutions,{});
  const unlock=await run(handler,{body:{niche:'QA',action:'unlock',point_id:'base.mercado.demanda'}});assert.equal(unlock.status,402);assert.equal(unlock.data.solution,null);
