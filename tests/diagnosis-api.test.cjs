@@ -15,6 +15,7 @@ async function run(fn,request,options={}){
  global.fetch=async(url,opt={})=>{
   calls.push({url,opt});
   if(url.includes('/auth/v1/user'))return response({id:uid,email:'qa@example.invalid'});
+  if(url.includes('/legal_acceptances?'))return response(options.terms===false?[]:[{version:'2026-10-20'}]);
   if(url.includes('/diagnosis_rules?'))return response([{...rule,...options.rule}]);
   if(url.endsWith('/rpc/diagnosis_access'))return response({...grant,...options.grant});
   if(url.endsWith('/rpc/diagnosis_save_point'))return response({data:{[JSON.parse(opt.body).p_point_id]:JSON.parse(opt.body).p_data},updated_at:'2026-10-19'});
@@ -76,6 +77,12 @@ test('checkout uses the server price and owner instead of supplied amounts',asyn
  const result=await run(require('../api/create-mercadopago-preference.js'),{body:{item_id:'diagnosis:mercado',amount:0,user_id:other}});
  assert.equal(result.status,200);const preference=JSON.parse(result.calls.find(c=>c.url.includes('/checkout/preferences')).opt.body);
  assert.equal(preference.items[0].unit_price,19.9);assert.equal(preference.metadata.miv_user_id,uid);
+});
+
+test('new checkout requires a stored terms receipt before contacting payment provider',async()=>{
+ const checkout=require('../api/create-mercadopago-preference.js');
+ const result=await run(checkout,{body:{item_id:'diagnosis:mercado'}},{terms:false});
+ assert.equal(result.status,428);assert(!result.calls.some(c=>c.url.includes('api.mercadopago.com')));
 });
 test('Pro cannot call analysis AI or diagnostic MARK context',async()=>{
  const result=await run(require('../api/analysis-ai.js'),{body:{analysis_id:'empresa'}},{plan:'pro'});assert.equal(result.status,403);

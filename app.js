@@ -1354,6 +1354,7 @@ async function startMercadoPagoSinglePurchase(){
  const item=state.current;
  if(!item)return;
  if(!mivUser||!mivSupabase){pendingAuthAction={type:'paywall',itemId:item?.id};closePaywall();openAuth('login');toast('Entre na sua conta para comprar.');return}
+ if(!window.MivPrivacy||!await window.MivPrivacy.ensureTerms())return;
  const btn=document.getElementById('buySingle');const old=btn?.innerHTML;
  try{
   if(btn){btn.disabled=true;btn.textContent='Abrindo Mercado Pago...'}
@@ -2079,6 +2080,7 @@ bindMonthlyPlan();
 // V13.4 — autenticação real via Supabase
 const authModal=document.getElementById('authModal');
 let mivSupabase=null;
+let mivPasswordRecovery=false;
 const MIV_PRODUCTION_ORIGIN='https://miv-ecosystem.vercel.app';
 function authRedirectUrl(){
  const local=['localhost','127.0.0.1','0.0.0.0'].includes(location.hostname);
@@ -2330,12 +2332,16 @@ async function initSupabase(){
   const c=await r.json();if(!c.supabaseUrl||!c.supabasePublishableKey)throw new Error('Variáveis do Supabase não encontradas no Vercel.');
   if(!window.supabase?.createClient)throw new Error('Biblioteca Supabase não carregou.');
   mivSupabase=window.supabase.createClient(c.supabaseUrl,c.supabasePublishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  mivSupabase.auth.onAuthStateChange((event,session)=>{
+   if(event==='PASSWORD_RECOVERY'){mivPasswordRecovery=true;setTimeout(()=>openAuth('reset'),0);}
+   else if(session&&!mivPasswordRecovery)closeAuth();
+   setTimeout(()=>applyAuthSession(session),0);
+  });
   await loadDynamicCatalog();
   await loadSubscriptionPlans();
   await loadNicheHeros();
   await loadLearningContent();populateLearningAreas();
   const {data}=await mivSupabase.auth.getSession();await applyAuthSession(data.session);
-  mivSupabase.auth.onAuthStateChange((_event,session)=>{if(session)closeAuth();setTimeout(()=>applyAuthSession(session),0)});
  }catch(err){console.error('[MIV Supabase]',err);authStatus('loginStatus','Conexão com a conta indisponível. Recarregue a página.','error')}
 }
 
@@ -2443,6 +2449,7 @@ async function loadCompanyFromSupabase(){
 async function applyAuthSession(session){
  const incomingOwner=session?.user?.id||'visitor',oldOwner=localStorage.getItem('mivWorkspaceOwner')||'visitor';
  if(incomingOwner!==oldOwner){
+  window.dispatchEvent(new Event('miv-auth-session'));
   localStorage.setItem('mivAccountArchive:'+oldOwner,JSON.stringify({reports:state.reports,history:state.history}));
   let archive={};try{archive=JSON.parse(localStorage.getItem('mivAccountArchive:'+incomingOwner)||'{}')}catch{}
   state.reports=archive.reports||[];state.history=archive.history||[];save();window.MivEvolution?.close();window.MivDiagnosis?.reset();
@@ -2468,7 +2475,7 @@ async function applyAuthSession(session){
   try{await loadWorkspaceFromSupabase()}catch(e){console.warn('[MIV workspace hydrate]',e)}
   try{await loadCentralExtras()}catch(e){console.warn('[MIV central extras hydrate]',e)}
   mivHydratingAuth=false;
-  window.MivEvolution?.render();if(runPendingAuthAction())return;
+  window.MivEvolution?.render();if(!mivPasswordRecovery&&runPendingAuthAction())return;
   maybeRenderCentral();
  }).catch(e=>{
   console.warn('[MIV auth hydrate]',e);
@@ -2476,13 +2483,33 @@ async function applyAuthSession(session){
   maybeRenderCentral();
  });
 }
-function openAuth(mode='login'){if(!authModal)return;const notice=document.getElementById('analysisAuthNotice');if(notice)notice.hidden=!['diagnosis','diagnosisComplete'].includes(pendingAuthAction?.type);authModal.classList.add('show');document.querySelectorAll('.authPane').forEach(x=>x.classList.remove('active'));document.getElementById(mode==='register'?'authRegister':mode==='forgot'?'authForgot':'authLogin')?.classList.add('active')}
+function openAuth(mode='login'){if(!authModal)return;const notice=document.getElementById('analysisAuthNotice');if(notice)notice.hidden=!['diagnosis','diagnosisComplete'].includes(pendingAuthAction?.type);authModal.classList.add('show');document.querySelectorAll('.authPane').forEach(x=>x.classList.remove('active'));document.getElementById(mode==='register'?'authRegister':mode==='forgot'?'authForgot':mode==='reset'?'authReset':'authLogin')?.classList.add('active')}
 function closeAuth(){authModal?.classList.remove('show')}
 document.querySelectorAll('[data-open-auth]').forEach(b=>b.addEventListener('click',()=>{if(mivUser){route('central')}else openAuth(b.dataset.openAuth)}));
 document.querySelectorAll('[data-auth-switch]').forEach(b=>b.addEventListener('click',()=>openAuth(b.dataset.authSwitch)));
 document.getElementById('authClose')?.addEventListener('click',closeAuth);authModal?.addEventListener('click',e=>{if(e.target===authModal)closeAuth()});
 document.getElementById('doLogin')?.addEventListener('click',async()=>{const email=document.getElementById('loginEmail').value.trim(),password=document.getElementById('loginPassword').value;if(!email||!password){authStatus('loginStatus','Informe e-mail e senha.','error');return}if(!mivSupabase){authStatus('loginStatus','A conexão ainda não está pronta. Recarregue a página.','error');return}authStatus('loginStatus','Entrando...');const {data,error}=await mivSupabase.auth.signInWithPassword({email,password});if(error){authStatus('loginStatus',friendlyAuthError(error),'error');return}if(data?.session){const hasPending=!!pendingAuthAction;mivUser=data.session.user;closeAuth();applyAuthSession(data.session);authStatus('loginStatus','Login realizado.','ok');toast('Bem-vindo à sua Central.');if(!hasPending)route('central')}});
-document.getElementById('doRegister')?.addEventListener('click',async()=>{const email=document.getElementById('regEmail').value.trim(),password=document.getElementById('regPass').value,p2=document.getElementById('regPass2').value;if(!email||!password){authStatus('registerStatus','Preencha pelo menos e-mail e senha.','error');return}if(password!==p2){authStatus('registerStatus','As senhas não coincidem.','error');return}if(!mivSupabase){authStatus('registerStatus','A conexão ainda não está pronta.','error');return}const selectedNiche=selectedWithOther('regNiche');if(!selectedNiche){authStatus('registerStatus','Escolha um nicho ou marque Outra opção.','error');return}authStatus('registerStatus','Criando conta...');const meta={full_name:document.getElementById('regName').value.trim(),phone:document.getElementById('regPhone').value.trim(),business:document.getElementById('regBusiness').value.trim(),niche:selectedNiche,city:document.getElementById('regCity').value.trim()};const {data,error}=await mivSupabase.auth.signUp({email,password,options:{data:meta,emailRedirectTo:authRedirectUrl()}});if(error){authStatus('registerStatus',friendlyAuthError(error),'error');return}if(data.session){authStatus('registerStatus','Conta criada.','ok');closeAuth();toast('Conta criada com sucesso.');route('central')}else authStatus('registerStatus','Conta criada. Verifique seu e-mail para confirmar o acesso.','ok')});
+document.getElementById('doRegister')?.addEventListener('click',async()=>{
+ const email=document.getElementById('regEmail').value.trim(),password=document.getElementById('regPass').value,p2=document.getElementById('regPass2').value;
+ if(!email||password.length<12){authStatus('registerStatus','Informe seu e-mail e uma senha com pelo menos 12 caracteres.','error');return;}
+ if(password!==p2){authStatus('registerStatus','As senhas não coincidem.','error');return;}
+ if(!window.MivPrivacy?.registration()){authStatus('registerStatus','Leia os documentos e marque o aceite dos Termos de Uso.','error');return;}
+ if(!mivSupabase){authStatus('registerStatus','A conexão ainda não está pronta.','error');return;}
+ const selectedNiche=selectedWithOther('regNiche');if(!selectedNiche){authStatus('registerStatus','Escolha um nicho ou marque Outra opção.','error');return;}
+ const button=document.getElementById('doRegister');button.disabled=true;authStatus('registerStatus','Criando conta...');
+ try{
+  const meta={full_name:document.getElementById('regName').value.trim(),phone:document.getElementById('regPhone').value.trim(),business:document.getElementById('regBusiness').value.trim(),niche:selectedNiche,city:document.getElementById('regCity').value.trim(),terms_version:window.MIV_LEGAL.version,terms_acknowledged:true};
+  const {data,error}=await mivSupabase.auth.signUp({email,password,options:{data:meta,emailRedirectTo:authRedirectUrl()}});if(error)throw error;
+  document.getElementById('regPass').value='';document.getElementById('regPass2').value='';document.getElementById('regTerms').checked=false;
+  if(data.session){authStatus('registerStatus','Conta criada.','ok');closeAuth();toast('Conta criada com sucesso.');route('central');}else authStatus('registerStatus','Verifique seu e-mail para confirmar o acesso ou recuperar uma conta já existente.','ok');
+ }catch(error){authStatus('registerStatus',friendlyAuthError(error),'error');}finally{button.disabled=false;}
+});
+document.getElementById('doResetPassword')?.addEventListener('click',async()=>{
+ const password=document.getElementById('resetPass').value,confirmation=document.getElementById('resetPass2').value,button=document.getElementById('doResetPassword');
+ if(!mivPasswordRecovery||!mivSupabase){authStatus('resetStatus','Abra o link de recuperação enviado ao seu e-mail.','error');return;}
+ if(password.length<12||password!==confirmation){authStatus('resetStatus','Use pelo menos 12 caracteres e repita a mesma senha.','error');return;}
+ button.disabled=true;try{const {error}=await mivSupabase.auth.updateUser({password});if(error)throw error;mivPasswordRecovery=false;document.getElementById('resetPass').value='';document.getElementById('resetPass2').value='';authStatus('resetStatus','Senha atualizada.','ok');closeAuth();toast('Senha atualizada. Guarde-a em um local seguro.');}catch(e){authStatus('resetStatus',friendlyAuthError(e),'error');}finally{button.disabled=false;}
+});
 document.getElementById('doForgot')?.addEventListener('click',async()=>{const email=document.getElementById('forgotEmail').value.trim();if(!email){authStatus('forgotStatus','Informe seu e-mail.','error');return}if(!mivSupabase){authStatus('forgotStatus','A conexão ainda não está pronta.','error');return}const {error}=await mivSupabase.auth.resetPasswordForEmail(email,{redirectTo:authRedirectUrl()});authStatus('forgotStatus',error?friendlyAuthError(error):'Se o e-mail estiver cadastrado, você receberá as instruções.',error?'error':'ok')});
 window.mivLogout=async function(){if(mivSupabase)await mivSupabase.auth.signOut();mivActiveCompanyId=null;mirrorCompanyProfile({});toast('Você saiu da sua conta.');route('home')};
 document.getElementById('logoutBtn')?.addEventListener('click',()=>window.mivLogout());

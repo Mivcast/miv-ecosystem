@@ -2,6 +2,8 @@
   "buildCommand": "node scripts/build-public.cjs",
   "outputDirectory": "public",
   "routes": [
+    {"src":"/(.*)","headers":{"X-Content-Type-Options":"nosniff","Referrer-Policy":"strict-origin-when-cross-origin","X-Frame-Options":"DENY","Content-Security-Policy":"frame-ancestors 'none'; object-src 'none'; base-uri 'self'","Permissions-Policy":"camera=(), microphone=(), geolocation=()"},"continue":true},
+    {"src":"/api/(.*)","headers":{"Cache-Control":"private, no-store"},"continue":true},
     {"src": "^/private(?:/.*)?$", "dest": "/api/diagnoses?blocked_source=1", "status": 404, "headers": {"Cache-Control": "private, no-store"}},
     {"src": "^/api/config$", "dest": "/api/diagnoses?action=public-config"},
     {"handle": "filesystem"}

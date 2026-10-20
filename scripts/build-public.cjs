@@ -1,7 +1,7 @@
 const fs=require('node:fs');
 const path=require('node:path');
 
-const publicFiles=['index.html','admin.html','styles.css','evolution.css','app.js','admin-commerce.js','commercial-rules.js','library-reform.js','evolution-data.js','diagnosis-official.js','diagnosis-guidance.js','diagnosis-access.js','evolution.js','analytics.js','admin-analytics.js','analytics.css'];
+const publicFiles=['index.html','admin.html','styles.css','evolution.css','app.js','admin-commerce.js','commercial-rules.js','library-reform.js','evolution-data.js','diagnosis-official.js','diagnosis-guidance.js','diagnosis-access.js','evolution.js','analytics.js','admin-analytics.js','analytics.css','legal.html','legal-config.js','legal-documents.js','legal.css','privacy.js','admin-privacy.js','admin-security.js'];
 const media=/\.(png|jpe?g|webp|gif|svg|ico|avif|mp4|webm|mp3|wav|woff2?|ttf|pdf)$/i;
 function buildPublic(root=path.resolve(__dirname,'..')){
  root=path.resolve(root);

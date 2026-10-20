@@ -37,9 +37,8 @@ async function ingest(req,url,key,pub){
  if(token){const r=await fetch(url+'/auth/v1/user',{signal:AbortSignal.timeout(8000),headers:{apikey:pub,Authorization:'Bearer '+token}});if(!r.ok)throw Object.assign(new Error('Sessão inválida.'),{status:401});const user=await r.json();if(!uuid.test(user.id))throw bad('Sessão inválida.');userId=user.id;}
  return db(url,key,'rpc/analytics_ingest',{method:'POST',body:JSON.stringify({p_user_id:userId,p_events:events})});
 }
-async function report(url,key,user,query){
- const profile=await db(url,key,`profiles?id=eq.${user.id}&select=role&limit=1`);
- if(profile?.[0]?.role!=='admin')throw Object.assign(new Error('Acesso exclusivo do administrador.'),{status:403});
+async function report(url,key,user,query,token){
+ if(!await require('./admin-security.cjs').allowed(url,key,user,token))throw Object.assign(new Error('Acesso exclusivo do administrador.'),{status:403});
  return db(url,key,'rpc/analytics_report',{method:'POST',body:JSON.stringify(reportInput(query))});
 }
 async function bestEffort(label,fn){try{return await fn();}catch{console.warn('[MIV analytics] Registro indisponível: '+label);return null;}}

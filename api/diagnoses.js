@@ -1,6 +1,7 @@
 const crypto=require('node:crypto');
 const service=require('../private/diagnosis-service.cjs');
 const analytics=require('../private/analytics-service.cjs');
+const privacy=require('../private/privacy-service.cjs');
 const send=(res,status,data)=>{res.setHeader('Cache-Control','private, no-store');return res.status(status).json(data);};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -22,7 +23,13 @@ module.exports=async function(req,res){
     if(!auth.ok)return send(res,401,{error:'Sua sessão expirou. Entre novamente.'});
     const user=await auth.json();if(!uuid.test(user.id))return send(res,401,{error:'Sessão inválida.'});
     const input=req.method==='GET'?req.query||{}:req.body||{};
-    if(req.method==='GET'&&input.action==='analytics-report')return send(res,200,await analytics.report(url,key,user,input));
+    if(/^(privacy-|legal-)/.test(input.action||'')){
+      const readActions=new Set(['legal-status','privacy-list','privacy-admin-list']);
+      if(readActions.has(input.action)!==(req.method==='GET'))return send(res,405,{error:'Método não permitido.'});
+      if(!analytics.sameOrigin(req))return send(res,403,{error:'Origem não permitida.'});
+      return send(res,200,await privacy.handle(url,key,user,input,token));
+    }
+    if(req.method==='GET'&&input.action==='analytics-report')return send(res,200,await analytics.report(url,key,user,input,token));
     if(req.method==='GET'&&input.action==='list'){
       const workspaces=await service.db(url,key,`diagnosis_workspaces?user_id=eq.${user.id}&select=workspace_key,company_id,niche,data,updated_at&order=updated_at.desc&limit=100`);
       const memberships=await service.db(url,key,`company_users?user_id=eq.${user.id}&select=company_id`);

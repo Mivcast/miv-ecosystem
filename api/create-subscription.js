@@ -48,6 +48,7 @@ module.exports=async function(req,res){
   const su=process.env.SUPABASE_URL,pk=process.env.SUPABASE_PUBLISHABLE_KEY,sk=process.env.SUPABASE_SECRET_KEY,mp=process.env.MERCADOPAGO_ACCESS_TOKEN;
   if(!su||!pk||!sk||!mp)return send(res,500,{error:'Servidor não configurado.'});
   const jwt=String(req.headers.authorization||'').replace(/^Bearer\s+/i,'');const user=await userFromJwt(su,pk,jwt);if(!user?.id||!user.email)return send(res,401,{error:'Entre na sua conta para assinar.'});
+  await require('../private/privacy-service.cjs').requireAcceptance(su,sk,user);
   const planKey=String(req.body?.plan||'').toLowerCase();if(!['pro','premium'].includes(planKey))return send(res,400,{error:'Plano inválido.'});
   const plans=await sb(su,sk,`subscription_plans?plan_key=eq.${encodeURIComponent(planKey)}&active=eq.true&select=*&limit=1`);const plan=normalizePlan(plans?.[0],planKey);
 
@@ -85,5 +86,5 @@ module.exports=async function(req,res){
   const initPoint=isTestToken?(data.sandbox_init_point||data.init_point||null):(data.init_point||data.sandbox_init_point||null);
   if(data.id&&initPoint)await analytics.order(su,sk,{id:crypto.randomUUID(),userId:user.id,providerRef:String(data.id),itemId:'plan:'+planKey,kind:'subscription',amountCents:recurringCents,plan:planKey,test:isTestToken,attribution:req.body?.analytics_context});
   return send(res,200,{ok:true,id:data.id,status:data.status,init_point:initPoint,upgrade:isUpgrade,coupon:couponResult?.coupon?.code||null,discounted_amount:recurringCents/100});
- }catch(e){console.error('[MIV subscription create]',e);return send(res,500,{error:'Erro ao iniciar assinatura.'})}
+ }catch(e){console.error('[MIV subscription create]',e.status||500);return send(res,e.status||500,{error:e.status===428?e.message:'Erro ao iniciar assinatura.'})}
 }
