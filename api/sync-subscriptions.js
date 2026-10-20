@@ -22,6 +22,7 @@ module.exports=async function(req,res){
   const user=await userFromJwt(su,pk,jwt);if(!user?.id)return send(res,401,{error:'Sessão inválida.'});
   const prof=await sbFetch(su,sk,`profiles?id=eq.${encodeURIComponent(user.id)}&select=role&limit=1`);
   if(prof?.[0]?.role!=='admin')return send(res,403,{error:'Acesso restrito ao administrador.'});
+  await require('../private/privacy-service.cjs').requireAdmin(su,sk,user,jwt);
   const subs=await sbFetch(su,sk,'user_subscriptions?provider=eq.mercadopago&provider_subscription_id=not.is.null&select=*&order=created_at.desc');
   let checked=0,updated=0,failed=0;const details=[];
   for(const row of (subs||[])){
@@ -31,13 +32,14 @@ module.exports=async function(req,res){
     const sub=await r.json().catch(()=>({}));
     if(!r.ok){failed++;details.push({id:sid,ok:false,status:r.status});continue}
     const mpStatus=String(sub.status||'').toLowerCase();
-    const status=mpStatus==='authorized'?'active':mpStatus==='pending'?'pending':mpStatus==='paused'?'past_due':['cancelled','canceled'].includes(mpStatus)?'canceled':row.status;
-    const patch={status,provider_plan_id:sub.preapproval_plan_id||row.provider_plan_id||null,payer_email:sub.payer_email||row.payer_email||null,next_payment_date:sub.next_payment_date||null,current_period_end:sub.next_payment_date||row.current_period_end||null,updated_at:new Date().toISOString()};
+    let status=mpStatus==='authorized'?'active':mpStatus==='pending'?'pending':mpStatus==='paused'?'past_due':['cancelled','canceled'].includes(mpStatus)?'canceled':row.status;
+    if(['cancelled','canceled'].includes(mpStatus)&&row.cancel_at_period_end&&new Date(row.current_period_end).getTime()>Date.now())status='active';
+    const patch={status,provider_plan_id:sub.preapproval_plan_id||row.provider_plan_id||null,payer_email:sub.payer_email||row.payer_email||null,next_payment_date:row.cancel_at_period_end?null:(sub.next_payment_date||null),current_period_end:row.cancel_at_period_end?(row.current_period_end||sub.next_payment_date||null):(sub.next_payment_date||row.current_period_end||null),updated_at:new Date().toISOString()};
     await sbFetch(su,sk,`user_subscriptions?id=eq.${encodeURIComponent(row.id)}`,{method:'PATCH',prefer:'return=representation',body:JSON.stringify(patch)});
     if(status==='active')await recordSubscriptionCoupon(su,sk,row.user_id,row.plan,sub);
     updated++;details.push({id:sid,ok:true,mp_status:mpStatus,status});
    }catch(e){failed++;details.push({id:sid,ok:false,error:String(e.message||e)})}
   }
   return send(res,200,{ok:true,checked,updated,failed,details});
- }catch(e){console.error('[MIV admin sync subscriptions]',e);return send(res,500,{error:'Não foi possível sincronizar as assinaturas.'})}
+ }catch(e){console.error('[MIV admin sync subscriptions]',e.status||500);return send(res,e.status||500,{error:e.status===403?e.message:'Não foi possível sincronizar as assinaturas.'})}
 }
