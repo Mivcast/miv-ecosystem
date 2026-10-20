@@ -50,7 +50,9 @@ module.exports=async function(req,res){
   const jwt=String(req.headers.authorization||'').replace(/^Bearer\s+/i,'');const user=await userFromJwt(su,pk,jwt);if(!user?.id||!user.email)return send(res,401,{error:'Entre na sua conta para assinar.'});
   await require('../private/privacy-service.cjs').requireAcceptance(su,sk,user);
   const planKey=String(req.body?.plan||'').toLowerCase();if(!['pro','premium'].includes(planKey))return send(res,400,{error:'Plano inválido.'});
-  const plans=await sb(su,sk,`subscription_plans?plan_key=eq.${encodeURIComponent(planKey)}&active=eq.true&select=*&limit=1`);const plan=normalizePlan(plans?.[0],planKey);
+  const plans=await sb(su,sk,`subscription_plans?plan_key=eq.${encodeURIComponent(planKey)}&select=*&limit=1`);
+  if(plans?.[0]?.active===false)return send(res,409,{error:'Este plano está indisponível para novas assinaturas.'});
+  const plan=normalizePlan(plans?.[0],planKey);
 
   const rows=await sb(su,sk,`user_subscriptions?user_id=eq.${encodeURIComponent(user.id)}&provider=eq.mercadopago&status=in.(active,pending)&select=*&order=created_at.desc&limit=10`);
   const active=(rows||[]).find(x=>x.status==='active')||null;
