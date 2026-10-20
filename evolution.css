@@ -19,3 +19,66 @@
 @media(max-width:700px){.ev-stage-head>div:first-child{min-width:0}.ev-stage-head h3{overflow-wrap:anywhere}.ev-stage-score{min-width:0;width:95px;flex:0 0 95px;padding:10px}.ev-stage-score span{font-size:10px}.ev-question{grid-template-rows:auto auto auto}}
 @media(max-width:700px){.help-showcase .ecosystem-links{grid-template-columns:repeat(2,minmax(0,1fr))}.help-showcase .ecosystem-links h3{font-size:15px}.ev-cards{grid-template-columns:1fr}.ev-toolbar{gap:16px}.ev-progress{width:100%}.ev-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ev-intro h3{font-size:22px}.ev-stage-head h3{font-size:22px}.ev-stage-head{gap:12px}.ev-stage-score{max-width:95px}.ev-dialog-body{padding:18px}.ev-report-overview{grid-template-columns:repeat(2,minmax(0,1fr))}.ev-report-question>div{display:grid;gap:5px}.ev-report-heading h1{font-size:24px}.ev-choices{grid-template-columns:55px minmax(0,1fr) 55px}.ev-choices button{font-size:12px}.ev-card-content>p,.ev-question>p{min-height:0}.ev-question-actions button{font-size:12px}}
 @media print{body:has(.ev-report[open]){background:#fff!important;color:#111!important}body:has(.ev-report[open])>*:not(.ev-report){display:none!important}.ev-report[open]{display:block!important;position:static!important;inset:auto!important;width:100%!important;max-width:none!important;max-height:none!important;height:auto!important;overflow:visible!important;margin:0!important;padding:0!important;box-shadow:none!important;border:0!important;color:#111!important;background:#fff!important}.ev-report::backdrop{display:none}.ev-report .ev-dialog-head,.ev-report-tools{display:none!important}.ev-report .ev-dialog-body{padding:0;font-size:10pt;color:#111}.ev-report h1,.ev-report h2,.ev-report h3{break-after:avoid}.ev-report-heading,.ev-report-overview{break-inside:avoid}.ev-report-stage{break-inside:auto}.ev-report-stage>h2{background:#e8f0ed!important;color:#183e35!important;print-color-adjust:exact}.ev-report-question{break-inside:avoid;overflow-wrap:anywhere}.ev-report li{break-inside:avoid}.ev-report-status{white-space:normal}.ev-report p{orphans:3;widows:3}@page{size:A4;margin:16mm}}
+/* Compact overview and the shared solution flow. */
+#como-ajuda{padding-top:34px;padding-bottom:28px}
+#como-ajuda .help-steps{margin-bottom:10px}
+#como-ajuda h2{font-size:38px;line-height:1.15;letter-spacing:0;max-width:850px;margin:10px 0 14px}
+#como-ajuda .ecosystem-links{margin-top:8px;gap:20px}
+#como-ajuda .pillar-image{max-height:230px;margin-bottom:8px}
+#como-ajuda .ecosystem-links h3{font-size:16px;min-height:38px;margin:0 0 8px}
+.pillar-benefits{padding-left:17px;margin:0;max-width:270px;text-align:left;list-style:disc;color:var(--muted);font-size:12px;line-height:1.55}
+.pillar-benefits li{padding-left:2px;margin:4px 0}
+.pillar-benefits li::marker{color:var(--accent)}
+.analysis-auth-notice{margin:20px 0 16px;padding:14px;border-left:3px solid var(--accent);background:var(--accent-soft);color:var(--text);font-size:13px;line-height:1.6}
+.authModal .authBox{max-height:calc(100dvh - 40px);overflow-y:auto}
+.ev-question-actions button.ev-solution-viewed{background:#e1f3e9;color:#17603f;border:1px solid #8ec6a6;box-shadow:none}
+.ev-wizard-question .ev-question-actions{margin-left:0}
+.ev-unlock-intro h3{font-size:23px;line-height:1.3;margin:8px 0}
+.ev-unlock-intro p{font-size:14px;color:var(--muted);margin:8px 0}
+.ev-unlock-benefits{padding-left:20px;font-size:13px;margin:16px 0}
+.ev-unlock-benefits li{margin:5px 0}
+.ev-unlock-benefits li::marker{color:#218158}
+.ev-unlock-options{display:grid;gap:0;border-top:1px solid var(--line)}
+.ev-unlock-option{padding:16px 0;border-bottom:1px solid var(--line)}
+.ev-unlock-option strong{font-size:15px}
+.ev-unlock-option p,.ev-free-used{font-size:12px;line-height:1.55;color:var(--muted);margin:6px 0 12px}
+.ev-unlock-option button{width:100%;max-width:100%;white-space:normal;line-height:1.45;font-size:13px;border-radius:8px;padding:12px 16px}
+.ev-free-option strong{color:#17603f}
+@media(max-width:700px){#como-ajuda{padding-top:26px;padding-bottom:22px}#como-ajuda h2{font-size:28px}#como-ajuda .ecosystem-links{gap:20px 12px}#como-ajuda .pillar-image{max-height:175px}#como-ajuda .ecosystem-links h3{font-size:14px;min-height:50px}.pillar-benefits{font-size:11px;line-height:1.5}.ev-unlock-intro h3{font-size:20px}}
+/* Size mobile cards from their track, not the viewport, so the next card stays visible. */
+@media(max-width:700px){
+  #view-home .wrap,#view-central .wrap{min-width:0}
+  #view-home section[id]{scroll-margin-top:98px}
+  #view-home .titleRow{flex-wrap:wrap;gap:12px}
+  #view-home .titleRow>div:first-child{flex:1 1 230px;min-width:0}
+  #view-home .titleRow .arrows{flex:0 0 auto}
+  #view-home .shelf,#view-home .testimonial-track,#view-home .ev-cards,#view-central .centralCarousel{
+    display:flex;max-width:100%;min-width:0;gap:12px;overflow-x:auto;overflow-y:hidden;
+    scroll-snap-type:x proximity;scroll-padding-inline:2px;overscroll-behavior-x:contain;
+    padding:4px 2px 14px;scrollbar-width:none
+  }
+  #view-home .shelf>*,#view-home .testimonial-track>article,#view-home .ev-cards>.ev-card,
+  #view-central .centralCarousel>.card,#view-central .centralCarousel>.centralMiniCard,#view-central .centralCarousel>.centralItem{
+    flex:0 0 84%;min-width:0;max-width:100%;scroll-snap-align:start
+  }
+  #view-home .shelf>:only-child,#view-central .centralCarousel>:only-child{flex-basis:100%}
+  #view-home .shelf>.card,#view-central .centralCarousel>.card{transition:transform .22s,box-shadow .22s}
+  #view-home .ev-cards{align-items:stretch}
+  #view-home .ev-card-content{height:calc(100% - 146px)}
+  #view-home .shelf h3,#view-home .ev-card h4,#view-home .titleRow h2,#view-home .fullAnalysis strong{
+    overflow-wrap:anywhere;letter-spacing:0
+  }
+  #view-home .shelf button,#view-central .centralCarousel button{max-width:100%;white-space:normal}
+  #view-home .mivcastServicePhoto{width:100%;height:170px;min-width:0}
+  #view-home .learnDiscovery{grid-template-columns:minmax(0,1fr)}
+  #view-home .learnDiscovery input,#view-home .learnDiscovery select{width:100%;min-width:0;max-width:100%}
+  .ev-dialog,.monthly-plan-dialog{max-width:calc(100% - 24px)}
+  .ev-dialog-body,.monthly-plan-dialog .monthlyPlanContent{overflow-wrap:anywhere;min-width:0}
+  .modal.show{overflow-y:auto;align-items:start;padding-block:24px}
+  .modal>div{min-width:0;max-width:100%}
+  .pay-options button{flex-wrap:wrap;gap:6px;white-space:normal;text-align:left}
+  .detailHero section>div,.centralHero,.companyProfileHead{flex-wrap:wrap}
+  .detailHero section,.detailGrid article,.detailGrid aside{min-width:0}
+  .detailHero h1,.centralHero h1,.fullReportHeader h1{overflow-wrap:anywhere;letter-spacing:0}
+}
+@media(prefers-reduced-motion:reduce){.shelf,.ev-cards,.ev-niche-list,.testimonial-track,.centralCarousel{scroll-behavior:auto}}

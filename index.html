@@ -6,7 +6,7 @@
 <title>MIV Ecosystem — Vitrine Inteligente</title>
 <meta name="description" content="Ecossistema empresarial adaptável por nicho com estratégias, análises, ferramentas e inteligência artificial.">
 <link rel="stylesheet" href="styles.css?v=15.1">
-<link rel="stylesheet" href="evolution.css?v=8">
+<link rel="stylesheet" href="evolution.css?v=10">
 </head>
 <body data-theme="clean">
 <header class="floating-header">
@@ -64,10 +64,10 @@
         <h2>Quatro caminhos para fazer seu negócio evoluir.</h2>
       </div>
       <nav class="help-circles ecosystem-links" aria-label="Áreas do ecossistema">
-        <a href="#analises"><img class="pillar-image" src="assets/pillars/analises.png" alt="" width="877" height="723" loading="lazy"><h3>Análises empresariais</h3><p>Entenda cada problema e encontre o próximo passo.</p></a>
-        <a href="#marketing"><img class="pillar-image" src="assets/pillars/estrategias.png" alt="" width="861" height="744" loading="lazy"><h3>Estratégias de Branding e Marketing</h3><p>Posicionamento, divulgação e vendas para o seu nicho.</p></a>
-        <a href="#ferramentas"><img class="pillar-image" src="assets/pillars/ferramentas.png" alt="" width="883" height="739" loading="lazy"><h3>Ferramentas e recursos</h3><p>Leve suas decisões para a rotina do negócio.</p></a>
-        <a href="#consultoria"><img class="pillar-image" src="assets/pillars/especialistas.png" alt="" width="871" height="765" loading="lazy"><h3>Contrate nossos especialistas</h3><p>Conte com orientação para avançar com confiança.</p></a>
+        <a href="#analises"><img class="pillar-image" src="assets/pillars/analises.png" alt="" width="877" height="723" loading="lazy"><h3>Análises empresariais</h3><ul class="pillar-benefits"><li>Encontre os pontos que merecem sua atenção.</li><li>Descubra como melhorar cada área do negócio.</li><li>Guarde suas análises e acompanhe sua evolução.</li></ul></a>
+        <a href="#marketing"><img class="pillar-image" src="assets/pillars/estrategias.png" alt="" width="861" height="744" loading="lazy"><h3>Estratégias de Branding e Marketing</h3><ul class="pillar-benefits"><li>Construa uma marca mais clara e confiável.</li><li>Encontre ideias de divulgação para seu nicho.</li><li>Transforme oportunidades em ações de vendas.</li></ul></a>
+        <a href="#ferramentas"><img class="pillar-image" src="assets/pillars/ferramentas.png" alt="" width="883" height="739" loading="lazy"><h3>Ferramentas e recursos</h3><ul class="pillar-benefits"><li>Organize campanhas e prioridades do mês.</li><li>Simplifique tarefas da rotina da sua empresa.</li><li>Leve suas decisões do planejamento à prática.</li></ul></a>
+        <a href="#consultoria"><img class="pillar-image" src="assets/pillars/especialistas.png" alt="" width="871" height="765" loading="lazy"><h3>Contrate nossos especialistas</h3><ul class="pillar-benefits"><li>Conte com um olhar especializado para seu desafio.</li><li>Encontre apoio para executar suas ideias.</li><li>Escolha o serviço que faz sentido para seu momento.</li></ul></a>
       </nav>
     </div>
   </section>
@@ -292,6 +292,7 @@
 <div class="authModal" id="authModal">
   <div class="authBox">
     <button class="authClose" id="authClose" aria-label="Fechar">×</button>
+    <p class="analysis-auth-notice" id="analysisAuthNotice" role="status" hidden>Vamos guardar sua evolução? Para realizar uma análise, entre ou faça um cadastro rápido e gratuito. Assim, suas respostas e análises ficam salvas na sua Central para você continuar depois.</p>
     <section class="authPane active" id="authLogin"><span class="eyebrow">SUA CONTA</span><h2>Entrar no MIV Ecosystem</h2><p>Acesse sua Central e seus dados salvos.</p><label>E-mail</label><input id="loginEmail" type="email" autocomplete="email"><label>Senha</label><input id="loginPassword" type="password" autocomplete="current-password"><div class="authActions"><button class="primary" id="doLogin">Entrar</button></div><div class="authStatus" id="loginStatus"></div><button class="authLink" data-auth-switch="forgot">Esqueci minha senha</button><button class="authLink" data-auth-switch="register">Criar conta</button></section>
     <section class="authPane" id="authRegister"><span class="eyebrow">NOVA CONTA</span><h2>Criar sua conta</h2><p>Comece sua Central com os dados básicos do negócio.</p><label>Seu nome</label><input id="regName"><label>E-mail</label><input id="regEmail" type="email" autocomplete="email"><label>Telefone</label><input id="regPhone"><label>Empresa</label><input id="regBusiness"><label>Nicho</label><select id="regNiche"></select><input id="regOtherNiche" class="otherNicheInput" placeholder="Digite outro nicho" hidden><label>Cidade / UF</label><input id="regCity"><label>Senha</label><input id="regPass" type="password" autocomplete="new-password"><label>Repita a senha</label><input id="regPass2" type="password" autocomplete="new-password"><div class="authActions"><button class="primary" id="doRegister">Criar conta</button></div><div class="authStatus" id="registerStatus"></div><button class="authLink" data-auth-switch="login">Já tenho conta</button></section>
     <section class="authPane" id="authForgot"><span class="eyebrow">RECUPERAR ACESSO</span><h2>Redefinir senha</h2><p>Enviaremos o processo de recuperação para seu e-mail.</p><label>E-mail</label><input id="forgotEmail" type="email" autocomplete="email"><div class="authActions"><button class="primary" id="doForgot">Enviar recuperação</button></div><div class="authStatus" id="forgotStatus"></div><button class="authLink" data-auth-switch="login">Voltar para entrar</button></section>
@@ -421,11 +422,11 @@
 </dialog>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=15.5"></script>
+<script src="app.js?v=15.6"></script>
 <script src="library-reform.js?v=1"></script>
 <script src="evolution-data.js?v=2"></script>
 <script src="diagnosis-official.js?v=1"></script>
 <script src="diagnosis-guidance.js?v=2"></script>
 <script src="diagnosis-access.js?v=1"></script>
-<script src="evolution.js?v=9"></script>
+<script src="evolution.js?v=10"></script>
 </body></html>

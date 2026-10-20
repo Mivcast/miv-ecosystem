@@ -24,6 +24,15 @@ const server=http.createServer(async(req,res)=>{
   assert.equal((await page.request.get(url+'/private/diagnosis-content.json')).status(),404);
   await page.locator('[data-ev-solve="base.mercado.demanda"]').click();
   assert.equal(await page.locator('#authModal.show').count(),1);assert.equal(await page.locator('.ev-practical-example').count(),0);
+  assert(await page.locator('#analysisAuthNotice').isVisible());
+  assert.match(await page.locator('#analysisAuthNotice').innerText(),/cadastro rápido e gratuito/);
+  assert.equal(await page.locator('.ev-solution-viewed').count(),0);
+  await page.locator('[data-auth-switch="register"]').click();assert(await page.locator('#analysisAuthNotice').isVisible());
+  await page.setViewportSize({width:320,height:700});
+  assert(await page.locator('.authBox').evaluate(el=>el.getBoundingClientRect().height<=innerHeight-39));
+  await page.setViewportSize({width:1440,height:1000});
+  await page.locator('#authClose').click();await page.evaluate(()=>MivEvolution.openComplete());
+  assert(await page.locator('#analysisAuthNotice').isVisible());assert.equal(await page.locator('.ev-wizard-content').count(),0);
   await page.locator('#authClose').click();await authenticate(page,'account-a');
   for(const id of ['base.mercado.demanda','base.mercado.concorrencia']){
    await page.locator(`[data-ev-solve="${id}"]`).click();await page.locator('[data-ev-free]').click();
@@ -32,10 +41,12 @@ const server=http.createServer(async(req,res)=>{
    else await page.locator('[data-ev-close]').click();
   }
   assert.equal(fixture.free.get('account-a').size,2);
+  assert.match(await page.locator('[data-ev-solve="base.mercado.demanda"]').innerText(),/consultada/);
   await page.locator('[data-ev-solve="base.mercado.demanda"]').click();await page.locator('.ev-practical-example').waitFor();await page.locator('[data-ev-close]').click();
   assert.equal(fixture.free.get('account-a').size,2);
   await page.locator('[data-ev-solve="base.mercado.mudancas"]').click();
   assert.equal(await page.locator('[data-ev-free]').count(),0);assert.match(await page.locator('[data-ev-buy]').innerText(),/19,90/);
+  assert.equal(await page.locator('[data-ev-solve="base.mercado.mudancas"].ev-solution-viewed').count(),0);
   for(const width of [390,320]){await page.setViewportSize({width,height:900});assert(await page.locator('.ev-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'Paywall fits mobile');await page.screenshot({path:path.join(output,'free-limit-'+width+'.png')});}
   await page.setViewportSize({width:1440,height:1000});
   await page.screenshot({path:path.join(output,'free-limit.png')});await page.locator('[data-ev-buy]').click();
@@ -60,8 +71,52 @@ const server=http.createServer(async(req,res)=>{
   assert(await page.evaluate(()=>Object.keys(JSON.parse(localStorage.getItem('mivDiagnosisPending:mivEvolution:v2:account-a:business:'+state.profile.niche))).length>0));
   fixture.setOffline(false);await page.evaluate(()=>MivDiagnosis.hydrate(true).then(()=>MivDiagnosis.flush()));
   assert.match(await page.locator('#evCloudStatus').innerText(),/salvas/);
+  await page.evaluate(()=>MivEvolution.openComplete());
+  assert.equal(await page.locator('.ev-dialog [data-ev-solve]').count(),15);
+  assert.equal(await page.locator('.ev-dialog [data-ev-info]').count(),15);
+  await page.locator('.ev-dialog [data-ev-wizard-answer="base.mercado.demanda"][data-value="2"]').click();
+  await page.locator('.ev-dialog [data-ev-solve="base.mercado.demanda"]').click();
+  await page.locator('.ev-practical-example').waitFor();await page.locator('[data-ev-close]').click();
+  assert.equal(await page.locator('[data-ev-wizard-answer="base.mercado.demanda"][data-value="2"]').getAttribute('aria-pressed'),'true');
+  assert.equal(fixture.free.get('account-a').size,2);
+  await page.locator('.ev-wizard-tabs [data-ev-step="1"]').click();
+  await page.locator('.ev-dialog [data-ev-solve]').first().click();await page.locator('[data-ev-buy]').waitFor();
+  await page.getByRole('button',{name:'Voltar à análise completa',exact:true}).click();
+  assert.equal(await page.locator('.ev-wizard-tabs [data-ev-step="1"]').getAttribute('aria-pressed'),'true');
+  await page.locator('.ev-dialog [data-ev-info]').first().click();await page.locator('[data-ev-close]').click();
+  assert.equal(await page.locator('.ev-wizard-tabs [data-ev-step="1"]').getAttribute('aria-pressed'),'true');
+  for(const width of [1440,390,320]){
+   await page.setViewportSize({width,height:1000});
+   assert(await page.locator('.ev-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
+   await page.screenshot({path:path.join(output,'wizard-solutions-'+width+'.png')});
+  }
+  await page.locator('[data-ev-close]').click();
+  await page.setViewportSize({width:1440,height:1000});
+  await page.locator('#como-ajuda').scrollIntoViewIfNeeded();
+  assert.equal(await page.locator('.pillar-benefits li').count(),12);
+  await page.screenshot({path:path.join(output,'compact-benefits.png')});
+  for(const width of [390,320]){
+   await page.setViewportSize({width,height:900});await page.locator('#como-ajuda').scrollIntoViewIfNeeded();
+   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+   await page.screenshot({path:path.join(output,'compact-benefits-'+width+'.png')});
+  }
+  await page.setViewportSize({width:1440,height:1000});
+  const images=page.locator('#mivcastTrack .mivcastServicePhoto img');
+  assert.equal(await images.count(),20);
+  const alpha=await images.evaluateAll(async images=>{
+   const results=[];
+   for(const src of new Set(images.map(img=>img.getAttribute('src')))){
+    const img=new Image();img.src=src;await img.decode();const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;
+    const context=canvas.getContext('2d');context.drawImage(img,0,0);results.push({src,alpha:context.getImageData(0,0,1,1).data[3]});
+   }return results;
+  });
+  assert.equal(alpha.length,7);assert(alpha.every(img=>img.alpha<=1),'All service families have real transparency');
+  await page.locator('#mivcastTrack').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'service-cutouts.png')});
   await authenticate(page,'account-b');assert.equal(await page.evaluate(()=>MivEvolution.localData()['base.mercado.demanda']),undefined);
+  assert.equal(await page.locator('.ev-solution-viewed').count(),0);
   assert.equal(await page.evaluate(()=>!!MivDiagnosis.solution('base.produto.necessidade')),false);
+  await page.reload();await authenticate(page,'account-a');
+  assert(await page.locator('[data-ev-solve="base.mercado.demanda"]').evaluate(el=>el.classList.contains('ev-solution-viewed')));
   assert.deepEqual(errors,[]);
   console.log('PASS: guest, two lifetime free solutions, idempotent reopen, paywall, paid card, Pro/Premium, cloud report, offline retry, account isolation. Network fixture, no real charges.');
  }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

@@ -252,7 +252,17 @@ function nicheThumb(name){return localNicheHeroPaths(name)[1]}
 function renderNiches(){window.MivEvolution?.renderNichePicker()}
 function imgFor(item){const img=item.img||'';return img&&!img.includes('picsum.photos')?img:(cardImageMap[item.id]||img)}
 function card(item){const saved=state.favorites.includes(item.id);const unlocked=hasItemAccess(item);const lock=item.access==='Grátis'?`<span class="lock-badge free-badge">GRÁTIS</span>`:unlocked?`<span class="lock-badge free-badge">✓ LIBERADO</span>`:`<span class="lock-badge">🔒 ${item.id==='monthly-strategy-plan'?'PREMIUM · ou '+markEsc(item.price):'PRO'} ${item.access==='Pago'?'· ou '+(item.price||'avulso'):''}</span>`;return `<article class="card"><div class="cardImg cardImgFallback"><div class="cardFallbackLabel"><span>${item.icon||'◆'}</span><small>${item.cat||'MIV ECOSYSTEM'}</small></div><img src="${imgFor(item)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">${lock}<button class="heart ${saved?'saved':''}" data-fav="${item.id}">${saved?'♥':'♡'}</button></div><div class="cardBody"><div class="meta"><span>${item.tag}</span><small>${item.format}</small></div><h3>${item.title}</h3><p>${item.desc}</p><button class="open" data-open="${item.id}">Abrir →</button></div></article>`}
-function mivcastCard(item){const saved=state.favorites.includes(item.id),short=String(item.desc||'').split('.').slice(0,2).join('. ').trim()+'.';return `<article class="mivcastServiceCard"><button class="heart ${saved?'saved':''}" data-fav="${item.id}">${saved?'♥':'♡'}</button><div class="mivcastServicePhoto"><img src="${imgFor(item)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><span>${item.icon||'◆'}</span></div><small>${markEsc(item.tag||'MIVCAST')}</small><h3>${markEsc(item.title)}</h3><p>${markEsc(short)}</p><button class="open" data-open="${item.id}">Saiba mais →</button></article>`}
+const serviceCutouts = {
+  'svc-logo':'branding', 'svc-vetor':'branding', 'svc-manual':'branding',
+  'svc-site':'website', 'svc-lp':'website', 'svc-link':'website',
+  'svc-loja':'commerce', 'svc-market':'commerce', 'svc-market40':'commerce',
+  'svc-google':'local', 'svc-whatsapp':'messaging',
+  'svc-instagram':'social', 'svc-facebook':'social', 'svc-linkedin':'social',
+  'svc-15artes':'social', 'svc-arte':'social',
+  'svc-midiakit':'branding', 'svc-impressos':'branding',
+  'svc-video':'video', 'svc-institucional':'video'
+};
+function mivcastCard(item){const saved=state.favorites.includes(item.id),short=String(item.desc||'').split('.').slice(0,2).join('. ').trim()+'.';return `<article class="mivcastServiceCard"><button class="heart ${saved?'saved':''}" data-fav="${item.id}">${saved?'♥':'♡'}</button><div class="mivcastServicePhoto"><img src="${serviceCutouts[item.id]?`assets/services/${serviceCutouts[item.id]}.png`:imgFor(item)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><span>${item.icon||'◆'}</span></div><small>${markEsc(item.tag||'MIVCAST')}</small><h3>${markEsc(item.title)}</h3><p>${markEsc(short)}</p><button class="open" data-open="${item.id}">Saiba mais →</button></article>`}
 const bases={marketing:['calendario','canais','local','equipe-marketing','clientes-marketing','parcerias','brindes'],brand:['identidade','branding-fisico','branding-digital','diferenciacao'],sales:['ticket','vendas-tecnicas','followup','whatsapp','oferta'],tools:['tool-calendario','markia-app','agendamentos','financeiro','orcamentos'],learn:['livro-admin-sabedoria','livro-branding-marketing','livro-digital-influencer','livro-youtuber','video-marketing-base','video-branding-base','video-vendas-base','video-conteudo-base'],consult:['consult-markia','mentoria-area','consult-setor','consult-completa','consult-acomp'],mivcast:['svc-logo','svc-vetor','svc-manual','svc-site','svc-loja','svc-lp','svc-market','svc-market40','svc-google','svc-instagram','svc-15artes','svc-facebook','svc-whatsapp','svc-link','svc-linkedin','svc-midiakit','svc-impressos','svc-arte','svc-video','svc-institucional']};
 function recommended(){
  const t=state.profile.theme;
@@ -2229,6 +2239,7 @@ function runPendingAuthAction(){
  if(action.type==='refreshTrends'){route('home');setTimeout(()=>{document.getElementById('tendencias')?.scrollIntoView({behavior:'smooth',block:'start'});refreshMarketTrends()},180);return true}
  if(action.type==='refreshCompetitors'){route('home');setTimeout(()=>{document.getElementById('concorrentes')?.scrollIntoView({behavior:'smooth',block:'start'});refreshCompetitors(!!action.suggest,action.channel||'',action.link||'')},180);return true}
  if(action.type==='diagnosis'){route('home');setTimeout(()=>window.MivEvolution?.openSolution(action.pointId),180);return true}
+ if(action.type==='diagnosisComplete'){route('home');setTimeout(()=>window.MivEvolution?.openComplete(action.step||0),180);return true}
  if(action.type==='paywall'&&action.itemId){route('home');setTimeout(()=>{const item=getItem(action.itemId),escaped=window.CSS&&CSS.escape?CSS.escape(action.itemId):String(action.itemId).replace(/"/g,'\\"');if(item){document.querySelector(`[data-open="${escaped}"]`)?.scrollIntoView({behavior:'smooth',block:'center'});openPaywall(item)}},180);return true}
  if(action.type==='openItem'&&action.itemId){route('home');setTimeout(()=>openItem(action.itemId),180);return true}
  return false;
@@ -2465,7 +2476,7 @@ async function applyAuthSession(session){
   maybeRenderCentral();
  });
 }
-function openAuth(mode='login'){if(!authModal)return;authModal.classList.add('show');document.querySelectorAll('.authPane').forEach(x=>x.classList.remove('active'));document.getElementById(mode==='register'?'authRegister':mode==='forgot'?'authForgot':'authLogin')?.classList.add('active')}
+function openAuth(mode='login'){if(!authModal)return;const notice=document.getElementById('analysisAuthNotice');if(notice)notice.hidden=!['diagnosis','diagnosisComplete'].includes(pendingAuthAction?.type);authModal.classList.add('show');document.querySelectorAll('.authPane').forEach(x=>x.classList.remove('active'));document.getElementById(mode==='register'?'authRegister':mode==='forgot'?'authForgot':'authLogin')?.classList.add('active')}
 function closeAuth(){authModal?.classList.remove('show')}
 document.querySelectorAll('[data-open-auth]').forEach(b=>b.addEventListener('click',()=>{if(mivUser){route('central')}else openAuth(b.dataset.openAuth)}));
 document.querySelectorAll('[data-auth-switch]').forEach(b=>b.addEventListener('click',()=>openAuth(b.dataset.authSwitch)));
