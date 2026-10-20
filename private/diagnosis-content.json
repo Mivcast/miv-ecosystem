@@ -1,0 +1,1206 @@
+[
+  {
+    "id": "base",
+    "title": "Base do Negócio",
+    "desc": "Descubra se existe oportunidade real, se sua empresa vende o que as pessoas procuram e se consegue funcionar de maneira organizada e lucrativa.",
+    "cards": [
+      {
+        "id": "mercado",
+        "title": "Mercado e oportunidade",
+        "qs": [
+          {
+            "id": "base.mercado.demanda",
+            "text": "Existe gente suficiente querendo comprar o que você vende para seu negócio crescer?",
+            "standard": "Teste se o público tem interesse e condições de comprar antes de ampliar o investimento.",
+            "why": "Sem compradores suficientes, a empresa pode gastar com divulgação e estrutura sem conseguir vendas que sustentem o negócio.",
+            "steps": [
+              "Converse com cinco possíveis clientes sobre a última vez que compraram algo semelhante.",
+              "Ofereça um teste pago ou uma proposta real e anote quantos aceitam.",
+              "Compare o volume possível de vendas com os custos mensais."
+            ],
+            "example": "Uma profissional oferece dez vagas de um serviço piloto e mede pedidos e pagamentos, em vez de contar apenas curtidas.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": "base.mercado.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "base.mercado.concorrencia",
+            "text": "Você sabe o que seus concorrentes fazem melhor e onde sua empresa pode se destacar?",
+            "standard": "Compare concorrentes que atendem o mesmo público e encontre uma diferença que você consiga entregar.",
+            "why": "Sem comparar as opções do cliente, você pode repetir uma oferta comum ou disputar apenas pelo menor preço.",
+            "steps": [
+              "Escolha três alternativas que seus clientes realmente consideram.",
+              "Compare preço, prazo, atendimento, conveniência e provas apresentadas.",
+              "Teste uma vantagem sua em uma proposta e pergunte se ela influencia a decisão."
+            ],
+            "example": "Uma assistência percebe que o maior incômodo é ficar sem previsão e testa um orçamento com prazo de diagnóstico informado.",
+            "resources": [
+              "diferenciacao"
+            ],
+            "allowNA": false,
+            "legacyKey": null,
+            "legacyInvert": false
+          },
+          {
+            "id": "base.mercado.mudancas",
+            "text": "Você acompanha as mudanças do mercado que podem ajudar ou prejudicar seu negócio?",
+            "standard": "Mantenha uma rotina curta de observação do mercado ligada às decisões do negócio.",
+            "why": "Mudanças de hábitos, fornecedores ou tecnologia podem diminuir a procura antes que a queda apareça no caixa.",
+            "steps": [
+              "Liste três fontes do setor e uma forma de ouvir clientes.",
+              "Reserve vinte minutos por semana para registrar mudanças de procura ou custos.",
+              "Escolha uma hipótese para testar antes de mudar toda a operação."
+            ],
+            "example": "Uma loja percebe pedidos por retirada rápida e testa o serviço por duas semanas antes de reformar seu espaço.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": "base.mercado.2",
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "produto",
+        "title": "Produto e serviço",
+        "qs": [
+          {
+            "id": "base.produto.necessidade",
+            "text": "Seus produtos ou serviços resolvem problemas ou atendem desejos reais dos clientes?",
+            "standard": "Descreva a situação do cliente e o benefício concreto que seu produto ou serviço entrega.",
+            "why": "Uma oferta sem utilidade percebida exige mais esforço comercial e facilita que o cliente adie a compra.",
+            "steps": [
+              "Pergunte a três compradores o que tentavam resolver ao contratar.",
+              "Escreva uma frase ligando a oferta ao benefício citado.",
+              "Revise a apresentação comercial usando essa situação como ponto de partida."
+            ],
+            "example": "Uma empresa de limpeza apresenta a liberação do imóvel no prazo combinado, além de listar os materiais usados.",
+            "resources": [
+              "oferta"
+            ],
+            "allowNA": false,
+            "legacyKey": "base.produto.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "base.produto.validacao",
+            "text": "Você já confirmou, com clientes reais, que existe interesse em comprar o que oferece?",
+            "standard": "Valide interesse com compras, reservas ou propostas aceitas por clientes reais.",
+            "why": "Elogios de amigos não comprovam disposição de pagar; produzir antes de testar pode gerar estoque parado.",
+            "steps": [
+              "Apresente uma versão pequena da oferta a pessoas do público desejado.",
+              "Informe preço, entrega e condições reais, sem omitir custos.",
+              "Registre compras e recusas e ajuste a oferta antes de ampliar."
+            ],
+            "example": "Um prestador vende um pacote piloto a dois clientes antes de contratar uma ferramenta anual.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": "base.produto.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "base.produto.mix-lucrativo",
+            "text": "Você sabe quais produtos ou serviços vendem melhor e trazem mais lucro?",
+            "standard": "Compare as ofertas considerando vendas, custos de entrega e esforço de atendimento.",
+            "why": "Dar mais atenção ao item que mais fatura pode esconder outro que deixa mais lucro e ocupa menos tempo.",
+            "steps": [
+              "Liste os produtos ou serviços vendidos no último mês.",
+              "Estime receita menos custos variáveis e horas gastas em cada um.",
+              "Priorize uma oferta rentável e revise a que consome recursos sem retorno."
+            ],
+            "example": "Um estúdio compara um serviço de R$ 300 com duas horas de execução a outro de R$ 500 que ocupa o dia inteiro.",
+            "resources": [
+              "ticket"
+            ],
+            "allowNA": false,
+            "legacyKey": "base.produto.2",
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "publico",
+        "title": "Público ideal",
+        "qs": [
+          {
+            "id": "base.publico.cliente-prioritario",
+            "text": "Você sabe quais tipos de clientes têm mais chances de comprar e trazer bons resultados para sua empresa?",
+            "standard": "Reconheça quais clientes combinam com a entrega e geram um relacionamento sustentável.",
+            "why": "Atender públicos muito diferentes sem prioridade dispersa a divulgação e aumenta o custo de conquistar clientes.",
+            "steps": [
+              "Revise dez vendas recentes e identifique perfil, necessidade e valor comprado.",
+              "Compare facilidade de atendimento, margem e repetição de compra.",
+              "Escolha um grupo prioritário para a próxima campanha."
+            ],
+            "example": "Um autônomo percebe que pequenos escritórios contratam manutenção com regularidade e concentra uma oferta nesse grupo.",
+            "resources": [
+              "diferenciacao"
+            ],
+            "allowNA": false,
+            "legacyKey": "base.publico.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "base.publico.motivacoes",
+            "text": "Você entende o que faz seus clientes quererem comprar ou desistirem da compra?",
+            "standard": "Use conversas reais para conhecer o que atrai, preocupa e impede a decisão do cliente.",
+            "why": "Quando você desconhece o motivo de uma recusa, pode dar desconto sem resolver a dúvida que impedia a compra.",
+            "steps": [
+              "Pergunte a compradores o que os fez escolher sua empresa.",
+              "Pergunte a quem recusou uma proposta qual foi o principal motivo.",
+              "Ajuste a mensagem e as respostas comerciais às três dúvidas mais repetidas."
+            ],
+            "example": "Uma escola descobre que a dúvida não era o preço, mas a compatibilidade dos horários, e passa a mostrá-los na oferta.",
+            "resources": [
+              "oferta"
+            ],
+            "allowNA": false,
+            "legacyKey": "base.publico.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "base.publico.jornada-busca",
+            "text": "Você sabe onde seus clientes procuram produtos ou serviços como os seus?",
+            "standard": "Escolha canais com base no caminho que seus compradores percorrem até encontrar uma solução.",
+            "why": "Estar em uma rede pouco usada pelo seu público desperdiça tempo enquanto oportunidades chegam aos concorrentes.",
+            "steps": [
+              "Pergunte aos próximos dez interessados onde pesquisaram antes do contato.",
+              "Anote os canais e os termos mencionados.",
+              "Priorize a presença nos dois caminhos mais frequentes e meça os contatos."
+            ],
+            "example": "Uma oficina percebe que a maioria procura pelo bairro no Google e prioriza seu perfil local.",
+            "resources": [
+              "canais",
+              "local"
+            ],
+            "allowNA": false,
+            "legacyKey": "base.publico.2",
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "preco",
+        "title": "Preço e margem",
+        "qs": [
+          {
+            "id": "base.preco.custo-real",
+            "text": "Você sabe quanto realmente custa vender e entregar cada produto ou serviço?",
+            "standard": "Calcule o custo de vender e entregar uma unidade antes de definir preço ou desconto.",
+            "why": "Custos esquecidos, como taxas, deslocamentos e retrabalho, podem transformar uma venda aparentemente boa em prejuízo.",
+            "steps": [
+              "Some materiais, tempo de execução, taxas, impostos e comissões de uma oferta.",
+              "Inclua uma parcela coerente das despesas da operação.",
+              "Compare o custo total com o preço recebido e atualize quando os custos mudarem."
+            ],
+            "example": "Um serviço de R$ 200 desconta R$ 40 de materiais, R$ 20 de taxas e R$ 80 de execução antes de avaliar a sobra.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": "base.preco.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "base.preco.lucro-suficiente",
+            "text": "Depois de pagar os custos e despesas, sobra lucro suficiente para manter e fazer sua empresa crescer?",
+            "standard": "Separe faturamento, despesas e retirada do dono para enxergar a sobra real do negócio.",
+            "why": "Faturar mais sem sobrar dinheiro pode aumentar o trabalho e reduzir a capacidade de investir ou enfrentar imprevistos.",
+            "steps": [
+              "Feche mensalmente o total recebido e todas as despesas.",
+              "Separe a retirada pessoal dos gastos da empresa.",
+              "Compare a sobra com uma reserva e com os investimentos que pretende fazer."
+            ],
+            "example": "Uma loja que vende R$ 30 mil e gasta R$ 29 mil tem apenas R$ 1 mil de sobra antes de decidir uma nova contratação.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": "base.preco.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "base.preco.valor-preco",
+            "text": "Seus clientes enxergam valor suficiente no que você oferece para aceitar seus preços?",
+            "standard": "Apresente benefícios e evidências que expliquem o preço, sem inventar vantagens.",
+            "why": "Se o cliente não entende a entrega, tende a comparar somente números e pressionar por descontos.",
+            "steps": [
+              "Mostre o que está incluído e quais problemas a entrega evita.",
+              "Inclua um caso, amostra ou demonstração pertinente.",
+              "Anote objeções e ajuste a apresentação antes de reduzir o preço."
+            ],
+            "example": "Um instalador explica garantia, acabamento e limpeza incluídos para permitir comparar propostas equivalentes.",
+            "resources": [
+              "oferta",
+              "diferenciacao"
+            ],
+            "allowNA": false,
+            "legacyKey": null,
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "modelo",
+        "title": "Modelo de negócio",
+        "qs": [
+          {
+            "id": "base.modelo.receitas",
+            "text": "Está claro como sua empresa ganha dinheiro e como pode gerar novas vendas ou receitas recorrentes?",
+            "standard": "Desenhe como cada oferta gera receita e em quais situações faz sentido vender novamente.",
+            "why": "Depender de receitas ocasionais sem entender os custos de cada venda dificulta prever caixa e compromissos.",
+            "steps": [
+              "Liste ofertas, preços, frequência de compra e custos principais.",
+              "Identifique complementos ou acompanhamento que o cliente realmente precise.",
+              "Teste uma opção de continuidade sem forçar assinatura para uma necessidade pontual."
+            ],
+            "example": "Uma empresa que instala equipamentos também oferece manutenção periódica quando isso é útil ao comprador.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": null,
+            "legacyInvert": false
+          },
+          {
+            "id": "base.modelo.responsabilidades",
+            "text": "As tarefas e responsabilidades estão organizadas para o negócio funcionar sem improvisos constantes?",
+            "standard": "Organize as rotinas essenciais mesmo se você trabalha sozinho.",
+            "why": "Quando ninguém sabe quem faz cada tarefa, pedidos ficam sem retorno e o dono precisa resolver urgências o tempo todo.",
+            "steps": [
+              "Liste tarefas de venda, entrega, cobrança e suporte.",
+              "Defina um responsável e uma data ou frequência para cada tarefa.",
+              "Use uma lista compartilhada ou agenda e revise atrasos semanalmente."
+            ],
+            "example": "Um autônomo reserva horários separados para produzir, responder contatos e cobrar serviços concluídos.",
+            "resources": [
+              "equipe-marketing"
+            ],
+            "allowNA": false,
+            "legacyKey": null,
+            "legacyInvert": false
+          },
+          {
+            "id": "base.modelo.capacidade",
+            "text": "Se as vendas aumentarem bastante, sua empresa conseguirá atender os clientes sem perder qualidade ou lucro?",
+            "standard": "Descubra o limite de atendimento e prepare a operação antes de acelerar as vendas.",
+            "why": "Vender acima da capacidade pode causar atrasos, perda de clientes e gastos emergenciais que consomem o lucro.",
+            "steps": [
+              "Meça quantos pedidos ou atendimentos consegue entregar por semana.",
+              "Identifique o recurso que acaba primeiro: tempo, equipe, estoque ou caixa.",
+              "Simule um aumento de demanda e defina o ajuste necessário antes da campanha."
+            ],
+            "example": "Uma confeitaria limita encomendas por data e combina fornecedores extras antes de lançar uma promoção.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": "base.modelo.2",
+            "legacyInvert": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pos",
+    "title": "Posicionamento da Marca",
+    "desc": "Faça sua empresa ser percebida como uma opção profissional, confiável, valorizada e diferente da concorrência.",
+    "cards": [
+      {
+        "id": "diferencial",
+        "title": "Diferencial da marca",
+        "qs": [
+          {
+            "id": "pos.diferencial.motivo-escolha",
+            "text": "Sua empresa oferece algum motivo claro para o cliente escolher você e não o concorrente?",
+            "standard": "Escolha uma vantagem relevante para o cliente que você consiga cumprir sempre.",
+            "why": "Sem um motivo claro de escolha, o cliente vê empresas parecidas e decide por preço ou proximidade.",
+            "steps": [
+              "Liste as razões de escolha citadas por compradores recentes.",
+              "Selecione a vantagem que sua operação entrega melhor.",
+              "Escreva uma frase de posicionamento e teste sua compreensão."
+            ],
+            "example": "Uma empresa de suporte destaca atendimento para sistemas usados por escritórios contábeis, em vez de dizer apenas qualidade.",
+            "resources": [
+              "diferenciacao"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.diferencial.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "pos.diferencial.percepcao",
+            "text": "Seus clientes conseguem perceber esse diferencial antes de comprar?",
+            "standard": "Mostre seu diferencial nos pontos que o cliente consulta antes de decidir.",
+            "why": "Uma diferença que aparece só depois da compra não ajuda novos interessados a escolher sua empresa.",
+            "steps": [
+              "Localize onde o cliente vê sua oferta pela primeira vez.",
+              "Inclua demonstrações, processos ou exemplos que comprovem a vantagem.",
+              "Pergunte a interessados o que entenderam de diferente na sua proposta."
+            ],
+            "example": "Uma oficina mostra seu relatório de diagnóstico antes de pedir aprovação do reparo.",
+            "resources": [
+              "diferenciacao",
+              "branding-digital"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.diferencial.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "pos.diferencial.vantagem-defensavel",
+            "text": "Sua empresa tem alguma vantagem que os concorrentes não conseguem copiar facilmente?",
+            "standard": "Construa uma combinação de conhecimento, processo e relacionamento difícil de reproduzir.",
+            "why": "Uma promoção ou frase fácil de copiar perde força assim que outros negócios fazem a mesma oferta.",
+            "steps": [
+              "Separe vantagens temporárias de competências que sua empresa acumulou.",
+              "Documente um processo que gere qualidade ou conveniência de forma constante.",
+              "Invista no aperfeiçoamento dessa competência e acompanhe a percepção do cliente."
+            ],
+            "example": "Uma indústria combina adaptação de medidas, histórico técnico e reposição compatível em vez de depender só de desconto.",
+            "resources": [
+              "diferenciacao"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.diferencial.2",
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "proposta",
+        "title": "Proposta de valor",
+        "qs": [
+          {
+            "id": "pos.proposta.explicacao-simples",
+            "text": "Você consegue explicar de forma simples por que vale a pena comprar de sua empresa?",
+            "standard": "Explique para quem é a oferta, o benefício principal e o próximo passo em poucas frases.",
+            "why": "Uma apresentação confusa faz o interessado sair sem entender por que deveria continuar a conversa.",
+            "steps": [
+              "Escreva a apresentação sem siglas ou termos internos.",
+              "Peça a alguém do público que explique o que entendeu.",
+              "Revise o trecho que gerou dúvida e use a versão clara na proposta."
+            ],
+            "example": "Uma consultora troca soluções integradas por organizo suas cobranças para você acompanhar o que tem a receber.",
+            "resources": [
+              "oferta"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.proposta.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "pos.proposta.beneficios",
+            "text": "Quando apresenta seus produtos ou serviços, você mostra como eles ajudam o cliente, em vez de apenas falar das características?",
+            "standard": "Ligue cada característica importante a uma utilidade concreta para o cliente.",
+            "why": "Características isoladas exigem que o comprador descubra sozinho como o produto melhora sua vida ou seu trabalho.",
+            "steps": [
+              "Escolha três características usadas na sua divulgação.",
+              "Explique qual esforço, risco ou dificuldade cada uma reduz.",
+              "Inclua uma demonstração ou situação de uso na apresentação."
+            ],
+            "example": "Uma loja explica que o tecido de secagem rápida facilita a rotina de quem treina diariamente.",
+            "resources": [
+              "oferta"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.proposta.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "pos.proposta.relevancia",
+            "text": "Os benefícios que sua empresa oferece são realmente importantes para os clientes que deseja conquistar?",
+            "standard": "Priorize benefícios valorizados pelo público, não apenas os preferidos pela equipe.",
+            "why": "Você pode investir em vantagens caras que não pesam na decisão dos clientes que deseja conquistar.",
+            "steps": [
+              "Peça aos clientes para ordenar três critérios de escolha.",
+              "Compare essas prioridades com o que sua comunicação destaca.",
+              "Reforce o benefício mais importante e teste a resposta na próxima oferta."
+            ],
+            "example": "Um fornecedor descobre que previsibilidade da entrega pesa mais que variedade e reorganiza sua apresentação.",
+            "resources": [
+              "diferenciacao"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.proposta.2",
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "identidade",
+        "title": "Identidade visual",
+        "qs": [
+          {
+            "id": "pos.identidade.profissionalismo",
+            "text": "Sua logo, cores e materiais passam uma imagem profissional e confiável?",
+            "standard": "Faça a marca ser reconhecível e legível nos materiais que realmente usa.",
+            "why": "Materiais ilegíveis ou improvisados podem gerar desconfiança antes de o cliente conhecer a qualidade da entrega.",
+            "steps": [
+              "Teste a logo em tamanho pequeno e em fundo claro e escuro.",
+              "Revise cores, contraste e qualidade de imagens dos materiais principais.",
+              "Corrija primeiro os arquivos usados em propostas e contatos comerciais."
+            ],
+            "example": "Uma profissional refaz um cartão digital cuja fonte pequena impedia ler telefone e especialidade.",
+            "resources": [
+              "identidade"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.identidade.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "pos.identidade.adequacao-publico",
+            "text": "A aparência da sua marca combina com o público que deseja atrair e com os preços que pratica?",
+            "standard": "Alinhe a apresentação visual ao tipo de cliente, à experiência e à faixa de preço.",
+            "why": "Uma aparência incoerente pode afastar o público desejado ou criar expectativas que o serviço não entrega.",
+            "steps": [
+              "Descreva três percepções que deseja transmitir.",
+              "Compare os materiais atuais com essas percepções e com a experiência real.",
+              "Teste uma aplicação revisada com pessoas do público antes de mudar tudo."
+            ],
+            "example": "Uma empresa técnica prioriza clareza e organização na proposta para transmitir segurança, sem usar efeitos que dificultem a leitura.",
+            "resources": [
+              "identidade"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.identidade.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "pos.identidade.padrao-visual",
+            "text": "Sua empresa mantém o mesmo padrão visual nas redes sociais, no site, nos materiais e no espaço físico, quando houver?",
+            "standard": "Use um conjunto pequeno de padrões visuais nas aplicações da marca.",
+            "why": "Variações sem critério entre canais dificultam reconhecer a empresa e fazem a comunicação parecer fragmentada.",
+            "steps": [
+              "Reúna exemplos de redes, propostas, embalagens e espaço físico, quando houver.",
+              "Defina versões de logo, cores e fontes permitidas.",
+              "Crie dois modelos reutilizáveis e entregue os arquivos a quem produz materiais."
+            ],
+            "example": "Uma loja usa o mesmo padrão nas etiquetas, no catálogo de WhatsApp e nos anúncios.",
+            "resources": [
+              "identidade"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.identidade.2",
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "oferta",
+        "title": "Oferta comercial",
+        "qs": [
+          {
+            "id": "pos.oferta.entrega-clara",
+            "text": "Quando apresenta uma oferta, o cliente entende claramente o que vai receber e quais benefícios terá?",
+            "standard": "Deixe explícitos os entregáveis, benefícios e limites antes de fechar a venda.",
+            "why": "Uma oferta incompleta aumenta dúvidas, retrabalho e reclamações sobre o que deveria estar incluído.",
+            "steps": [
+              "Liste o que o cliente recebe e o que não está incluído.",
+              "Informe prazos, etapas e responsabilidades de cada lado.",
+              "Confirme a compreensão em uma proposta curta."
+            ],
+            "example": "Uma agência informa quantidade de peças, rodadas de ajuste e datas de entrega no orçamento.",
+            "resources": [
+              "oferta"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.oferta.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "pos.oferta.condicoes",
+            "text": "Seus preços, formas de pagamento e condições de compra são fáceis de entender?",
+            "standard": "Apresente o valor total e as condições comerciais em linguagem direta.",
+            "why": "Condições confusas podem interromper uma compra pronta ou causar conflitos no pagamento.",
+            "steps": [
+              "Mostre preço, parcelamento e eventuais custos adicionais no mesmo lugar.",
+              "Especifique validade da proposta e condições de entrega ou cancelamento.",
+              "Teste a leitura pedindo a alguém para resumir quanto pagará e quando receberá."
+            ],
+            "example": "Uma loja informa valor à vista, total parcelado e frete antes de pedir a confirmação.",
+            "resources": [
+              "oferta"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.oferta.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "pos.oferta.seguranca-compra",
+            "text": "Suas ofertas ajudam a tirar dúvidas e dão segurança para o cliente decidir comprar?",
+            "standard": "Reduza incertezas com explicações e provas verdadeiras, sem pressionar o cliente.",
+            "why": "Dúvidas sem resposta fazem o interessado adiar a decisão ou escolher uma opção que pareça menos arriscada.",
+            "steps": [
+              "Anote as cinco dúvidas mais comuns antes da compra.",
+              "Inclua respostas, exemplos de entrega e políticas aplicáveis na proposta.",
+              "Defina um próximo passo claro para quem deseja contratar."
+            ],
+            "example": "Uma empresa de reforma mostra etapas do serviço e como trata alterações de escopo antes de assinar o contrato.",
+            "resources": [
+              "oferta"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.oferta.2",
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "presenca",
+        "title": "Presença física e digital",
+        "qs": [
+          {
+            "id": "pos.presenca.descoberta",
+            "text": "Seus clientes conseguem encontrar sua empresa com facilidade nos lugares e canais que costumam usar?",
+            "standard": "Facilite a descoberta nos canais que seu público realmente utiliza.",
+            "why": "Se o cliente não encontra sua empresa quando precisa, a oportunidade pode ir para outra opção sem chegar até você.",
+            "steps": [
+              "Pesquise sua empresa como um cliente novo, pelo nome e pelo serviço.",
+              "Corrija endereço, categoria ou informações ausentes nos canais relevantes.",
+              "Peça a uma pessoa de fora para testar o caminho até o contato."
+            ],
+            "example": "Um prestador percebe que seu nome aparece no Google, mas seu serviço e a região atendida não estão claros.",
+            "resources": [
+              "local",
+              "canais"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.presenca.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "pos.presenca.canais-apresentados",
+            "text": "Seu Google, WhatsApp, redes sociais, site e outros canais importantes estão bem apresentados e facilitam o contato ou a compra?",
+            "standard": "Mantenha os canais prioritários atualizados e com um caminho simples até a compra ou conversa.",
+            "why": "Horários errados, links quebrados e descrições incompletas desperdiçam contatos de pessoas já interessadas.",
+            "steps": [
+              "Escolha os canais que mais recebem interessados.",
+              "Confira descrição, oferta, horários, localização e botões de contato.",
+              "Teste todos os links pelo celular e corrija o que impede a próxima ação."
+            ],
+            "example": "Uma clínica corrige o link de agendamento que levava a um número antigo.",
+            "resources": [
+              "canais"
+            ],
+            "allowNA": false,
+            "legacyKey": "pos.presenca.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "pos.presenca.provas-confianca",
+            "text": "Sua empresa mostra avaliações, depoimentos, trabalhos realizados ou outras provas que ajudam novos clientes a confiar nela?",
+            "standard": "Mostre provas legítimas e autorizadas de que sua empresa consegue entregar o que promete.",
+            "why": "Sem sinais de experiência, novos clientes precisam assumir mais risco para confiar em uma empresa desconhecida.",
+            "steps": [
+              "Selecione trabalhos, avaliações ou casos coerentes com a oferta.",
+              "Solicite autorização antes de usar imagem ou relato identificável de clientes.",
+              "Organize as provas perto da apresentação comercial e atualize as antigas."
+            ],
+            "example": "Um marceneiro apresenta fotos autorizadas de projetos concluídos e explica o tipo de problema resolvido.",
+            "resources": [
+              "branding-digital"
+            ],
+            "allowNA": false,
+            "legacyKey": null,
+            "legacyInvert": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "vendas",
+    "title": "Vendas e Clientes",
+    "desc": "Descubra como atrair mais interessados, vender melhor e fazer os clientes comprarem novamente.",
+    "cards": [
+      {
+        "id": "atracao",
+        "title": "Atração de clientes",
+        "qs": [
+          {
+            "id": "vendas.atracao.constancia",
+            "text": "Sua empresa consegue atrair novos clientes com frequência, sem depender apenas da sorte?",
+            "standard": "Mantenha poucas ações de aquisição com frequência definida e acompanhe os contatos que elas produzem.",
+            "why": "Quando novos clientes chegam só por acaso, a empresa não consegue prever receita e alterna ociosidade e urgências.",
+            "steps": [
+              "Escolha um canal usado pelo seu público e uma ação que consiga repetir.",
+              "Defina a rotina semanal e quem fará o acompanhamento.",
+              "Registre interessados e vendas por quatro semanas antes de ampliar o esforço."
+            ],
+            "example": "Um prestador publica casos toda semana e combina visitas a parceiros, anotando os contatos recebidos.",
+            "resources": [
+              "local",
+              "parcerias",
+              "canais"
+            ],
+            "allowNA": false,
+            "legacyKey": "vendas.atracao.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "vendas.atracao.origem-vendas",
+            "text": "Você sabe quais formas de divulgação realmente trazem clientes e vendas?",
+            "standard": "Relacione divulgação a contatos e compras, mesmo com um registro simples.",
+            "why": "Sem saber a origem das vendas, você pode aumentar gastos no canal que gera mais movimento e menos resultado.",
+            "steps": [
+              "Pergunte em cada novo contato como a pessoa chegou até você.",
+              "Registre a origem junto do orçamento e da venda.",
+              "Compare mensalmente custo, quantidade de compradores e receita por origem."
+            ],
+            "example": "Uma loja descobre que uma parceria gera menos contatos que anúncios, mas mais compras com boa margem.",
+            "resources": [
+              "canais"
+            ],
+            "allowNA": false,
+            "legacyKey": "vendas.atracao.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "vendas.atracao.diversificacao",
+            "text": "Sua empresa tem mais de uma maneira de conquistar clientes ou depende demais de um único canal?",
+            "standard": "Construa uma segunda fonte de clientes sem abandonar o que já funciona.",
+            "why": "Depender de um único canal deixa a receita vulnerável a mudanças de alcance, preço de mídia ou regras da plataforma.",
+            "steps": [
+              "Calcule qual parte das vendas vem do canal principal.",
+              "Escolha uma fonte complementar compatível com o público e com a equipe.",
+              "Teste por um período e compare clientes conquistados antes de dividir mais recursos."
+            ],
+            "example": "Uma empresa dependente de anúncios testa indicações de parceiros como fonte adicional de propostas.",
+            "resources": [
+              "parcerias",
+              "local"
+            ],
+            "allowNA": false,
+            "legacyKey": "vendas.atracao.2",
+            "legacyInvert": true
+          }
+        ]
+      },
+      {
+        "id": "conteudo",
+        "title": "Conteúdo e campanhas",
+        "qs": [
+          {
+            "id": "vendas.conteudo.objetivo-conteudo",
+            "text": "Você sabe o que deseja conseguir com os conteúdos que publica, como atrair clientes, gerar confiança ou vender?",
+            "standard": "Dê uma função principal a cada conteúdo e escolha um sinal para acompanhá-la.",
+            "why": "Publicar sem objetivo consome tempo e dificulta saber se a comunicação ajudou o negócio.",
+            "steps": [
+              "Defina se a publicação deve apresentar, esclarecer, demonstrar ou convidar para comprar.",
+              "Escolha a dúvida ou necessidade do público que será abordada.",
+              "Acompanhe o sinal compatível: visitas, perguntas, pedidos ou vendas, e não só curtidas."
+            ],
+            "example": "Uma empresa publica uma comparação de modelos para reduzir dúvidas repetidas antes do orçamento.",
+            "resources": [
+              "calendario"
+            ],
+            "allowNA": false,
+            "legacyKey": "vendas.conteudo.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "vendas.conteudo.planejamento",
+            "text": "Sua empresa planeja campanhas e promoções ou apenas publica conteúdos sem uma estratégia definida?",
+            "standard": "Planeje uma sequência de comunicação em torno de uma oportunidade e de um objetivo.",
+            "why": "Posts isolados podem chegar atrasados às datas importantes e não criar repetição suficiente para uma oferta ser lembrada.",
+            "steps": [
+              "Escolha uma campanha e a data em que precisa estar pronta.",
+              "Distribua conteúdos de apresentação, explicação, prova e convite ao longo do período.",
+              "Reserve tempo para produção e acompanhe respostas durante a campanha."
+            ],
+            "example": "Uma papelaria prepara a campanha de volta às aulas com antecedência, incluindo lista, kits e prazo de retirada.",
+            "resources": [
+              "calendario"
+            ],
+            "allowNA": false,
+            "legacyKey": "vendas.conteudo.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "vendas.conteudo.argumentos",
+            "text": "Seus conteúdos e anúncios mostram motivos convincentes para as pessoas se interessarem pelo que você vende?",
+            "standard": "Use razões específicas e comprováveis que conectem a oferta à situação do público.",
+            "why": "Uma divulgação que mostra apenas o produto pode não explicar por que ele interessa ou para quem é adequado.",
+            "steps": [
+              "Escolha uma pergunta ou objeção que aparece nas vendas.",
+              "Mostre a utilidade da oferta com demonstração ou exemplo real.",
+              "Inclua uma chamada coerente para conhecer detalhes ou conversar."
+            ],
+            "example": "Uma loja de móveis demonstra medidas e usos de uma mesa para quem trabalha em espaços pequenos.",
+            "resources": [
+              "calendario",
+              "oferta"
+            ],
+            "allowNA": false,
+            "legacyKey": "vendas.conteudo.2",
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "atendimento",
+        "title": "Atendimento e WhatsApp",
+        "qs": [
+          {
+            "id": "vendas.atendimento.rapidez",
+            "text": "Sua empresa responde rapidamente às pessoas interessadas para não perder oportunidades de venda?",
+            "standard": "Defina um tempo possível de resposta e deixe claro quando haverá atendimento.",
+            "why": "Um interessado que espera muito pode contratar outro fornecedor antes de receber sua resposta.",
+            "steps": [
+              "Observe por três dias quanto tempo leva para responder novos contatos.",
+              "Estabeleça horários e um responsável, ou blocos de atendimento se trabalha sozinho.",
+              "Use uma mensagem inicial informando o prazo e acompanhe conversas que ficaram pendentes."
+            ],
+            "example": "Um profissional responde o recebimento e informa que enviará o orçamento até o fim da tarde.",
+            "resources": [
+              "whatsapp"
+            ],
+            "allowNA": false,
+            "legacyKey": "vendas.atendimento.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "vendas.atendimento.escuta",
+            "text": "Seu atendimento procura entender o que o cliente precisa antes de oferecer um produto ou serviço?",
+            "standard": "Faça perguntas breves para entender a situação antes de sugerir uma solução.",
+            "why": "Oferecer antes de entender a necessidade pode parecer pressão e levar à indicação de algo inadequado.",
+            "steps": [
+              "Pergunte o que a pessoa precisa resolver, para quando e o que já tentou.",
+              "Confirme em uma frase se entendeu a prioridade.",
+              "Apresente uma opção pertinente e explique por que ela se encaixa no caso."
+            ],
+            "example": "Uma loja pergunta o ambiente e as medidas antes de indicar um ar-condicionado.",
+            "resources": [
+              "whatsapp",
+              "vendas-tecnicas"
+            ],
+            "allowNA": false,
+            "legacyKey": null,
+            "legacyInvert": false
+          },
+          {
+            "id": "vendas.atendimento.contatos",
+            "text": "Você organiza os contatos recebidos para não esquecer clientes que precisam de uma resposta ou retorno?",
+            "standard": "Organize cada interessado com status e próxima ação definida.",
+            "why": "Conversas sem registro somem entre mensagens e fazem a empresa perder vendas que já estavam em andamento.",
+            "steps": [
+              "Use etiquetas, planilha ou sistema para registrar nome, necessidade e origem.",
+              "Marque o próximo retorno com data e responsável.",
+              "Revise diariamente quem aguarda resposta, proposta ou confirmação."
+            ],
+            "example": "Uma equipe separa contatos em orçamento solicitado, proposta enviada e retorno agendado.",
+            "resources": [
+              "whatsapp"
+            ],
+            "allowNA": false,
+            "legacyKey": "vendas.atendimento.2",
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "processo",
+        "title": "Processo comercial",
+        "qs": [
+          {
+            "id": "vendas.processo.etapas-venda",
+            "text": "Sua empresa tem uma forma organizada de atender interessados, apresentar propostas e fechar vendas?",
+            "standard": "Defina um caminho simples do primeiro contato ao fechamento.",
+            "why": "Sem etapas comerciais, cada pessoa atende de um jeito e fica difícil descobrir onde os interessados desistem.",
+            "steps": [
+              "Liste as etapas mais comuns: contato, entendimento, proposta e decisão.",
+              "Determine o que precisa acontecer para avançar em cada uma.",
+              "Registre quantos interessados chegam e saem de cada etapa semanalmente."
+            ],
+            "example": "Uma empresa percebe que muitas conversas não chegam a receber proposta e corrige esse intervalo.",
+            "resources": [
+              "vendas-tecnicas"
+            ],
+            "allowNA": false,
+            "legacyKey": "vendas.processo.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "vendas.processo.retorno-orcamento",
+            "text": "Você volta a conversar com pessoas que pediram orçamento, mas ainda não compraram?",
+            "standard": "Combine retornos úteis e respeitosos com quem demonstrou interesse.",
+            "why": "Não retomar um orçamento pode significar perder uma venda por uma dúvida simples que o cliente não resolveu sozinho.",
+            "steps": [
+              "Pergunte ao enviar a proposta quando seria adequado retomar.",
+              "No retorno, cite a necessidade e ofereça esclarecer um ponto específico.",
+              "Registre a decisão e encerre os contatos se a pessoa não quiser continuidade."
+            ],
+            "example": "Um fornecedor pergunta se o comprador precisa comparar prazos ou esclarecer itens do orçamento.",
+            "resources": [
+              "whatsapp",
+              "vendas-tecnicas"
+            ],
+            "allowNA": false,
+            "legacyKey": "vendas.processo.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "vendas.processo.motivos-perda",
+            "text": "Você sabe por que alguns clientes desistem da compra e como melhorar suas chances de fechar a venda?",
+            "standard": "Classifique os motivos reais de desistência e corrija o mais frequente.",
+            "why": "Atribuir toda recusa ao preço pode provocar descontos desnecessários e manter problemas de prazo, clareza ou atendimento.",
+            "steps": [
+              "Registre o motivo informado após propostas perdidas, sem insistir em obter uma resposta.",
+              "Agrupe casos por preço, adequação, confiança, prazo ou atendimento.",
+              "Teste uma mudança relacionada ao motivo predominante e compare novas propostas."
+            ],
+            "example": "Uma empresa descobre que perde pedidos por demora na confirmação de estoque, não por preço.",
+            "resources": [
+              "vendas-tecnicas"
+            ],
+            "allowNA": false,
+            "legacyKey": null,
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "retencao",
+        "title": "Pós-venda e recompra",
+        "qs": [
+          {
+            "id": "vendas.retencao.satisfacao",
+            "text": "Você procura saber se os clientes ficaram satisfeitos depois da compra?",
+            "standard": "Crie um contato de pós-venda para verificar se a entrega atendeu ao combinado.",
+            "why": "Problemas não percebidos depois da entrega podem virar avaliações negativas ou impedir a próxima compra.",
+            "steps": [
+              "Escolha um momento em que o cliente já tenha usado o produto ou serviço.",
+              "Pergunte se recebeu o esperado e se precisa de alguma ajuda.",
+              "Registre problemas, encaminhe a solução e confirme a resolução."
+            ],
+            "example": "Uma assistência confirma se o equipamento voltou a funcionar bem alguns dias após o reparo.",
+            "resources": [
+              "followup"
+            ],
+            "allowNA": false,
+            "legacyKey": "vendas.retencao.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "vendas.retencao.relacionamento",
+            "text": "Sua empresa mantém contato com clientes antigos para incentivar novas compras ou contratações?",
+            "standard": "Mantenha contato com relevância e autorização, respeitando o ciclo natural de compra.",
+            "why": "Quando o cliente não lembra da empresa no momento da próxima necessidade, você volta a gastar para conquistá-lo.",
+            "steps": [
+              "Separe clientes por tipo de compra e prazo provável de nova necessidade.",
+              "Combine quais lembretes ou novidades gostariam de receber.",
+              "Envie uma mensagem útil no momento adequado e facilite deixar de receber."
+            ],
+            "example": "Um prestador avisa a proximidade da manutenção recomendada, sem mandar ofertas toda semana.",
+            "resources": [
+              "followup"
+            ],
+            "allowNA": false,
+            "legacyKey": "vendas.retencao.2",
+            "legacyInvert": false
+          },
+          {
+            "id": "vendas.retencao.indicacoes",
+            "text": "Você incentiva clientes satisfeitos a deixar avaliações, recomendar ou indicar sua empresa?",
+            "standard": "Facilite recomendações e avaliações legítimas depois de confirmar a satisfação.",
+            "why": "Clientes satisfeitos podem querer indicar, mas desistir por não encontrar um caminho simples ou não serem convidados.",
+            "steps": [
+              "Escolha um ponto da jornada em que o cliente já demonstrou satisfação.",
+              "Disponibilize um link de avaliação ou contato para encaminhar a conhecidos.",
+              "Agradeça o retorno sem condicionar benefícios a avaliações positivas."
+            ],
+            "example": "Uma loja envia o link de avaliação após resolver uma dúvida e informa que qualquer opinião sincera é bem-vinda.",
+            "resources": [
+              "followup"
+            ],
+            "allowNA": false,
+            "legacyKey": null,
+            "legacyInvert": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cres",
+    "title": "Crescimento",
+    "desc": "Saiba o que melhorar primeiro para aumentar o lucro, corrigir problemas e preparar sua empresa para crescer.",
+    "cards": [
+      {
+        "id": "indicadores",
+        "title": "Indicadores e desempenho",
+        "qs": [
+          {
+            "id": "cres.indicadores.vendas-lucro-conversao",
+            "text": "Você sabe quanto sua empresa vende, quanto realmente lucra e quantos interessados se tornam clientes?",
+            "standard": "Acompanhe faturamento, lucro e proporção de interessados que compram no mesmo período.",
+            "why": "O faturamento pode subir enquanto o lucro cai, e a falta de conversão pode ficar escondida atrás do volume de contatos.",
+            "steps": [
+              "Registre vendas e faturamento de cada mês.",
+              "Subtraia custos e despesas para calcular a sobra e registre o número de interessados.",
+              "Divida compradores por interessados e compare os três números mensalmente."
+            ],
+            "example": "Com 100 interessados e 10 vendas, a conversão é 10%. Chegar a 15 vendas com os mesmos contatos representa 50% mais vendas se o valor médio for mantido.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": "cres.indicadores.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "cres.indicadores.rentabilidade-origem",
+            "text": "Você sabe quais produtos, serviços e formas de divulgação trazem os melhores resultados financeiros?",
+            "standard": "Compare resultado financeiro por oferta e origem, e não apenas o total vendido.",
+            "why": "Uma oferta popular ou um canal movimentado pode consumir a margem com descontos, taxas e esforço de execução.",
+            "steps": [
+              "Separe receita e custos variáveis por produto ou serviço.",
+              "Relacione vendas ao canal que trouxe o cliente e ao custo de divulgação.",
+              "Revise ou reduza o investimento nas combinações com pouca sobra."
+            ],
+            "example": "Uma indústria vê que um produto com maior faturamento exige fretes e retrabalho que reduzem seu ganho real.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": null,
+            "legacyInvert": false
+          },
+          {
+            "id": "cres.indicadores.metas",
+            "text": "Sua empresa tem metas claras e acompanha os resultados para saber se está melhorando?",
+            "standard": "Escolha poucas metas ligadas à realidade atual e acompanhe sua evolução.",
+            "why": "Sem uma meta e uma revisão periódica, a equipe pode trabalhar bastante sem perceber se o resultado melhorou.",
+            "steps": [
+              "Registre o resultado atual de vendas, lucro ou conversão.",
+              "Defina uma melhoria possível e um prazo, com a ação que pretende testar.",
+              "Revise semanalmente o andamento e ajuste a ação, não só a meta."
+            ],
+            "example": "Uma empresa acompanha propostas convertidas por semana para verificar se um novo roteiro está ajudando.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": null,
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "gargalos",
+        "title": "Gargalos atuais",
+        "qs": [
+          {
+            "id": "cres.gargalos.principal-limite",
+            "text": "Você sabe qual é o principal problema que impede sua empresa de crescer mais?",
+            "standard": "Encontre o ponto da jornada que mais impede o próximo avanço.",
+            "why": "Tentar resolver tudo ao mesmo tempo distribui recursos e pode deixar intacto o problema que mais limita o resultado.",
+            "steps": [
+              "Compare volume de interessados, vendas, capacidade de entrega e margem.",
+              "Identifique onde existe maior perda ou fila de trabalho.",
+              "Escolha um único problema para uma primeira intervenção com prazo."
+            ],
+            "example": "Uma empresa tem procura suficiente, mas demora a enviar orçamentos; prioriza esse processo antes de anunciar mais.",
+            "resources": [
+              "vendas-tecnicas"
+            ],
+            "allowNA": false,
+            "legacyKey": "cres.gargalos.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "cres.gargalos.localizar-perda",
+            "text": "Você consegue identificar se está perdendo resultados por falta de clientes, poucas vendas, custos altos ou problemas na operação?",
+            "standard": "Separe perdas de atração, venda, custo e entrega antes de escolher uma solução.",
+            "why": "Investir em publicidade para uma operação que entrega com prejuízo pode aumentar o problema em vez de resolvê-lo.",
+            "steps": [
+              "Reúna números do último mês: contatos, propostas, vendas, despesas e atrasos.",
+              "Compare a etapa que tem dificuldade com a anterior e a seguinte.",
+              "Converse com quem executa a rotina para confirmar a causa provável."
+            ],
+            "example": "Uma loja com bom movimento e poucas compras investiga estoque e abordagem antes de ampliar a divulgação.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": null,
+            "legacyInvert": false
+          },
+          {
+            "id": "cres.gargalos.prioridade-plano",
+            "text": "Você sabe quais problemas precisa resolver primeiro e tem um plano para isso?",
+            "standard": "Transforme o problema principal em uma ação com dono, prazo e critério de resultado.",
+            "why": "Uma lista de problemas sem ordem costuma gerar tarefas urgentes, mas poucas correções que melhoram o negócio.",
+            "steps": [
+              "Liste até cinco problemas e estime impacto, urgência e esforço.",
+              "Escolha o de maior impacto que consiga começar agora.",
+              "Registre a tarefa, o responsável e o número ou fato que mostrará a melhoria."
+            ],
+            "example": "Um autônomo escolhe padronizar propostas nesta semana e acompanha se reduz o tempo de envio.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": "cres.gargalos.2",
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "ticket",
+        "title": "Ticket e margem",
+        "qs": [
+          {
+            "id": "cres.ticket.opcoes-valor",
+            "text": "Você oferece opções mais completas ou de maior valor para clientes que desejam algo melhor?",
+            "standard": "Ofereça uma versão ampliada quando ela entregar uma vantagem real para o cliente.",
+            "why": "Sem opções de maior valor, clientes que precisam de uma entrega mais completa podem buscá-la em outra empresa.",
+            "steps": [
+              "Identifique necessidades adicionais que compradores já perguntam.",
+              "Monte duas versões com diferenças claras de entrega e preço.",
+              "Compare aceitação, custo e lucro antes de expandir o pacote."
+            ],
+            "example": "Um serviço oferece atendimento pontual ou acompanhamento com revisões, deixando claros os limites de cada opção.",
+            "resources": [
+              "ticket"
+            ],
+            "allowNA": true,
+            "legacyKey": "cres.ticket.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "cres.ticket.complementos",
+            "text": "Você sugere produtos ou serviços complementares que podem ajudar o cliente e aumentar o valor da compra?",
+            "standard": "Sugira itens complementares de acordo com a necessidade, sem empurrar produtos.",
+            "why": "Deixar de indicar um complemento útil pode reduzir a qualidade do uso do produto e desperdiçar uma venda pertinente.",
+            "steps": [
+              "Mapeie combinações que clientes costumam precisar juntas.",
+              "Explique a utilidade do complemento e o preço separado.",
+              "Registre aceitação e margem para evitar pacotes sem lucro."
+            ],
+            "example": "Uma loja oferece o suporte compatível com a TV e pergunta se o comprador já possui um.",
+            "resources": [
+              "ticket"
+            ],
+            "allowNA": true,
+            "legacyKey": "cres.ticket.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "cres.ticket.ganho-por-venda",
+            "text": "Você analisa quais ofertas dão mais lucro e como melhorar seus ganhos em cada venda?",
+            "standard": "Acompanhe quanto sobra por oferta e ajuste combinações, preço ou execução.",
+            "why": "Descontos e pacotes podem elevar o valor recebido, mas diminuir o lucro em cada atendimento.",
+            "steps": [
+              "Compare preço, custo variável e tempo das principais ofertas.",
+              "Identifique desperdícios, descontos e etapas que consomem margem.",
+              "Teste um ajuste e confira se a sobra melhorou sem prejudicar a experiência."
+            ],
+            "example": "Uma empresa troca um combo com desconto excessivo por um pacote com serviço complementar de baixo custo.",
+            "resources": [
+              "ticket"
+            ],
+            "allowNA": false,
+            "legacyKey": "cres.ticket.2",
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "expansao",
+        "title": "Expansão",
+        "qs": [
+          {
+            "id": "cres.expansao.novas-frentes",
+            "text": "Você já identificou novos tipos de clientes, regiões ou canais onde poderia vender mais?",
+            "standard": "Escolha uma oportunidade adjacente onde exista necessidade e capacidade de compra.",
+            "why": "Entrar em muitos mercados sem uma hipótese clara pode espalhar esforços e tornar o atendimento mais caro.",
+            "steps": [
+              "Liste pedidos recebidos de públicos ou regiões que ainda atende pouco.",
+              "Escolha um segmento com necessidade próxima à dos clientes atuais.",
+              "Teste poucas propostas e compare interesse, custo e margem antes de ampliar."
+            ],
+            "example": "Um fornecedor testa entregas em uma cidade vizinha com clientes interessados antes de abrir uma unidade.",
+            "resources": [
+              "parcerias"
+            ],
+            "allowNA": true,
+            "legacyKey": "cres.expansao.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "cres.expansao.estrutura-caixa",
+            "text": "Sua empresa tem estrutura e dinheiro suficientes para crescer sem prejudicar o atendimento ou a qualidade?",
+            "standard": "Simule recursos e dinheiro necessários para suportar a nova demanda.",
+            "why": "Crescer exige financiar estoque, equipe e prazos de recebimento; uma expansão sem caixa pode comprometer a operação atual.",
+            "steps": [
+              "Estime volume adicional, horas, materiais e necessidade de equipe.",
+              "Compare quando pagará os custos e quando receberá pelas vendas.",
+              "Reserve uma margem de segurança e defina limites para iniciar a expansão."
+            ],
+            "example": "Uma empresa calcula o intervalo entre pagar insumos e receber clientes antes de aceitar um contrato maior.",
+            "resources": [],
+            "allowNA": true,
+            "legacyKey": "cres.expansao.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "cres.expansao.avaliacao-investimento",
+            "text": "Antes de investir em uma nova oportunidade, você avalia os custos, os riscos e as chances de retorno?",
+            "standard": "Avalie o investimento com cenários e um teste pequeno antes de assumir gastos duradouros.",
+            "why": "Investir sem comparar riscos e retorno pode prender dinheiro em uma frente que demora a se pagar.",
+            "steps": [
+              "Some implantação, manutenção e capital necessário para operar.",
+              "Estime vendas e margem em cenários conservador e favorável.",
+              "Defina um teste, um limite de perda e a condição para continuar."
+            ],
+            "example": "Uma profissional aluga uma sala por períodos antes de assumir um contrato anual em outro bairro.",
+            "resources": [],
+            "allowNA": true,
+            "legacyKey": null,
+            "legacyInvert": false
+          }
+        ]
+      },
+      {
+        "id": "inovacao",
+        "title": "Inovação e tendências",
+        "qs": [
+          {
+            "id": "cres.inovacao.acompanhar-novidades",
+            "text": "Você acompanha as novidades do seu mercado para não ficar para trás dos concorrentes?",
+            "standard": "Acompanhe novidades com foco em necessidades do cliente e decisões possíveis.",
+            "why": "Ignorar mudanças de preferência ou de entrega pode fazer uma oferta perder espaço sem que a empresa perceba a tempo.",
+            "steps": [
+              "Selecione fontes confiáveis do setor e observe perguntas de clientes.",
+              "Registre uma mudança de comportamento e sua possível consequência.",
+              "Discuta se ela exige ajuste agora, um teste ou apenas acompanhamento."
+            ],
+            "example": "Uma empresa percebe pedidos por entrega acompanhada online e avalia como informar etapas do pedido.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": "cres.inovacao.0",
+            "legacyInvert": false
+          },
+          {
+            "id": "cres.inovacao.testar-tecnologia",
+            "text": "Você testa novas ferramentas, inteligência artificial ou automações para economizar tempo e melhorar o trabalho?",
+            "standard": "Teste tecnologia em uma tarefa delimitada e compare tempo, custo e qualidade.",
+            "why": "Adotar ferramentas por novidade pode aumentar custos; ignorar tarefas repetitivas também desperdiça tempo de trabalho.",
+            "steps": [
+              "Escolha uma tarefa repetitiva e meça quanto tempo ela ocupa hoje.",
+              "Teste a ferramenta com dados fictícios ou não sensíveis e revise o resultado.",
+              "Adote somente se houver ganho e alguém puder acompanhar falhas."
+            ],
+            "example": "Uma empresa testa lembretes de orçamento e compara o tempo economizado sem automatizar mensagens para todos os contatos.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": "cres.inovacao.1",
+            "legacyInvert": false
+          },
+          {
+            "id": "cres.inovacao.revisar-entrega",
+            "text": "Você revisa seus produtos, serviços e formas de trabalhar para continuar atendendo bem seus clientes?",
+            "standard": "Revise periodicamente o que entrega e como trabalha usando resultados e feedback.",
+            "why": "Processos e ofertas que funcionavam antes podem ficar caros ou deixar de atender à rotina atual dos clientes.",
+            "steps": [
+              "Marque uma revisão trimestral das ofertas e dos processos principais.",
+              "Compare reclamações, pedidos novos, custos e resultados do período.",
+              "Escolha uma melhoria pequena, teste e registre o que mudou."
+            ],
+            "example": "Um prestador reorganiza a entrega de relatórios após perceber que clientes precisavam de um resumo mais simples.",
+            "resources": [],
+            "allowNA": false,
+            "legacyKey": "cres.inovacao.2",
+            "legacyInvert": false
+          }
+        ]
+      }
+    ]
+  }
+]

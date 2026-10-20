@@ -6,6 +6,7 @@
 <title>MIV Ecosystem — Vitrine Inteligente</title>
 <meta name="description" content="Ecossistema empresarial adaptável por nicho com estratégias, análises, ferramentas e inteligência artificial.">
 <link rel="stylesheet" href="styles.css?v=15.1">
+<link rel="stylesheet" href="evolution.css?v=8">
 </head>
 <body data-theme="clean">
 <header class="floating-header">
@@ -13,9 +14,10 @@
     <button class="brand" data-route="home"><span class="brand-mark">M</span><span class="brand-name">MIV <small>ECOSYSTEM</small></span></button>
     <nav>
       <button data-route="home">Início</button>
-      <button data-scroll="marketing">Estratégias</button>
       <button data-scroll="analises">Análises</button>
+      <button data-scroll="marketing">Estratégias de Branding e Marketing</button>
       <button data-scroll="ferramentas">Ferramentas</button>
+      <button data-scroll="consultoria">Contrate-nos</button>
       <button data-scroll="aprender">Aprender</button>
       <button data-scroll="planos">Planos</button>
     </nav>
@@ -30,31 +32,10 @@
     <div class="hero-overlay"></div>
     <div class="hero-inner">
       <span class="eyebrow hero-eyebrow">UM ECOSSISTEMA PARA QUEM QUER FAZER O NEGÓCIO EVOLUIR</span>
-      <h1 id="heroTitle">Tudo para profissionalizar, divulgar, vender e fazer seu negócio crescer.</h1>
-      <p id="heroText">Estratégias, ferramentas, análises, conteúdos e inteligência reunidos em um só lugar — e organizados de acordo com o seu nicho.</p>
-      <div class="hero-actions"><button class="primary metallic-primary" id="focusNiche">Encontrar soluções para meu nicho</button><button class="glass" data-scroll="recomendados">Explorar vitrine</button></div>
+      <h1 id="heroTitle">Descubra o que já está certo, o que precisa melhorar e o que fazer agora.</h1>
+      <p id="heroText">Você não precisa dominar marketing para tomar boas decisões. Avalie sua empresa por áreas, compare com o jeito certo de fazer e descubra quais pontos realmente merecem sua atenção agora.</p>
+      <div class="hero-actions"><button class="primary metallic-primary" id="focusNiche">Encontrar soluções para meu nicho</button><button class="glass" data-scroll="marketing">Explorar vitrine</button></div>
       <div class="hero-tags"><span>✦ Estratégias aplicáveis</span><span>◎ Análises profundas</span><span>◈ MARK em todas as páginas</span></div>
-    </div>
-  </section>
-
-  <section class="wrap help-bridge" id="como-ajuda">
-    <div class="help-grid help-showcase">
-      <div class="help-steps">
-        <span class="eyebrow">COMO NOSSO ECOSSISTEMA IRÁ TE AJUDAR</span>
-        <h2>Ampla biblioteca de estratégias e conhecimentos para o seu nicho</h2>
-        <p class="help-intro">O sistema cruza nicho, objetivos, canais, vendas, marca e estrutura para transformar dúvida em prioridade prática, com nossa biblioteca gigante de conhecimento, metodologias dos nossos consultores e fontes externas altamente relevantes e confiáveis.</p>
-      </div>
-      <nav class="help-circles ecosystem-links" aria-label="Áreas do ecossistema">
-        <a href="#marketing"><span class="help-circle-img icon-circle marketing">✦</span><h3>Estratégias de marketing</h3><p>Campanhas, canais e ações para divulgar melhor.</p></a>
-        <a href="#tendencias"><span class="help-circle-img icon-circle trends">↗</span><h3>Tendências do seu mercado</h3><p>Notícias recentes com ideias de publicação.</p></a>
-        <a href="#concorrentes"><span class="help-circle-img icon-circle competitors">⌕</span><h3>Concorrentes para se inspirar</h3><p>Canais e movimentos públicos para observar.</p></a>
-        <a href="#marca"><span class="help-circle-img icon-circle brand">◇</span><h3>Posicionamento e marca</h3><p>Autoridade, identidade e percepção profissional.</p></a>
-        <a href="#marketing"><span class="help-circle-img icon-circle sales">＋</span><h3>Vendas e crescimento</h3><p>Conversão, recompra, ticket e relacionamento.</p></a>
-        <a href="#ferramentas"><span class="help-circle-img icon-circle tools">◫</span><h3>Ferramentas</h3><p>Recursos práticos para rotina e produtividade.</p></a>
-        <a href="#analises"><span class="help-circle-img icon-circle analysis">◎</span><h3>Análises</h3><p>Auditorias para decidir o que melhorar primeiro.</p></a>
-        <a href="#aprender"><span class="help-circle-img icon-circle learn">▣</span><h3>Aprendizados</h3><p>Conteúdos para estudar e aplicar no negócio.</p></a>
-        <a href="#mivcast"><span class="help-circle-img icon-circle execution">◆</span><h3>Execução da MivCast</h3><p>Serviços para quem prefere delegar a produção.</p></a>
-      </nav>
     </div>
   </section>
 
@@ -62,17 +43,46 @@
     <div class="niche-heading">
       <span class="eyebrow">UMA EXPERIÊNCIA QUE MUDA COM VOCÊ</span>
       <h2>Qual é o seu nicho?</h2>
-      <p>Pesquise sua atividade ou escolha uma das áreas abaixo. A vitrine, as recomendações, as ferramentas e até o visual do ecossistema se adaptam.</p>
     </div>
-    <div class="niche-search-wrap">
+    <div class="niche-discovery">
+      <p>Pesquise sua atividade ou escolha uma das áreas abaixo. A vitrine, as recomendações, as ferramentas e até o visual do ecossistema se adaptam.</p>
+      <div class="niche-search-wrap">
       <span>⌕</span>
       <input id="nicheSearch" list="nicheList" placeholder="Digite: cardiologista, academia, loja de roupas, advogado, restaurante...">
       <datalist id="nicheList"></datalist>
       <button id="applyNiche">Aplicar</button>
+      </div>
     </div>
     <div id="nicheGroups" class="niche-groups"></div>
     <div class="current-niche" id="currentNiche"><span>Experiência atual</span><strong>Visão geral para negócios</strong><small>Tema clean neutro</small></div>
   </section>
+
+  <section class="wrap help-bridge" id="como-ajuda">
+    <div class="help-grid help-showcase">
+      <div class="help-steps">
+        <span class="eyebrow">COMO NOSSO ECOSSISTEMA IRÁ TE AJUDAR</span>
+        <h2>Quatro caminhos para fazer seu negócio evoluir.</h2>
+      </div>
+      <nav class="help-circles ecosystem-links" aria-label="Áreas do ecossistema">
+        <a href="#analises"><img class="pillar-image" src="assets/pillars/analises.png" alt="" width="877" height="723" loading="lazy"><h3>Análises empresariais</h3><p>Entenda cada problema e encontre o próximo passo.</p></a>
+        <a href="#marketing"><img class="pillar-image" src="assets/pillars/estrategias.png" alt="" width="861" height="744" loading="lazy"><h3>Estratégias de Branding e Marketing</h3><p>Posicionamento, divulgação e vendas para o seu nicho.</p></a>
+        <a href="#ferramentas"><img class="pillar-image" src="assets/pillars/ferramentas.png" alt="" width="883" height="739" loading="lazy"><h3>Ferramentas e recursos</h3><p>Leve suas decisões para a rotina do negócio.</p></a>
+        <a href="#consultoria"><img class="pillar-image" src="assets/pillars/especialistas.png" alt="" width="871" height="765" loading="lazy"><h3>Contrate nossos especialistas</h3><p>Conte com orientação para avançar com confiança.</p></a>
+      </nav>
+    </div>
+  </section>
+
+  <section class="wrap analysis" id="analises">
+    <div class="analysisTop">
+      <div><span class="eyebrow">ANÁLISES EMPRESARIAIS</span><h2>Descubra o que está funcionando, o que precisa melhorar e o que fazer primeiro.</h2><p>Avalie cada ponto nos cards ou responda às 60 perguntas das quatro etapas na análise completa.</p></div>
+      <div class="fullAnalysis">
+        <div class="full-top"><small>ANÁLISE COMPLETA</small><button class="heart analysis-heart" data-analysis-fav="completa">♡</button></div>
+        <strong>Todas as quatro etapas</strong><span>Base do Negócio · Posicionamento da Marca · Vendas e Clientes · Crescimento</span><button class="primary" data-analysis="completa">Começar análise completa</button>
+      </div>
+    </div>
+    <div id="analysisGrid" class="evolution-map"></div>
+  </section>
+
 
   <section class="wrap shelfSec" id="marketing">
     <div class="titleRow"><div><span class="eyebrow">ESTRATÉGIAS DE MARKETING · VENDAS & CRESCIMENTO</span><h2>Divulgação, conversão, recompra e crescimento em uma só trilha.</h2><p>Campanhas, canais, relacionamento, oferta, WhatsApp, ticket médio, pós-venda e ações para transformar atenção em clientes.</p></div><div class="arrows"><button data-prev="marketingTrack">‹</button><button data-next="marketingTrack">›</button></div></div>
@@ -88,7 +98,7 @@
   <section class="wrap shelfSec competitorSec" id="concorrentes">
     <div class="titleRow"><div><span class="eyebrow">ACOMPANHE SEUS CONCORRENTES</span><h2>Movimentos do Mercado</h2><p>Veja o que outros <strong>concorrentes</strong> estão comunicando e transforme sinais do mercado em ideias melhores para sua marca.</p></div><div class="arrows"><button data-prev="competitorTrack">‹</button><button data-next="competitorTrack">›</button></div></div>
     <div class="competitorPanel competitorMovementPanel">
-      <p><strong>Como funciona:</strong> cada card já mostra estratégias consolidadas que perfis relevantes do seu nicho costumam usar naquele canal. Nos planos PRO e Premium, o MARK pesquisa movimentos dos últimos 30 dias e adiciona os novos sinais sem apagar o checklist inicial.</p>
+      <p>Escolha um canal para pesquisar seus movimentos dos últimos 30 dias. A pesquisa fica disponível nos planos PRO e Premium.</p>
       <button class="primary" id="refreshCompetitors">Pesquisar movimentos dos últimos 30 dias</button>
       <div class="competitorSearchStatus" id="competitorSearchStatus"></div>
     </div>
@@ -119,20 +129,6 @@
     <div class="shelf" id="mivcastTrack"></div>
   </section>
 
-  <section class="wrap analysis" id="analises">
-    <div class="analysisTop">
-      <div><span class="eyebrow">ANÁLISES EMPRESARIAIS</span><h2>Descubra o que está funcionando, o que precisa melhorar e o que fazer primeiro.</h2><p>Escolha uma subanálise específica, favorite para fazer depois ou entre na análise completa de cada área.</p></div>
-      <div class="fullAnalysis">
-        <div class="full-top"><small>ANÁLISE COMPLETA</small><button class="heart analysis-heart" data-analysis-fav="completa">♡</button></div>
-        <strong>Áreas principais</strong><span>Empresa · Marca · Mercado · Oferta · Presença · Marketing · Vendas · Experiência · Gestão</span><button class="primary" data-analysis="completa">Começar análise completa</button>
-      </div>
-    </div>
-    <div class="analysis-carousel-head">
-      <span>Arraste ou use as setas para ver todas as áreas</span>
-      <div class="arrows analysis-arrows"><button data-prev="analysisGrid" aria-label="Análises anteriores">‹</button><button data-next="analysisGrid" aria-label="Próximas análises">›</button></div>
-    </div>
-    <div id="analysisGrid" class="analysisGrid"></div>
-  </section>
 
   <section class="wrap shelfSec learning" id="aprender">
     <div class="titleRow"><div><span class="eyebrow">APRENDA & APLIQUE</span><h2>Conteúdo útil, organizado para virar aplicação.</h2><p>O carrossel mostra primeiro o que tende a ser mais relevante, mas você pode filtrar por formato e acesso.</p></div><div class="arrows"><button data-prev="learnTrack">‹</button><button data-next="learnTrack">›</button></div></div>
@@ -142,50 +138,6 @@
     <div class="learnDiscovery"><input id="learnSearch" placeholder="Buscar conteúdo, tema ou assunto"><select id="learnArea"><option value="Todos">Todas as áreas</option></select><select id="learnLevel"><option value="Todos">Todos os níveis</option><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select></div><div class="shelf" id="learnTrack"></div>
   </section>
 
-  <section class="wrap monthlyPlanSec" id="plano-mensal">
-    <div class="monthlyPlanUnified">
-      <div class="monthlyPlanContent">
-        <span class="eyebrow">DOSSIÊ PREMIUM</span>
-        <h2>Plano Estratégico do Mês</h2>
-        <p>Um relatório consultivo para transformar calendário, estratégias, tendências, movimentos do mercado e vendas em um plano de ação mensal para o seu nicho.</p>
-        <div class="monthlyPlanBadges"><span>Premium liberado</span><span>Avulso R$ 99,00</span><span>PDF + WhatsApp</span></div>
-        <div class="monthlyPlanAccess" id="monthlyPlanAccess"><strong>Acesso Premium</strong><small>Ou compre este dossiê individualmente.</small></div>
-        <div class="monthlyPlanBuilder">
-          <div class="monthlyPlanControls">
-            <label>Nicho confirmado<input id="monthlyPlanNiche" readonly></label>
-            <label>Mês da análise<select id="monthlyPlanMonth"></select></label>
-            <label>Ano<select id="monthlyPlanYear"></select></label>
-            <div class="monthlyPlanProfileChoice">
-              <strong>Personalização</strong>
-              <p>Você pode gerar apenas com o nicho ou usar as informações da empresa para deixar o plano mais específico.</p>
-              <label><input type="checkbox" id="monthlyUseProfile" checked> Usar dados da empresa quando disponíveis</label>
-              <button class="outline" id="monthlyEditProfile" type="button">Completar informações da empresa</button>
-            </div>
-            <div class="monthlyPlanActions">
-              <button class="primary" id="generateMonthlyPlan">Gerar plano do mês</button>
-              <button class="outline" id="buyMonthlyPlan">Comprar avulso R$ 99,00</button>
-            </div>
-            <small id="monthlyPlanStatus"></small>
-          </div>
-          <div class="monthlyPlanPreview" id="monthlyPlanPreview">
-            <span class="eyebrow">O QUE O DOSSIÊ ENTREGA</span>
-            <h3>Uma visão de consultoria para executar no mês escolhido.</h3>
-            <ul>
-              <li>Campanhas e datas do mês com ideias de criativos.</li>
-              <li>Estratégias de marketing local, equipe, clientes, parcerias e brindes.</li>
-              <li>Tendências do mercado e movimentos por canal de comunicação.</li>
-              <li>Ações de vendas, fidelização, WhatsApp, oferta e ticket médio.</li>
-              <li>Plano por semana, checklist final e relatório salvo na Central.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="monthlyPlanHeroVisual">
-        <img src="assets/sections/como-miv-ajuda.png" alt="" loading="lazy">
-      </div>
-    </div>
-    <div id="monthlyPlanResult" class="monthlyPlanResult"></div>
-  </section>
 
   <section class="credibility" id="credibilidade">
     <div class="wrap">
@@ -231,24 +183,21 @@
   <section class="wrap plans" id="planos">
     <span class="eyebrow center">PLANOS & ACESSO</span><h2 class="center">Use grátis, compre apenas o que precisa ou libere o ecossistema inteiro.</h2><p class="center plan-sub">Uma estrutura flexível para atrair pelo conteúdo gratuito e monetizar por item, assinatura ou apoio humano.</p>
     <div class="plan-grid">
-      <article><span class="plan-label">COMEÇAR</span><h3>Grátis</h3><p>Experimente o ecossistema, descubra gargalos e receba valor antes de decidir pagar.</p><ul><li>Cards e ferramentas selecionados</li><li>Prévia das análises e soluções</li><li>Relatórios resumidos</li><li><b>5 interações com MARK.IA/mês</b></li><li>Central, favoritos e histórico</li></ul><button class="outline full" id="planFreeBtn">Criar conta grátis</button></article>
-      <article><span class="plan-label">SEM ASSINATURA</span><h3>Avulso</h3><p>Para quem precisa resolver uma necessidade específica sem contratar mensalidade.</p><ul><li>Compre somente o card desejado</li><li>Acesso permanente ao item comprado</li><li>Soluções e relatório daquele recurso</li><li>Resultado salvo na Central</li><li>Sem mensalidade</li></ul><button class="outline full" id="planAvulsoBtn">Explorar itens pagos</button></article>
-      <article class="featured"><span class="badge-best">MAIS INDICADO</span><span class="plan-label">PARA RESOLVER</span><h3>Pro <small id="planProPrice" style="display:block;color:var(--accent);font-size:14px;margin-top:6px">R$ 47,90/mês</small></h3><p>Para quem quer usar o ecossistema completo no dia a dia.</p><ul><li><b>Todos os cards PRO</b></li><li>Análises e soluções completas</li><li>Relatórios completos</li><li>Calendário e Aprenda & Aplique completos</li><li><b>80 interações com MARK.IA/mês</b></li><li>MARK contextual dentro dos recursos</li></ul><details class="planCouponInline"><summary>Tenho cupom</summary><input id="planProCoupon" data-plan-coupon-input="pro" placeholder="Cupom opcional"></details><button class="primary full" id="planProBtn">Quero acesso Pro</button></article>
-      <article><span class="plan-lock">TUDO DO PRO</span><span class="plan-label">IA MAIS PROFUNDA</span><h3>Premium <small id="planPremiumPrice" style="display:block;color:var(--accent);font-size:14px;margin-top:6px">R$ 97,90/mês</small></h3><p>Para quem quer o MARK trabalhando com muito mais profundidade sobre o negócio.</p><ul><li>Tudo do PRO</li><li><b>300 interações com MARK.IA/mês</b></li><li>Maior uso de análises profundas com IA</li><li>Inteligência cruzada: empresa + histórico + análises</li><li>Prioridade para recursos avançados futuros</li><li>Recomendações mais contínuas pelo MARK</li></ul><details class="planCouponInline"><summary>Tenho cupom</summary><input id="planPremiumCoupon" data-plan-coupon-input="premium" placeholder="Cupom opcional"></details><button class="outline full" id="planPremiumBtn">Quero acesso Premium</button></article>
+      <article><span class="plan-label">COMEÇAR</span><h3>Grátis</h3><p>Experimente o ecossistema, descubra gargalos e receba valor antes de decidir pagar.</p><ul><li>Cards e ferramentas selecionados</li><li><span data-diagnosis-free-count>2</span> soluções grátis por conta, sem renovação mensal</li><li>Autoavaliação das quatro etapas</li><li>Relatórios resumidos</li><li><b>5 interações com MARK.IA/mês</b></li><li>Central, favoritos e histórico</li></ul><button class="outline full" id="planFreeBtn">Criar conta grátis</button></article>
+      <article><span class="plan-label">SEM ASSINATURA</span><h3>Avulso</h3><p>Para quem precisa resolver uma necessidade específica sem contratar mensalidade.</p><ul><li>Card de análise: três soluções por <span data-diagnosis-card-price>R$ 19,90</span></li><li>Acesso permanente ao item comprado</li><li>Soluções e relatório daquele recurso</li><li>Resultado salvo na Central</li><li>Sem mensalidade</li></ul><button class="outline full" id="planAvulsoBtn">Explorar itens pagos</button></article>
+      <article class="featured"><span class="badge-best">MAIS INDICADO</span><span class="plan-label">PARA RESOLVER</span><h3>Pro <small id="planProPrice" style="display:block;color:var(--accent);font-size:14px;margin-top:6px">R$ 47,90/mês</small></h3><p>Para quem quer usar o ecossistema completo no dia a dia.</p><ul><li><b>Todos os cards PRO</b></li><li>Análises e soluções completas</li><li>Relatórios completos</li><li>Calendário e Aprenda & Aplique completos</li><li><b><span data-mark-limit="pro">80</span> interações com MARK.IA/mês</b></li><li data-diagnosis-mark-plan="pro">MARK nos demais recursos, sem consulta nas análises</li></ul><details class="planCouponInline"><summary>Tenho cupom</summary><input id="planProCoupon" data-plan-coupon-input="pro" placeholder="Cupom opcional"></details><button class="primary full" id="planProBtn">Quero acesso Pro</button></article>
+      <article><span class="plan-lock">TUDO DO PRO</span><span class="plan-label">IA MAIS PROFUNDA</span><h3>Premium <small id="planPremiumPrice" style="display:block;color:var(--accent);font-size:14px;margin-top:6px">R$ 97,90/mês</small></h3><p>Para quem quer o MARK trabalhando com muito mais profundidade sobre o negócio.</p><ul><li>Tudo do PRO</li><li><b><span data-mark-limit="premium">300</span> interações com MARK.IA/mês</b></li><li data-diagnosis-mark-plan="premium">MARK para aprofundar as análises</li><li>Inteligência cruzada: empresa + histórico + análises</li><li>Prioridade para recursos avançados futuros</li><li>Recomendações mais contínuas pelo MARK</li></ul><details class="planCouponInline"><summary>Tenho cupom</summary><input id="planPremiumCoupon" data-plan-coupon-input="premium" placeholder="Cupom opcional"></details><button class="outline full" id="planPremiumBtn">Quero acesso Premium</button></article>
     </div>
   </section>
 
   <section class="wrap shelfSec need-section" id="preciso-de-ajuda">
     <div class="need-box">
-      <div class="need-copy"><span class="eyebrow">NÃO ENCONTROU O QUE PRECISA?</span><h3>Conte para o MARK o que você gostaria de resolver agora.</h3><p>Escreva sua dúvida, dor ou objetivo com suas próprias palavras. A vitrine reorganiza as sugestões e mostra os conteúdos, ferramentas e análises mais próximos da sua necessidade.</p></div>
-      <div class="need-action"><textarea id="needInput" rows="3" placeholder="Ex.: estou divulgando bastante, mas poucas pessoas chamam no WhatsApp... ou: preciso vender mais sem baixar meus preços."></textarea><button class="primary" id="needSuggest">Encontrar soluções para mim</button><small id="needStatus">Você não precisa saber qual ferramenta procurar.</small></div>
+      <div class="need-copy"><span class="eyebrow">NÃO ENCONTROU O QUE PRECISA?</span><h3>Conte para o MARK o que você gostaria de resolver agora.</h3><p>Escreva sua dúvida, dor ou objetivo com suas próprias palavras e encontre conteúdos e ferramentas para sua necessidade.</p></div>
+      <div class="need-action"><textarea id="needInput" rows="3" placeholder="Ex.: estou divulgando bastante, mas poucas pessoas chamam no WhatsApp... ou: preciso vender mais sem baixar meus preços."></textarea><button class="primary" id="needSuggest">Encontrar soluções para mim</button><small id="needStatus" role="status">Você não precisa saber qual ferramenta procurar.</small></div>
     </div>
+    <div id="needResults" class="shelf" aria-label="Soluções para sua necessidade" hidden></div>
   </section>
 
-  <section class="wrap shelfSec" id="recomendados">
-    <div class="titleRow"><div><span class="eyebrow">RECOMENDADO PARA VOCÊ</span><h2 id="recTitle">Uma seleção para começar sem se perder.</h2><p>Itens com maior aderência ao nicho, ao objetivo selecionado e ao que você acabou de pedir ao MARK.</p></div><div class="arrows"><button data-prev="recTrack">‹</button><button data-next="recTrack">›</button></div></div>
-    <div class="shelf" id="recTrack"></div>
-  </section>
 
   <section class="wrap faq">
     <span class="eyebrow center">TIRE SUAS DÚVIDAS</span><h2 class="center">Você não precisa entender o ecossistema inteiro para começar.</h2>
@@ -289,6 +238,7 @@
   </details>
   <div class="wrap stats"><div><span>Favoritos</span><strong id="favCount">0</strong><small>Sua biblioteca está nascendo.</small></div><div><span>Conteúdos usados</span><strong id="usedCount">0</strong><small>Volte ao que já começou.</small></div><div><span>Análises</span><strong id="repCount">0</strong><small>Transforme diagnóstico em ação.</small></div><div><span>Progresso</span><strong id="progCount">18%</strong><small>Cada passo melhora o contexto.</small></div></div>
   <section class="wrap centralSec"><span class="eyebrow">CONTINUE DE ONDE PAROU</span><h2>Em andamento</h2><div class="centralGrid" id="centralContinue"></div></section>
+  <section class="wrap centralSec"><span class="eyebrow">ANÁLISES EMPRESARIAIS</span><h2>Seu mapa de evolução salvo</h2><div class="centralGrid" id="centralDiagnoses"></div></section>
   <section class="wrap centralSec"><span class="eyebrow">RECOMENDADO PARA SUA EMPRESA</span><div class="centralTitleActions"><h2>Próximos passos sugeridos</h2><button class="outline" id="centralAskMark">Perguntar ao MARK.IA</button></div><div class="centralGrid" id="centralRecommendations"></div></section>
   <section class="wrap centralSec"><span class="eyebrow">CALENDÁRIO</span><h2>Ideias de marketing salvas</h2><div class="centralGrid" id="centralCalendarIdeas"></div></section>
   <section class="wrap centralSec"><span class="eyebrow">SALVOS POR VOCÊ</span><h2>Favoritos</h2><div class="centralGrid" id="favorites"></div></section>
@@ -313,7 +263,7 @@
       <button class="outline dangerAction" id="subscriptionCancelBtn">Cancelar renovação</button>
     </div>
   </section>
-  <section class="centralSec centralPlanCompare"><span class="eyebrow">ESCOLHA O NÍVEL IDEAL</span><h2>Planos dentro da sua Central</h2><p>Assine ou faça upgrade sem sair da área da conta. O cupom é aplicado antes do Mercado Pago, então o checkout já abre com o valor final.</p><div class="centralGrid centralPlanCards"><div class="centralItem"><small>GRÁTIS</small><h3>Experimentar</h3><p>Cards selecionados, prévias e relatórios resumidos.</p><b>5 MARK.IA/mês</b></div><div class="centralItem"><small>PRO · <span id="centralProPrice">R$ 47,90/mês</span></small><h3>Resolver</h3><p>Todos os cards PRO, análises, relatórios, calendário e conteúdos completos.</p><details class="planCouponInline"><summary>Tenho cupom</summary><input data-plan-coupon-input="pro" placeholder="Cupom opcional"></details><button class="primary full" id="centralPlanProBtn">Quero acesso Pro</button></div><div class="centralItem"><small>PREMIUM · <span id="centralPremiumPrice">R$ 97,90/mês</span></small><h3>Aprofundar</h3><p>Tudo do PRO + uso muito maior do MARK e inteligência cruzada do negócio.</p><details class="planCouponInline"><summary>Tenho cupom</summary><input data-plan-coupon-input="premium" placeholder="Cupom opcional"></details><button class="outline full" id="centralPlanPremiumBtn">Quero acesso Premium</button></div></div></section>
+  <section class="centralSec centralPlanCompare"><span class="eyebrow">ESCOLHA O NÍVEL IDEAL</span><h2>Planos dentro da sua Central</h2><p>Assine ou faça upgrade sem sair da área da conta. O cupom é aplicado antes do Mercado Pago, então o checkout já abre com o valor final.</p><div class="centralGrid centralPlanCards"><div class="centralItem"><small>GRÁTIS</small><h3>Experimentar</h3><p>Cards selecionados e <span data-diagnosis-free-count>2</span> soluções grátis por conta, sem renovação mensal.</p><b>5 MARK.IA/mês</b></div><div class="centralItem"><small>PRO · <span id="centralProPrice">R$ 47,90/mês</span></small><h3>Resolver</h3><p>Todos os cards PRO, soluções das etapas e relatórios. <span data-diagnosis-mark-plan="pro">Sem MARK nas análises.</span></p><details class="planCouponInline"><summary>Tenho cupom</summary><input data-plan-coupon-input="pro" placeholder="Cupom opcional"></details><button class="primary full" id="centralPlanProBtn">Quero acesso Pro</button></div><div class="centralItem"><small>PREMIUM · <span id="centralPremiumPrice">R$ 97,90/mês</span></small><h3>Aprofundar</h3><p>Tudo do PRO. <span data-diagnosis-mark-plan="premium">MARK para aprofundar as análises.</span></p><details class="planCouponInline"><summary>Tenho cupom</summary><input data-plan-coupon-input="premium" placeholder="Cupom opcional"></details><button class="outline full" id="centralPlanPremiumBtn">Quero acesso Premium</button></div></div></section>
   </div>
   <section class="wrap accountSecurityPanel centralSec"><span class="eyebrow">CONTA & SEGURANÇA</span><div class="accountSecurityGrid"><div><h2>Seu acesso</h2><p>Altere a senha da conta quando precisar. O e-mail atual fica registrado para login e recuperação.</p><small id="accountEmail">—</small></div><label>Nova senha<input id="accountNewPassword" type="password" autocomplete="new-password" placeholder="Digite uma nova senha"></label><label>Confirmar senha<input id="accountConfirmPassword" type="password" autocomplete="new-password" placeholder="Repita a nova senha"></label><button class="primary" id="updateAccountPassword">Atualizar senha</button></div><div class="authStatus" id="accountStatus"></div></section>
 </section>
@@ -422,6 +372,60 @@
   </div>
 </div>
 
+<dialog id="monthlyPlanDialog" class="monthly-plan-dialog" aria-labelledby="monthlyDialogTitle">
+  <div class="monthly-dialog-head"><h2 id="monthlyDialogTitle">Plano Estratégico do Mês</h2><button type="button" id="closeMonthlyPlan" aria-label="Fechar dossiê">×</button></div>
+  <section class="wrap monthlyPlanSec" id="plano-mensal">
+    <div class="monthlyPlanUnified">
+      <div class="monthlyPlanContent">
+        <span class="eyebrow">DOSSIÊ PREMIUM</span>
+        <h2>Plano Estratégico do Mês</h2>
+        <p>Um relatório consultivo para transformar calendário, estratégias, tendências, movimentos do mercado e vendas em um plano de ação mensal para o seu nicho.</p>
+        <div class="monthlyPlanBadges"><span>Premium liberado</span><span data-monthly-price>Avulso R$ 99,00</span><span>PDF + WhatsApp</span></div>
+        <div class="monthlyPlanAccess" id="monthlyPlanAccess"><strong>Acesso Premium</strong><small>Ou compre este dossiê individualmente.</small></div>
+        <div class="monthlyPlanBuilder">
+          <div class="monthlyPlanControls">
+            <label>Nicho confirmado<input id="monthlyPlanNiche" readonly></label>
+            <label>Mês da análise<select id="monthlyPlanMonth"></select></label>
+            <label>Ano<select id="monthlyPlanYear"></select></label>
+            <div class="monthlyPlanProfileChoice">
+              <strong>Personalização</strong>
+              <p>Você pode gerar apenas com o nicho ou usar as informações da empresa para deixar o plano mais específico.</p>
+              <label><input type="checkbox" id="monthlyUseProfile" checked> Usar dados da empresa quando disponíveis</label>
+              <button class="outline" id="monthlyEditProfile" type="button">Completar informações da empresa</button>
+            </div>
+            <div class="monthlyPlanActions">
+              <button class="primary" id="generateMonthlyPlan">Gerar plano do mês</button>
+              <button class="outline" id="buyMonthlyPlan">Comprar avulso R$ 99,00</button>
+            </div>
+            <small id="monthlyPlanStatus"></small>
+          </div>
+          <div class="monthlyPlanPreview" id="monthlyPlanPreview">
+            <span class="eyebrow">O QUE O DOSSIÊ ENTREGA</span>
+            <h3>Uma visão de consultoria para executar no mês escolhido.</h3>
+            <ul>
+              <li>Campanhas e datas do mês com ideias de criativos.</li>
+              <li>Estratégias de marketing local, equipe, clientes, parcerias e brindes.</li>
+              <li>Tendências do mercado e movimentos por canal de comunicação.</li>
+              <li>Ações de vendas, fidelização, WhatsApp, oferta e ticket médio.</li>
+              <li>Plano por semana, checklist final e relatório salvo na Central.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="monthlyPlanHeroVisual">
+        <img src="assets/sections/como-miv-ajuda.png" alt="" loading="lazy">
+      </div>
+    </div>
+    <div id="monthlyPlanResult" class="monthlyPlanResult"></div>
+  </section>
+</dialog>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=15.1"></script>
+<script src="app.js?v=15.5"></script>
+<script src="library-reform.js?v=1"></script>
+<script src="evolution-data.js?v=2"></script>
+<script src="diagnosis-official.js?v=1"></script>
+<script src="diagnosis-guidance.js?v=2"></script>
+<script src="diagnosis-access.js?v=1"></script>
+<script src="evolution.js?v=9"></script>
 </body></html>
