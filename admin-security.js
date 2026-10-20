@@ -10,7 +10,8 @@ window.MivAdminSecurity=(() => {
    if(/;base64$/i.test(header))svg=atob(svg);
    else if(/^%3c/i.test(svg.trim()))svg=decodeURIComponent(svg);
   }
-  if(!/^<svg[\s>]/i.test(svg.trim()))throw Error('QR code inválido. Feche e tente novamente.');
+  const document=new DOMParser().parseFromString(svg,'image/svg+xml');
+  if(document.doctype||document.querySelector('parsererror')||document.documentElement.localName!=='svg'||document.documentElement.namespaceURI!=='http://www.w3.org/2000/svg')throw Error('QR code inválido. Feche e tente novamente.');
   return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
  }
  async function verify(sb,enroll=false){
