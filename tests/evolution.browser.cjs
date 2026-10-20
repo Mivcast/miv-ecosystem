@@ -175,6 +175,7 @@ const server=http.createServer(async(req,res)=>{
   await page.locator('.ev-visual img').first().evaluate(image=>image.decode());
   assert.equal(await page.locator('.ev-visual img').evaluateAll(images=>images.every(image=>image.getAttribute('src').startsWith('assets/'))),true);
   await page.screenshot({path:path.join(output,'desktop.png')});
+  await authenticate(page);
   for(const width of [1440,1100,768,390,320]){
     await page.setViewportSize({width,height:900});
     await page.evaluate(()=>window.scrollTo(0,document.getElementById('analysisGrid').getBoundingClientRect().top+scrollY-110));
