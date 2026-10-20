@@ -1,4 +1,4 @@
-const {chromium}=require('playwright');
+const {chromium,webkit}=require('playwright');
 const assert=require('node:assert/strict');
 const http=require('node:http');
 const fs=require('node:fs/promises');
@@ -17,7 +17,7 @@ const server=http.createServer(async(req,res)=>{
  await fs.mkdir(output,{recursive:true});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
  let browser;
  try{
-  browser=await chromium.launch({channel:'chrome',headless:true});
+  browser=process.env.MIV_WEBKIT_PATH?await webkit.launch({executablePath:process.env.MIV_WEBKIT_PATH,headless:true}):await chromium.launch({channel:'chrome',headless:true});
   const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://**/*',route=>route.abort());await attach(page);
@@ -58,6 +58,7 @@ const server=http.createServer(async(req,res)=>{
   for(const width of [320,390,700]){
    await page.setViewportSize({width,height:900});
    const layout=await page.evaluate(()=>({page:document.documentElement.scrollWidth,width:innerWidth,tracks:[...document.querySelectorAll('#view-central .centralCarousel')].filter(el=>el.children.length>1).map(el=>{el.scrollLeft=0;const r=el.getBoundingClientRect(),a=el.children[0].getBoundingClientRect(),b=el.children[1].getBoundingClientRect();return {id:el.id,width:r.width,first:a.width,peek:r.right-b.left};})}));
+   if(layout.page!==layout.width)console.log(await page.evaluate(()=>[...document.querySelectorAll('#view-central *')].filter(e=>e.getClientRects().length&&!e.closest('.centralCarousel')).map(e=>({tag:e.tagName,id:e.id,cls:e.className,width:e.getBoundingClientRect().width,right:e.getBoundingClientRect().right})).filter(e=>e.right>innerWidth+1)));
    assert.equal(layout.page,layout.width,'Central page fits at '+width);
    assert(layout.tracks.length>=2);
    for(const track of layout.tracks){

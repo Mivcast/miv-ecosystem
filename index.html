@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="stylesheet" href="legal.css?v=1">
 <title>MIV Ecosystem — Vitrine Inteligente</title>
 <meta name="description" content="Ecossistema empresarial adaptável por nicho com estratégias, análises, ferramentas e inteligência artificial.">
 <link rel="stylesheet" href="styles.css?v=15.1">
@@ -297,6 +299,7 @@
     <section class="authPane active" id="authLogin"><span class="eyebrow">SUA CONTA</span><h2>Entrar no MIV Ecosystem</h2><p>Acesse sua Central e seus dados salvos.</p><label>E-mail</label><input id="loginEmail" type="email" autocomplete="email"><label>Senha</label><input id="loginPassword" type="password" autocomplete="current-password"><div class="authActions"><button class="primary" id="doLogin">Entrar</button></div><div class="authStatus" id="loginStatus"></div><button class="authLink" data-auth-switch="forgot">Esqueci minha senha</button><button class="authLink" data-auth-switch="register">Criar conta</button></section>
     <section class="authPane" id="authRegister"><span class="eyebrow">NOVA CONTA</span><h2>Criar sua conta</h2><p>Comece sua Central com os dados básicos do negócio.</p><label>Seu nome</label><input id="regName"><label>E-mail</label><input id="regEmail" type="email" autocomplete="email"><label>Telefone</label><input id="regPhone"><label>Empresa</label><input id="regBusiness"><label>Nicho</label><select id="regNiche"></select><input id="regOtherNiche" class="otherNicheInput" placeholder="Digite outro nicho" hidden><label>Cidade / UF</label><input id="regCity"><label>Senha</label><input id="regPass" type="password" autocomplete="new-password"><label>Repita a senha</label><input id="regPass2" type="password" autocomplete="new-password"><div class="authActions"><button class="primary" id="doRegister">Criar conta</button></div><div class="authStatus" id="registerStatus"></div><button class="authLink" data-auth-switch="login">Já tenho conta</button></section>
     <section class="authPane" id="authForgot"><span class="eyebrow">RECUPERAR ACESSO</span><h2>Redefinir senha</h2><p>Enviaremos o processo de recuperação para seu e-mail.</p><label>E-mail</label><input id="forgotEmail" type="email" autocomplete="email"><div class="authActions"><button class="primary" id="doForgot">Enviar recuperação</button></div><div class="authStatus" id="forgotStatus"></div><button class="authLink" data-auth-switch="login">Voltar para entrar</button></section>
+    <section class="authPane" id="authReset"><span class="eyebrow">PROTEJA SUA CONTA</span><h2>Escolha sua nova senha</h2><p>Use uma senha exclusiva com pelo menos 12 caracteres.</p><label for="resetPass">Nova senha</label><input id="resetPass" type="password" autocomplete="new-password" minlength="12"><label for="resetPass2">Repita a nova senha</label><input id="resetPass2" type="password" autocomplete="new-password" minlength="12"><div class="authActions"><button class="primary" id="doResetPassword">Salvar nova senha</button></div><div class="authStatus" id="resetStatus" role="status"></div></section>
   </div>
 </div>
 <div class="overlay" id="overlay"></div>
@@ -313,7 +316,7 @@
     <div class="footerCol"><strong>Conta & ajuda</strong><button data-scroll="planos">Planos</button><button data-open-auth="login">Entrar</button><button data-open-auth="register">Criar conta</button><button onclick="document.getElementById('markFab')?.click()">Falar com MARK</button></div>
     <div class="footerCol"><strong>MivCast</strong><span>Consultoria & Mentoria</span><span>Serviços de execução</span><span>Marketing Digital</span><span>Criação & Tecnologia</span></div>
   </div>
-  <div class="footerBottom"><span>© 2026 MIV Ecosystem · MivCast Marketing Digital</span><span>Termos · Privacidade · Suporte</span></div>
+  <div class="footerBottom"><span>© 2026 MIV Ecosystem · MivCast Marketing Digital</span><div class="legal-links"><a href="legal.html?doc=terms">Termos de uso</a><a href="legal.html?doc=privacy">Privacidade</a><a href="legal.html?doc=cookies">Cookies e métricas</a><a href="legal.html?doc=support">Atendimento e cancelamento</a><button type="button" data-privacy-center>Privacidade e meus dados</button></div></div>
 </footer>
 <div class="calendarModal" id="calendarModal">
   <div class="calendarBox">
@@ -422,8 +425,10 @@
   </section>
 </dialog>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=15.7"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js" integrity="sha384-TcHRA3zBbn+Lexh5n+Oil4guNPOS3rjNDpGRAN46u/s/mB2IZ50ceC6TYDU2yvgK" crossorigin="anonymous"></script>
+<script src="app.js?v=15.8"></script>
+<script src="legal-config.js?v=1"></script>
+<script src="privacy.js?v=1"></script>
 <script src="library-reform.js?v=1"></script>
 <script src="evolution-data.js?v=2"></script>
 <script src="diagnosis-official.js?v=1"></script>

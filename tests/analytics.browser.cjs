@@ -13,7 +13,7 @@ const server=http.createServer(async(req,res)=>{
 });
 function adminMock(){
  const data={profiles:[{id:'qa-admin',role:'admin',full_name:'QA Admin'}]};
- window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'qa-admin'},access_token:'test-admin-token'}}}),signOut:async()=>({})},from(table){let single=false;const q={select(){return q;},eq(){return q;},order(){return q;},limit(){return q;},maybeSingle(){single=true;return q;},single(){single=true;return q;},then(resolve,reject){return Promise.resolve({data:single?(data[table]?.[0]||null):(data[table]||[]),error:null}).then(resolve,reject);}};return q;}})};
+ window.supabase={createClient:()=>({auth:{mfa:{getAuthenticatorAssuranceLevel:async()=>({data:{currentLevel:'aal1',nextLevel:'aal1'}})},getSession:async()=>({data:{session:{user:{id:'qa-admin'},access_token:'test-admin-token'}}}),signOut:async()=>({})},from(table){let single=false;const q={select(){return q;},eq(){return q;},order(){return q;},limit(){return q;},maybeSingle(){single=true;return q;},single(){single=true;return q;},then(resolve,reject){return Promise.resolve({data:single?(data[table]?.[0]||null):(data[table]||[]),error:null}).then(resolve,reject);}};return q;}})};
 }
 const report={started_at:'2026-10-20T10:00:00Z',generated_at:'2026-10-20T12:00:00Z',retention_days:90,
  summary:{visitors:10,sessions:12,returning_visitors:2,identified_users:4,page_views:30,sales:2,gross_cents:3980,refunds_cents:500,single_sales:2,subscription_payments:0,legacy_sales:0,unattributed_sales:0,checkouts:5,converted_checkouts:2,abandoned:1,pending:1,failed:1,recent:0},
@@ -44,7 +44,7 @@ const report={started_at:'2026-10-20T10:00:00Z',generated_at:'2026-10-20T12:00:0
   await page.reload();assert.equal(await page.locator('#analyticsConsent').count(),0);await page.evaluate(()=>MivAnalytics.flush());assert.equal(batches.length,before);
   const protectedPage=await browser.newPage();await protectedPage.addInitScript(()=>Object.defineProperty(navigator,'globalPrivacyControl',{value:true}));await protectedPage.route('https://**/*',r=>r.abort());await attach(protectedPage,'free',{analytics:true});await protectedPage.goto(base);await protectedPage.evaluate(()=>MivAnalytics.preferences());assert(await protectedPage.locator('[data-analytics-accept]').isDisabled());assert.equal(await protectedPage.evaluate(()=>MivAnalytics.context().consent),false);await protectedPage.close();
   const admin=await browser.newPage({viewport:{width:1440,height:1000}});const adminErrors=[];admin.on('pageerror',e=>adminErrors.push(e.message));
-  await admin.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'text/javascript',body:'('+adminMock.toString()+')();'}));
+  await admin.addInitScript(adminMock);await admin.route('https://cdn.jsdelivr.net/**',r=>r.abort());
   await admin.route('**/api/config',r=>r.fulfill({json:{supabaseUrl:'https://mock.invalid',supabasePublishableKey:'mock'}}));
   let offline=false;const reports=[];
   await admin.route('**/api/diagnoses?*',async r=>{const url=new URL(r.request().url());if(url.searchParams.get('action')!=='analytics-report')return r.fulfill({status:503,json:{error:'not available'}});reports.push(url);assert.equal(r.request().headers().authorization,'Bearer test-admin-token');return r.fulfill({status:offline?503:200,json:offline?{error:'Servidor de teste indisponível'}:report});});

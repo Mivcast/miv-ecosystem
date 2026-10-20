@@ -7,6 +7,7 @@ const root = path.resolve(__dirname, '..');
 const output = process.env.MIV_QA_OUTPUT || path.join(root, 'outputs', 'admin-commerce-qa');
 
 function installSupabaseMock() {
+  const mfa={getAuthenticatorAssuranceLevel:async()=>({data:{currentLevel:'aal1',nextLevel:'aal1'}})};
   const db={profiles:[{id:'admin-id',role:'admin',full_name:'Administrador de teste'}],
     subscription_plans:['pro','premium'].map((plan_key,i)=>({plan_key,price_cents:i?9790:4790,
       mark_monthly_limit:i?450:120,active:true,frequency:1,frequency_type:'months',sort_order:i,
@@ -16,7 +17,7 @@ function installSupabaseMock() {
     ecosystem_cards:[{item_id:'monthly-strategy-plan',shelf_key:'tools',title:'Plano Estrategico do Mes',
       price_cents:12900,price_label:'R$ 129,00',access_level:'Premium',active:true}]};
   window.__commerceDB=db;window.__commerceWrites=[];window.__commerceOffline=false;
-  const sb={auth:{getSession:async()=>({data:{session:{user:{id:'admin-id'},access_token:'mock'}}}),signOut:async()=>({})},
+  const sb={auth:{mfa,getSession:async()=>({data:{session:{user:{id:'admin-id'},access_token:'mock'}}}),signOut:async()=>({})},
     from(table){
       let filters=[],single=false,update=null;
       const q={select(){return q;},eq(k,v){filters.push([k,v]);return q;},order(){return q;},limit(){return q;},
@@ -49,7 +50,8 @@ function installSupabaseMock() {
     const page=await browser.newPage({viewport:{width:1440,height:1100}});
     const errors=[];page.on('pageerror',err=>errors.push(err.message));
     page.on('dialog',dialog=>dialog.accept());
-    await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'text/javascript',body:'('+installSupabaseMock.toString()+')();'}));
+    await page.addInitScript(installSupabaseMock);
+    await page.route('https://cdn.jsdelivr.net/**',route=>route.abort());
     await page.route('**/api/config',route=>route.fulfill({json:{supabaseUrl:'https://mock.invalid',supabasePublishableKey:'mock'}}));
     await page.goto('http://127.0.0.1:'+server.address().port+'/admin.html');
     await page.waitForFunction(()=>document.getElementById('login').classList.contains('hidden'));

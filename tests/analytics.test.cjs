@@ -36,7 +36,7 @@ test('different origin is denied and same-origin is accepted',()=>{
 });
 async function run(request,role='user'){
  const old=global.fetch,env={SUPABASE_URL:process.env.SUPABASE_URL,SUPABASE_SECRET_KEY:process.env.SUPABASE_SECRET_KEY,SUPABASE_PUBLISHABLE_KEY:process.env.SUPABASE_PUBLISHABLE_KEY};Object.keys(env).forEach(k=>process.env[k]='test');
- const calls=[];global.fetch=async(url,options={})=>{calls.push({url,options});const data=url.includes('/auth/v1/user')?{id:uid}:url.includes('profiles?')?[{role}]:url.includes('analytics_report')?{summary:{sales:3}}:1;return {ok:true,status:200,json:async()=>data};};
+ const calls=[];global.fetch=async(url,options={})=>{calls.push({url,options});const data=url.includes('/auth/v1/user')?{id:uid}:url.includes('admin_access')?role==='admin':url.includes('profiles?')?[{role}]:url.includes('analytics_report')?{summary:{sales:3}}:1;return {ok:true,status:200,json:async()=>data};};
  let status=200,data;const res={setHeader(){},status(s){status=s;return this},json(value){data=value;},end(){}};
  try{await handler({headers:{},...request},res);return {status,data,calls};}finally{global.fetch=old;Object.keys(env).forEach(k=>env[k]===undefined?delete process.env[k]:process.env[k]=env[k]);}
 }
