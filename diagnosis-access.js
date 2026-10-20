@@ -117,7 +117,7 @@
     const ctx=context();await hydrate();await flush(ctx);
     const result=await request(ctx,{action:'report',report_id:crypto.randomUUID()});
     if(!same(ctx))return;
-    state.reports.unshift(result.report);save();maybeRenderCentral();toast('Relatório salvo na sua Central.');
+    state.reports.unshift(result.report);save();maybeRenderCentral();toast('Relatório salvo na sua Central.');window.MivAnalytics?.track('report_created','complete');
     return result.report;
   }
   async function renderCentral(){

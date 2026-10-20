@@ -11,6 +11,7 @@
     "api/mark-ai.js": {"includeFiles": "private/**"},
     "api/analysis-ai.js": {"includeFiles": "private/**"},
     "api/create-mercadopago-preference.js": {"includeFiles": "private/**"},
+    "api/create-subscription.js": {"includeFiles": "private/**"},
     "api/validate-coupon.js": {"includeFiles": "private/**"},
     "api/mercadopago/webhook.js": {"includeFiles": "private/**"}
   }

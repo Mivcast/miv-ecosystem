@@ -1,3 +1,5 @@
+const analytics=require('../private/analytics-service.cjs');
+const crypto=require('node:crypto');
 function send(res,s,b){return res.status(s).json(b)}
 async function sb(url,key,path,opts={}){const r=await fetch(`${url}/rest/v1/${path}`,{...opts,headers:{apikey:key,'Content-Type':'application/json',Prefer:opts.prefer||'',...(opts.headers||{})}});const t=await r.text();let d=null;try{d=t?JSON.parse(t):null}catch{d=t}if(!r.ok)throw new Error(`Supabase ${r.status}: ${typeof d==='string'?d:JSON.stringify(d)}`);return d}
 async function userFromJwt(url,pub,jwt){const r=await fetch(`${url}/auth/v1/user`,{headers:{apikey:pub,Authorization:`Bearer ${jwt}`}});if(!r.ok)return null;return r.json()}
@@ -81,6 +83,7 @@ module.exports=async function(req,res){
   const row={user_id:user.id,plan:planKey,status:String(data.status||'pending'),provider:'mercadopago',provider_subscription_id:String(data.id||''),payer_email:payerEmail,current_period_start:new Date().toISOString(),current_period_end:null,next_payment_date:data.next_payment_date||null,updated_at:new Date().toISOString()};
   await sb(su,sk,'user_subscriptions',{method:'POST',prefer:'resolution=merge-duplicates,return=representation',body:JSON.stringify(row)});
   const initPoint=isTestToken?(data.sandbox_init_point||data.init_point||null):(data.init_point||data.sandbox_init_point||null);
+  if(data.id&&initPoint)await analytics.order(su,sk,{id:crypto.randomUUID(),userId:user.id,providerRef:String(data.id),itemId:'plan:'+planKey,kind:'subscription',amountCents:recurringCents,plan:planKey,test:isTestToken,attribution:req.body?.analytics_context});
   return send(res,200,{ok:true,id:data.id,status:data.status,init_point:initPoint,upgrade:isUpgrade,coupon:couponResult?.coupon?.code||null,discounted_amount:recurringCents/100});
  }catch(e){console.error('[MIV subscription create]',e);return send(res,500,{error:'Erro ao iniciar assinatura.'})}
 }
