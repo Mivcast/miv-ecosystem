@@ -97,3 +97,9 @@ test('unapproved payments and invalid signatures do not unlock any card',async()
  const invalid=await run(require('../api/mercadopago/webhook.js'),{...req,headers:{...req.headers,'x-signature':'ts=1,v1=deadbeef'}});
  assert.equal(invalid.status,401);assert.equal(invalid.calls.some(c=>c.url.includes('/user_purchases?')),false);
 });
+test('financial outage requests webhook retry after preserving the approved access grant',async()=>{
+ const ts=String(Date.now()),rid='qa-journal',id='123',signature=crypto.createHmac('sha256','test-only').update(`id:${id};request-id:${rid};ts:${ts};`).digest('hex');
+ const payment={id,status:'approved',currency_id:'BRL',transaction_amount:19.9,date_created:'2026-10-20T10:00:00Z',date_approved:'2026-10-20T10:01:00Z',date_last_updated:'2026-10-20T10:01:00Z',metadata:{miv_user_id:uid,miv_item_id:'diagnosis:mercado',miv_item_type:'card',miv_expected_amount_cents:1990}};
+ const result=await run(require('../api/mercadopago/webhook.js'),{url:'/api/mercadopago/webhook?data.id=123',headers:{'x-request-id':rid,'x-signature':`ts=${ts},v1=${signature}`},body:{type:'payment',data:{id}}},{payment});
+ assert.equal(result.status,500);assert(result.calls.some(c=>c.url.includes('/user_purchases?')));assert(result.calls.some(c=>c.url.endsWith('/rpc/analytics_record_payment')));
+});

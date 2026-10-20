@@ -64,6 +64,7 @@
     return `<div class="ev-question-actions"><button type="button" title="Por que isso importa?" aria-label="Por que isso importa: ${esc(row.q[0])}" data-ev-info="${row.id}">i</button><button type="button" class="${viewed?'ev-solution-viewed':''}" data-ev-solve="${row.id}">${viewed?'Solução consultada':'Descobrir a solução'}</button></div>`;
   }
   function markViewed(id) {
+    const row=rows().find(row=>row.id===id);if(row)window.MivAnalytics?.track('solution_view','diagnosis:'+row.card.id);
     try { localStorage.setItem(viewedKey(),JSON.stringify({...viewedPoints(),[id]:true})); } catch { /* Reading remains possible without local storage. */ }
     document.querySelectorAll(`[data-ev-solve="${id}"]`).forEach(button=>{button.classList.add('ev-solution-viewed');button.textContent='Solução consultada';});
   }

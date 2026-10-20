@@ -49,4 +49,4 @@ function validatePointData(id, data) {
   if(answer==='na'&&(!point.allowNA||!naReason))throw Object.assign(new Error('Este ponto exige uma justificativa válida para não se aplicar.'),{status:400});
   return {answer,note,naReason:answer==='na'?naReason:''};
 }
-module.exports={sections,points,cards,db,access,rules,grantedSolutions,catalogItem,markAllowed,validatePointData};
+module.exports={sections,points,cards,db,access,rules,grantedSolutions,catalogItem,markAllowed,validatePointData,userPlan};

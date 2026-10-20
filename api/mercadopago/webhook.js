@@ -232,6 +232,7 @@ async function recordSubscriptionCoupon({ supabaseUrl, secretKey, userId, plan, 
   if (!redResp.ok) console.error('[MIV webhook subscription] Assinatura ativa, mas falhou registro do cupom:', await redResp.text());
 }
 
+const analytics=require('../../private/analytics-service.cjs');
 module.exports = async function handler(req, res) {
   // Ajuda a confirmar rapidamente que a rota foi publicada, sem processar nada.
   if (req.method === 'GET') {
@@ -305,7 +306,17 @@ module.exports = async function handler(req, res) {
     if (type && type !== 'payment' && type !== 'subscription_authorized_payment') {
       return send(res, 200, { received: true, verified: true, processed: false, reason: 'event_ignored' });
     }
-    if(type==='subscription_authorized_payment') return send(res,200,{received:true,verified:true,processed:false,reason:'invoice_event_acknowledged'});
+    if(type==='subscription_authorized_payment') {
+      const invoiceId=String(signature.resourceDataId||req.body?.data?.id||'');
+      const result=await analytics.bestEffort('fatura',async()=>{
+        const r=await fetch(`https://api.mercadopago.com/authorized_payments/${encodeURIComponent(invoiceId)}`,{signal:AbortSignal.timeout(10000),headers:{Authorization:`Bearer ${mpToken}`}});
+        if(!r.ok)throw new Error('Fatura indisponível');const invoice=await r.json();if(!invoice.payment?.id||!invoice.preapproval_id)return {applicable:false};
+        const payment=await getMercadoPagoPayment(invoice.payment.id,mpToken);if(!payment.ok)throw new Error('Pagamento indisponível');
+        return analytics.captureVerifiedPayment(supabaseUrl,supabaseSecretKey,payment.data,{subscriptionId:String(invoice.preapproval_id),test:/^TEST-/i.test(mpToken)});
+      });
+      if(!result||result.applicable&&!result.recorded)return send(res,500,{error:'Registro financeiro pendente. Tente novamente.'});
+      return send(res,200,{received:true,verified:true,processed:!!result.recorded,reason:'invoice_event_acknowledged'});
+    }
 
     const paymentId = String(signature.resourceDataId || req.body?.data?.id || '').trim();
     if (!paymentId) {
@@ -317,6 +328,7 @@ module.exports = async function handler(req, res) {
     // O simulador do painel pode usar um Data ID que não é um pagamento real. Nesse caso,
     // a assinatura e a recepção já foram validadas; devolvemos 200 sem liberar conteúdo.
     if (!paymentResult.ok) {
+      if(paymentResult.status===429||paymentResult.status>=500)return send(res,503,{error:'Consulta ao pagamento indisponível. Tente novamente.'});
       console.log('[MIV webhook] Evento verificado; pagamento não consultável:', paymentId, paymentResult.status);
       return send(res, 200, {
         received: true,
@@ -327,7 +339,9 @@ module.exports = async function handler(req, res) {
     }
 
     const payment = paymentResult.data || {};
+    const ledger=await analytics.bestEffort('pagamento verificado',()=>analytics.captureVerifiedPayment(supabaseUrl,supabaseSecretKey,payment,{test:/^TEST-/i.test(mpToken)}));
     if (String(payment.status || '').toLowerCase() !== 'approved') {
+      if(ledger?.applicable&&!ledger.recorded)return send(res,500,{error:'Registro financeiro pendente. Tente novamente.'});
       return send(res, 200, {
         received: true,
         verified: true,
@@ -398,6 +412,7 @@ module.exports = async function handler(req, res) {
     }
 
     console.log('[MIV webhook] Compra liberada:', { userId, itemId, providerPaymentId });
+    if(ledger?.applicable&&!ledger.recorded)return send(res,500,{error:'Acesso liberado; registro financeiro aguardando nova tentativa.'});
     return send(res, 200, {
       received: true,
       verified: true,
