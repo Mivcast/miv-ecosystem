@@ -1,0 +1,31 @@
+const {chromium,webkit}=require('playwright');
+const assert=require('node:assert/strict');
+const path=require('node:path');
+const svg='<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><rect width="50" height="50" fill="#123456"/></svg>';
+(async()=>{
+ const browser=process.env.MIV_WEBKIT_PATH?await webkit.launch({executablePath:process.env.MIV_WEBKIT_PATH,headless:true}):await chromium.launch({channel:'chrome',headless:true});
+ try{
+  const page=await browser.newPage();
+  await page.setContent('<!doctype html><title>Synthetic MFA regression</title>');
+  await page.addScriptTag({path:path.resolve(__dirname,'../admin-security.js')});
+  for(const qr of [svg,'data:image/svg+xml;utf-8,'+svg,'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg),'data:image/svg+xml;base64,'+Buffer.from(svg).toString('base64')]){
+   await page.evaluate(qr=>{
+    window.__verified=false;
+    const mfa={getAuthenticatorAssuranceLevel:async()=>({data:{currentLevel:'aal1',nextLevel:'aal1'}}),listFactors:async()=>({data:{totp:[],all:[]}}),enroll:async()=>({data:{id:'synthetic-factor',totp:{qr_code:qr}}}),challengeAndVerify:async({code})=>({error:code==='123456'?null:{message:'invalid'}})};
+    window.__result=MivAdminSecurity.verify({auth:{mfa}},true).then(v=>{window.__verified=v;});
+   },qr);
+   await page.waitForFunction(()=>{const img=document.querySelector('#mfaQr img');return img?.complete&&img.naturalWidth>0;});
+   const pixel=await page.locator('#mfaQr img').evaluate(img=>{const c=document.createElement('canvas');c.width=c.height=50;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,50,50);return Array.from(ctx.getImageData(25,25,1,1).data);});
+   assert.deepEqual(pixel,[18,52,86,255]);
+   await page.locator('#mfaCode').fill('000000');await page.locator('form button').click();await page.waitForFunction(()=>document.querySelector('#mfaStatus').textContent.length>0);
+   assert.equal(await page.evaluate(()=>window.__verified),false);
+   await page.locator('#mfaCode').fill('123456');await page.locator('form button').click();await page.waitForFunction(()=>window.__verified);
+  }
+  await page.evaluate(()=>{const mfa={getAuthenticatorAssuranceLevel:async()=>({data:{}}),listFactors:async()=>({data:{totp:[],all:[]}}),enroll:async()=>({data:{id:'synthetic-factor',totp:{qr_code:'https://example.invalid/qr.svg'}}})};MivAdminSecurity.verify({auth:{mfa}},true);});
+  await page.waitForFunction(()=>document.querySelector('#mfaStatus')?.textContent.includes('inválido'));
+  assert.equal(await page.locator('#mfaQr img').count(),0);
+  assert(await page.locator('form').evaluate(el=>el.hidden));
+  await page.locator('.privacy-close').click();
+  console.log('PASS MFA QR: raw SVG, SDK data URL, encoded data URL, base64; rendered pixels; verification unchanged; external image rejected. Synthetic fixtures only.');
+ }finally{await browser.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});
