@@ -1,5 +1,18 @@
 window.MivAdminSecurity=(() => {
  let pending=null;
+ function qrImageSource(value){
+  if(typeof value!=='string')throw Error('QR code indisponível. Feche e tente novamente.');
+  let svg=value.trim();
+  // Supabase JS prefixes the raw SVG with a data URL; normalize the payload once.
+  if(/^data:image\/svg\+xml[;,]/i.test(svg)){
+   const comma=svg.indexOf(','),header=svg.slice(0,comma);
+   svg=svg.slice(comma+1);
+   if(/;base64$/i.test(header))svg=atob(svg);
+   else if(/^%3c/i.test(svg.trim()))svg=decodeURIComponent(svg);
+  }
+  if(!/^<svg[\s>]/i.test(svg.trim()))throw Error('QR code inválido. Feche e tente novamente.');
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+ }
  async function verify(sb,enroll=false){
   if(pending)return pending;
   if(!sb.auth.mfa)throw Error('Atualize a página para carregar a autenticação segura.');
@@ -18,7 +31,7 @@ window.MivAdminSecurity=(() => {
       for(const old of factors.all||[])if(old.factor_type==='totp'&&old.status==='unverified')await sb.auth.mfa.unenroll({factorId:old.id});
       const {data,error:enrollError}=await sb.auth.mfa.enroll({factorType:'totp',friendlyName:'MIV Admin'});if(enrollError)throw enrollError;factorId=data.id;
       dialog.querySelector('#mfaInstruction').textContent='Adicione este QR code ao seu aplicativo autenticador. Guarde o acesso ao aplicativo com segurança. Não compartilhe o QR code ou os códigos. A proteção só é ativada após confirmar um código válido.';
-      const img=document.createElement('img');img.alt='QR code para configurar o autenticador';img.width=220;img.height=220;img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(data.totp.qr_code);dialog.querySelector('#mfaQr').append(img);
+      const img=document.createElement('img');img.alt='QR code para configurar o autenticador';img.width=220;img.height=220;img.onerror=()=>{dialog.querySelector('#mfaStatus').textContent='Não foi possível exibir o QR code. Feche e tente novamente.';};img.src=qrImageSource(data.totp?.qr_code);dialog.querySelector('#mfaQr').append(img);
      }
     }else{const {data,error:listError}=await sb.auth.mfa.listFactors();if(listError)throw listError;factorId=data.totp?.find(f=>f.status==='verified')?.id;dialog.querySelector('#mfaInstruction').textContent='Informe o código do seu aplicativo autenticador para acessar os dados administrativos.';}
     if(!factorId)throw Error('Autenticador não encontrado. Solicite recuperação pelo responsável.');
