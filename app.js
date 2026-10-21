@@ -2,7 +2,7 @@ const accessState={plan:'free',subscription:null,purchases:new Set(),ready:false
 const state={profile:JSON.parse(localStorage.getItem('mivV3Profile')||'null')||{niche:'Visão geral para negócios',theme:'clean',objective:'crescer'},favorites:JSON.parse(localStorage.getItem('mivV3Fav')||'[]'),analysisFav:JSON.parse(localStorage.getItem('mivV3AnalysisFav')||'[]'),history:JSON.parse(localStorage.getItem('mivV3History')||'[]'),reports:JSON.parse(localStorage.getItem('mivV3Reports')||'[]'),route:'home',current:null,toolFilter:'Todos',learnFilter:'Todos'};
 let marketTrendItems=[],competitorInsightItems=[];
 let pendingAuthAction=null;
-const groups=[
+const groups=window.MIV_NICHE_CATALOG||[
  {name:'Profissionais da Saúde',theme:'medical',subs:['Médico','Cardiologista','Dermatologista','Dentista','Fisioterapeuta','Nutricionista','Psicólogo','Fonoaudiólogo']},
  {name:'Bem-estar & Terapias',theme:'health',subs:['Terapeuta','Psicanalista','Massoterapeuta','Reiki','Yoga','Pilates','Clínica de bem-estar']},
  {name:'Fitness & Esporte',theme:'fitness',subs:['Personal Trainer','Academia','Crossfit','Treinador esportivo','Estúdio funcional','Assessoria de corrida']},
@@ -41,10 +41,12 @@ function syncOtherInput(selectId,value=''){
  if(!isOther)input.value='';
 }
 function selectedWithOther(selectId){
+ if(window.MivNiche&&['calNiche','regNiche','cpNiche','cpSubniche'].includes(selectId))return window.MivNiche.value(selectId);
  const select=document.getElementById(selectId),input=otherInputFor(selectId);if(!select)return'';
  return select.value===OTHER_NICHE_VALUE?String(input?.value||'').trim():String(select.value||'').trim();
 }
 function renderCompanyNicheSelects(profile={}){
+ if(window.MivNiche){window.MivNiche.renderField('cpNiche');window.MivNiche.renderField('cpSubniche');return;}
  const nicheSel=document.getElementById('cpNiche'),subSel=document.getElementById('cpSubniche');
  if(!nicheSel||!subSel)return;
  const currentNiche=profile.niche||nicheSel.value||'',currentSub=profile.subniche||subSel.value||'';
@@ -58,6 +60,7 @@ function renderCompanyNicheSelects(profile={}){
  subSel.disabled=!group&&nicheSel.value!==OTHER_NICHE_VALUE;
 }
 function renderGenericNicheSelect(selectId,value=''){
+ if(window.MivNiche&&['calNiche','regNiche'].includes(selectId)){window.MivNiche.renderField(selectId);return;}
  const values=Object.keys(niches).sort((a,b)=>a.localeCompare(b,'pt-BR'));
  fillSelectOptions(document.getElementById(selectId),values,'Selecione seu nicho ou subnicho',value,true);
  syncOtherInput(selectId,values.includes(value)?'':value);
@@ -1821,6 +1824,7 @@ function fillCompanyProfileForm(){
  const st=document.getElementById('companyProfileStatus');if(st)st.textContent=p.savedAt?`Última atualização: ${new Date(p.savedAt).toLocaleString('pt-BR')}`:'';
 }
 async function saveCompanyProfileForm(){
+ if(window.MivNiche&&!window.MivNiche.require(()=>goCompanyProfile()))return;
  if(!mivUser||!mivSupabase){openAuth('login');toast('Entre na sua conta para salvar a empresa.');return}
  const p=getCompanyProfile();
  Object.entries(companyProfileFields).forEach(([id,key])=>{if(id==='cpNiche'||id==='cpSubniche')return;const el=document.getElementById(id);if(el)p[key]=el.value.trim()});
@@ -1842,7 +1846,7 @@ async function saveCompanyProfileForm(){
   const {error:profileError}=await mivSupabase.from('company_profiles').upsert(detail,{onConflict:'company_id'});
   if(profileError)throw profileError;
   p.savedAt=new Date().toISOString();mirrorCompanyProfile(p);
-  if(p.subniche||p.niche){state.profile.niche=p.subniche||p.niche;state.profile.theme=niches[state.profile.niche]?.theme||niches[p.niche]?.theme||state.profile.theme;save()}
+  if(!window.MivNiche&&(p.subniche||p.niche)){state.profile.niche=p.subniche||p.niche;state.profile.theme=niches[state.profile.niche]?.theme||niches[p.niche]?.theme||state.profile.theme;save()}
   fillCompanyProfileForm();toast('Informações da empresa salvas no Supabase.');
   if(status)status.textContent='Salvo na sua conta · disponível em qualquer navegador';
  }catch(err){console.error('[MIV company save]',err);toast('Erro ao salvar a empresa.');if(status)status.textContent='Não foi possível salvar. Tente novamente.'}
@@ -2057,7 +2061,7 @@ function readCalendarPrefs(){try{return JSON.parse(localStorage.getItem('mivCale
 function saveCalendarPrefs(p){localStorage.setItem('mivCalendarPrefs',JSON.stringify(p))}
 function customCalendarEvents(){const p=readCalendarPrefs(),result={};(p.customEvents||[]).forEach(x=>{const k=`${x.month}-${x.day}`;(result[k]||(result[k]=[])).push(x.label)});return result}
 function parseCustomDates(text){const monthNames={janeiro:1,fevereiro:2,março:3,marco:3,abril:4,maio:5,junho:6,julho:7,agosto:8,setembro:9,outubro:10,novembro:11,dezembro:12};const out=[];text.split(/\n|;/).map(x=>x.trim()).filter(Boolean).forEach(line=>{let m=line.match(/^(\d{1,2})\s*\/\s*(\d{1,2})(?:\s*[-–—:]?\s*)(.*)$/i);if(m){out.push({day:+m[1],month:+m[2],label:(m[3]||'Data importante').trim()});return}m=line.match(/^(\d{1,2})\s+de\s+([a-zçãéô]+)(?:\s*[-–—:]?\s*)(.*)$/i);if(m&&monthNames[m[2].toLowerCase()])out.push({day:+m[1],month:monthNames[m[2].toLowerCase()],label:(m[3]||'Data importante').trim()})});return out.filter(x=>x.day>=1&&x.day<=31&&x.month>=1&&x.month<=12)}
-async function openCalendar(){const modal=document.getElementById('calendarModal');modal.classList.add('open');calDate=new Date();fillCalSelectors();const local=readCalendarPrefs();renderCalendarNicheSelect(local.niche||state.profile.niche||'');document.getElementById('calCity').value=local.city||state.profile.city||'';document.getElementById('calCustomDates').value=local.customText||'';calDynamicEvents=Array.isArray(local.dynamicEvents)?local.dynamicEvents:[];calDynamicSources=Array.isArray(local.dynamicSources)?local.dynamicSources:[];if(mivUser&&mivSupabase){try{const {data}=await mivSupabase.from('marketing_calendar_profiles').select('*').eq('user_id',mivUser.id).maybeSingle();if(data){renderCalendarNicheSelect(data.niche||selectedWithOther('calNiche'));document.getElementById('calCity').value=data.city||document.getElementById('calCity').value;document.getElementById('calCustomDates').value=data.custom_text||'';calDynamicEvents=Array.isArray(data.dynamic_events)?data.dynamic_events:[];calDynamicSources=Array.isArray(data.dynamic_sources)?data.dynamic_sources:[];saveCalendarPrefs({niche:data.niche||'',city:data.city||'',customText:data.custom_text||'',customEvents:Array.isArray(data.custom_events)?data.custom_events:[],dynamicEvents:calDynamicEvents,dynamicSources:calDynamicSources,savedAt:data.updated_at,dynamicUpdatedAt:data.dynamic_updated_at})}}catch(e){console.warn('[Calendar cloud load]',e)}}renderCalendar();updateCalSavedStatus();renderCalSources()}
+async function openCalendar(){const modal=document.getElementById('calendarModal');modal.classList.add('open');calDate=new Date();fillCalSelectors();const local=readCalendarPrefs();renderCalendarNicheSelect(local.niche||state.profile.niche||'');document.getElementById('calCity').value=local.city||state.profile.city||'';document.getElementById('calCustomDates').value=local.customText||'';calDynamicEvents=Array.isArray(local.dynamicEvents)?local.dynamicEvents:[];calDynamicSources=Array.isArray(local.dynamicSources)?local.dynamicSources:[];if(mivUser&&mivSupabase){try{const {data}=await mivSupabase.from('marketing_calendar_profiles').select('*').eq('user_id',mivUser.id).maybeSingle();if(data&&(!window.MivNiche||data.niche===window.MivNiche.current())){renderCalendarNicheSelect(data.niche||selectedWithOther('calNiche'));document.getElementById('calCity').value=data.city||document.getElementById('calCity').value;document.getElementById('calCustomDates').value=data.custom_text||'';calDynamicEvents=Array.isArray(data.dynamic_events)?data.dynamic_events:[];calDynamicSources=Array.isArray(data.dynamic_sources)?data.dynamic_sources:[];saveCalendarPrefs({niche:data.niche||'',city:data.city||'',customText:data.custom_text||'',customEvents:Array.isArray(data.custom_events)?data.custom_events:[],dynamicEvents:calDynamicEvents,dynamicSources:calDynamicSources,savedAt:data.updated_at,dynamicUpdatedAt:data.dynamic_updated_at})}}catch(e){console.warn('[Calendar cloud load]',e)}}renderCalendar();updateCalSavedStatus();renderCalSources()}
 function fillCalSelectors(){const m=document.getElementById('calMonth'),y=document.getElementById('calYear');m.innerHTML=calMonths.map((x,i)=>`<option value="${i}" ${i===calDate.getMonth()?'selected':''}>${x}</option>`).join('');const years=[];for(let yr=2025;yr<=2032;yr++)years.push(yr);y.innerHTML=years.map(x=>`<option value="${x}" ${x===calDate.getFullYear()?'selected':''}>${x}</option>`).join('')}
 function dynamicEventsFor(year,month,day){return calDynamicEvents.filter(e=>{const d=String(e.date||'').split('-');return +d[0]===year&&+d[1]===month&&+d[2]===day}).map(e=>({name:e.name,type:e.type||'sector',relevance:e.relevance||'medium',reason:e.reason||''}))}
 function allEventsFor(month,day){const fixed=calEvents[`${month}-${day}`]||[],custom=customCalendarEvents()[`${month}-${day}`]||[],dyn=dynamicEventsFor(calDate.getFullYear(),month,day);return [...fixed.map(x=>({name:x,type:'base'})),...dyn,...custom.map(x=>({name:x,type:'custom'}))]}
@@ -2439,7 +2443,7 @@ async function loadCompanyFromSupabase(){
    savedAt:detail?.updated_at||company?.updated_at||new Date().toISOString()
   };
   mirrorCompanyProfile(p);
-  if(p.subniche||p.niche){state.profile.niche=p.subniche||p.niche;state.profile.theme=niches[state.profile.niche]?.theme||niches[p.niche]?.theme||state.profile.theme;save()}
+  if(!window.MivNiche&&(p.subniche||p.niche)){state.profile.niche=p.subniche||p.niche;state.profile.theme=niches[state.profile.niche]?.theme||niches[p.niche]?.theme||state.profile.theme;save()}
   maybeRenderCentral();
   return p;
  }catch(err){console.error('[MIV company load]',err);toast('Não foi possível carregar os dados da empresa.');return null}
@@ -2456,6 +2460,7 @@ async function applyAuthSession(session){
  }
  localStorage.setItem('mivWorkspaceOwner',incomingOwner);
  mivUser=session?.user||null;
+ window.MivNiche?.session();
  const btn=document.querySelector('.auth-header-btn');
  const centralBtn=document.querySelector('.central-btn');
  const logout=document.getElementById('logoutBtn');
@@ -2467,6 +2472,7 @@ async function applyAuthSession(session){
  mivHydratingAuth=true;
  Promise.resolve().then(async()=>{
   try{await loadCompanyFromSupabase()}catch(e){console.warn('[MIV company hydrate]',e)}
+  try{await window.MivNiche?.hydrate()}catch(e){console.warn('[MIV niche hydrate]',e)}
   try{await loadAccessFromSupabase()}catch(e){console.warn('[MIV access hydrate]',e)}
   try{await window.MivDiagnosis?.hydrate(true)}catch(e){console.warn('[MIV diagnosis hydrate]',e)}
   try{await syncSinglePurchaseReturn({showStatus:true})}catch(e){console.warn('[MIV purchase return]',e)}

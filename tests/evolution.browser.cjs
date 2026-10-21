@@ -28,6 +28,7 @@ const server=http.createServer(async(req,res)=>{
   await page.route('**/api/mark-ai',async route=>{researchRequests++;await route.fulfill({json:{cards:[{channel:'Instagram',title:'Instagram',description:'Movimento de teste: vídeos sobre dúvidas frequentes.',mark_strategy:'Teste uma série de respostas.',source:'Fonte de teste',source_url:'https://example.com/teste'}]}})});
   const url=`http://127.0.0.1:${server.address().port}`;
   await page.goto(url);await page.locator('.ev-card').first().waitFor();
+  await page.locator('#marketingTrack .card').first().waitFor();
   assert.equal(await page.locator('.ev-card').count(),20);
   assert.equal(await page.locator('.ev-question').count(),60);
   assert.equal(await page.locator('#marketingTrack .card').count(),10);

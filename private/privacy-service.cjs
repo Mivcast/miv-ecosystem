@@ -5,7 +5,7 @@ const fail=(status,message)=>{throw Object.assign(new Error(message),{status});}
 async function requireAdmin(url,key,user,token){if(!await require('./admin-security.cjs').allowed(url,key,user,token))fail(403,'Acesso restrito ao administrador. Confirme o segundo fator quando ativado.');}
 async function requireAcceptance(url,key,user){const rows=await db(url,key,`legal_acceptances?user_id=eq.${user.id}&version=eq.${VERSION}&select=version&limit=1`);if(!rows?.length)fail(428,'Leia e aceite os Termos de Uso antes de continuar.');}
 async function pages(url,key,table,filter,select='*'){
- const order=table==='diagnosis_workspaces'?'workspace_key':'id';
+ const order=table==='diagnosis_workspaces'?'workspace_key':table==='user_niche_profiles'?'user_id':'id';
  const result=[];for(let offset=0;offset<10000;offset+=500){const rows=await db(url,key,`${table}?${filter}&select=${select}&order=${order}&limit=500&offset=${offset}`);if(!Array.isArray(rows))fail(503,'Não foi possível concluir a cópia.');result.push(...rows);if(rows.length<500)return result;}
  fail(413,'O volume exige uma cópia assistida. Registre uma solicitação de acesso.');
 }
@@ -16,8 +16,9 @@ async function exportData(url,key,user){
   ['purchases','user_purchases','id,item_id,item_type,status,amount_cents,provider,purchased_at'],
   ['subscriptions','user_subscriptions','id,plan,status,current_period_start,current_period_end,cancel_at_period_end,next_payment_date,created_at'],
   ['diagnoses','diagnosis_workspaces','*'],['calendar','marketing_calendar_saved_ideas','*'],
+  ['niche_profile','user_niche_profiles','niche,revision,updated_at'],['niche_suggestions','niche_suggestions','id,name,status,created_at'],
   ['privacy_requests','privacy_requests','id,kind,message,status,response,created_at,updated_at'],['legal_acceptances','legal_acceptances','id,version,accepted_at']
- ])result[name]=await pages(url,key,table,filter,select);
+ ])result[name]=await pages(url,key,table,table==='niche_suggestions'?`submitted_by=eq.${user.id}`:filter,select);
  result.profile=await db(url,key,`profiles?id=eq.${user.id}&select=id,full_name,phone,avatar_url,created_at,updated_at`);
  const memberships=await db(url,key,`company_users?${filter}&select=company_id`);
  result.companies=[];

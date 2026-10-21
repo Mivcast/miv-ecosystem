@@ -8,6 +8,7 @@ async function getContext(su,sk,userId){
   const settings=(await rows(su,sk,'mark_ai_settings?id=eq.global&select=*'))[0]||{};
   const membership=(await rows(su,sk,`company_users?user_id=eq.${userId}&select=company_id,created_at&order=created_at.asc&limit=1`))[0]||null;
   let company=null,profile=null;if(membership?.company_id){company=(await rows(su,sk,`companies?id=eq.${membership.company_id}&select=id,name,niche,subniche,city,state&limit=1`))[0]||null;profile=(await rows(su,sk,`company_profiles?company_id=eq.${membership.company_id}&select=*&limit=1`))[0]||null}
+  company=await require('../private/niche-service.cjs').companyContext(su,sk,userId,company);
   return {settings,company,profile};
 }
 async function hasPaidAccess(su,sk,userId){
