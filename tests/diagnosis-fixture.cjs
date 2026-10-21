@@ -1,4 +1,5 @@
 const service=require('../private/diagnosis-service.cjs');
+const catalog=require('../private/catalog-service.cjs');
 const rules={id:'global',free_period:'lifetime',purchase_unit:'card',free_solution_limit:2,card_price_cents:1990,pro_mark_enabled:false,premium_mark_enabled:true,revision:1};
 async function attach(page,initialPlan='premium',options={}){
   if(!options.analytics)await page.addInitScript(()=>localStorage.setItem('mivAnalyticsConsent:v2',JSON.stringify({status:'declined',at:Date.now()})));
@@ -15,8 +16,12 @@ async function attach(page,initialPlan='premium',options={}){
     const req=route.request(),url=new URL(req.url()),body=req.postDataJSON()||{},input=req.method()==='POST'?body:Object.fromEntries(url.searchParams);
     if(offline)return route.fulfill({status:503,json:{error:'Banco temporariamente indisponível'}});
     if(input.action==='rules')return route.fulfill({json:{rules}});
+    if(input.action==='catalog')return route.fulfill({json:{revision:1,sections:catalog.publicSections(catalog.seed())}});
+    if(input.action==='niches')return route.fulfill({json:{niches:[]}});
     const user=(req.headers().authorization||'').replace('Bearer fixture:','');
     if(!user||user.startsWith('Bearer'))return route.fulfill({status:401,json:{error:'Entre na conta'}});
+    if(input.action==='niche-get')return route.fulfill({json:{niche:null,revision:0}});
+    if(input.action==='niche-set')return route.fulfill({json:{niche:input.niche,revision:input.revision+1,status:'approved'}});
     const key=user+':'+(input.company_id||'personal')+':'+input.niche;
     if(input.action==='list')return route.fulfill({json:{workspaces:[...workspaces.entries()].filter(([k])=>k.startsWith(user+':')).map(([,r])=>r)}});
     const workspace=workspaces.get(key)||{workspace_key:key,company_id:input.company_id||null,niche:input.niche,data:{},updated_at:new Date().toISOString()};

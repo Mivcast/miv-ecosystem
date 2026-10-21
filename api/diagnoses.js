@@ -2,6 +2,8 @@ const crypto=require('node:crypto');
 const service=require('../private/diagnosis-service.cjs');
 const analytics=require('../private/analytics-service.cjs');
 const privacy=require('../private/privacy-service.cjs');
+const catalog=require('../private/catalog-service.cjs');
+const niches=require('../private/niche-service.cjs');
 const send=(res,status,data)=>{res.setHeader('Cache-Control','private, no-store');return res.status(status).json(data);};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -16,6 +18,10 @@ module.exports=async function(req,res){
     const url=process.env.SUPABASE_URL,key=process.env.SUPABASE_SECRET_KEY,pub=process.env.SUPABASE_PUBLISHABLE_KEY;
     if(!url||!key||!pub)return send(res,503,{error:'Conexão das análises indisponível.'});
     if(req.method==='GET'&&req.query?.action==='rules')return send(res,200,{rules:await service.rules(url,key)});
+    if(req.method==='GET'&&req.query?.action==='catalog'){
+      const document=await catalog.load(url,key);return send(res,200,{revision:document.revision,sections:catalog.publicSections(document.sections)});
+    }
+    if(req.method==='GET'&&req.query?.action==='niches')return send(res,200,{niches:await niches.approved(url,key)});
     if(req.method==='POST'&&req.body?.action==='analytics-events')return send(res,200,{accepted:await analytics.ingest(req,url,key,pub)});
     const token=String(req.headers.authorization||'').match(/^Bearer (.+)$/)?.[1];
     if(!token)return send(res,401,{error:'Entre na sua conta para salvar análises e liberar soluções.'});
@@ -23,6 +29,25 @@ module.exports=async function(req,res){
     if(!auth.ok)return send(res,401,{error:'Sua sessão expirou. Entre novamente.'});
     const user=await auth.json();if(!uuid.test(user.id))return send(res,401,{error:'Sessão inválida.'});
     const input=req.method==='GET'?req.query||{}:req.body||{};
+    if(input.action==='catalog-admin-get'){
+      if(req.method!=='GET')return send(res,405,{error:'Método não permitido.'});
+      await privacy.requireAdmin(url,key,user,token);return send(res,200,await catalog.load(url,key));
+    }
+    if(input.action==='catalog-admin-save'){
+      if(req.method!=='POST')return send(res,405,{error:'Método não permitido.'});
+      if(!analytics.sameOrigin(req))return send(res,403,{error:'Origem não permitida.'});
+      return send(res,200,await catalog.publish(url,key,user,token,input));
+    }
+    if(input.action==='niche-get'&&req.method==='GET')return send(res,200,await niches.profile(url,key,user));
+    if(input.action==='niche-set'&&req.method==='POST'){
+      if(!analytics.sameOrigin(req))return send(res,403,{error:'Origem não permitida.'});
+      return send(res,200,await niches.save(url,key,user,input));
+    }
+    if(input.action==='niche-admin-list'||input.action==='niche-admin-update'){
+      if((input.action==='niche-admin-list')!==(req.method==='GET'))return send(res,405,{error:'Método não permitido.'});
+      if(!analytics.sameOrigin(req))return send(res,403,{error:'Origem não permitida.'});
+      return send(res,200,await niches.admin(url,key,user,token,input));
+    }
     if(/^(privacy-|legal-)/.test(input.action||'')){
       const readActions=new Set(['legal-status','privacy-list','privacy-admin-list']);
       if(readActions.has(input.action)!==(req.method==='GET'))return send(res,405,{error:'Método não permitido.'});
@@ -45,13 +70,15 @@ module.exports=async function(req,res){
     const workspaceKey=`${companyId||'personal'}:${niche.toLowerCase()}`;
     const workspace=async()=> (await service.db(url,key,`diagnosis_workspaces?user_id=eq.${user.id}&workspace_key=eq.${encodeURIComponent(workspaceKey)}&select=data,updated_at&limit=1`))[0]||{data:{},updated_at:null};
     if(req.method==='GET'){
-      const [grant,policy,saved]=await Promise.all([service.access(url,key,user.id),service.rules(url,key),workspace()]);
-      return send(res,200,{...grant,rules:policy,workspace:saved,solutions:service.grantedSolutions(grant)});
+      const [grant,policy,saved,document]=await Promise.all([service.access(url,key,user.id),service.rules(url,key),workspace(),catalog.load(url,key)]);
+      const solutions=Object.fromEntries([...catalog.pointMap(document.sections)].filter(([id])=>Object.hasOwn(service.grantedSolutions(grant),id)));
+      return send(res,200,{...grant,rules:policy,workspace:saved,solutions,catalog_revision:document.revision});
     }
     if(input.action==='unlock'){
       if(!service.points.has(input.point_id))return send(res,400,{error:'Solução não encontrada.'});
       const grant=await service.access(url,key,user.id,input.point_id,input.consume_free===true);
-      return send(res,grant.allowed?200:402,{...grant,solution:grant.allowed?service.points.get(input.point_id):null});
+      const document=grant.allowed?await catalog.load(url,key):null;
+      return send(res,grant.allowed?200:402,{...grant,solution:grant.allowed?catalog.pointMap(document.sections).get(input.point_id):null});
     }
     if(input.action==='save'){
       const data=service.validatePointData(input.point_id,input.data);
@@ -59,14 +86,15 @@ module.exports=async function(req,res){
       return send(res,200,{saved:true,workspace:saved});
     }
     if(input.action==='report'){
-      const [grant,saved]=await Promise.all([service.access(url,key,user.id),workspace()]);
+      const [grant,saved,document]=await Promise.all([service.access(url,key,user.id),workspace(),catalog.load(url,key)]);
+      const solutions=Object.fromEntries([...catalog.pointMap(document.sections)].filter(([id])=>Object.hasOwn(service.grantedSolutions(grant),id)));
       const clientId=input.report_id||crypto.randomUUID();if(!uuid.test(clientId))return send(res,400,{error:'Identificador de relatório inválido.'});
       const row={user_id:user.id,company_id:companyId,client_id:clientId,name:'Relatório de Evolução · '+niche,status:'Salvo',
-        meta:{type:'evolution',owner_id:user.id,workspace_key:workspaceKey,niche,generated_at:new Date().toISOString(),data:saved.data,solutions:service.grantedSolutions(grant)},created_at:new Date().toISOString()};
+        meta:{type:'evolution',owner_id:user.id,workspace_key:workspaceKey,niche,generated_at:new Date().toISOString(),data:saved.data,solutions,catalog:catalog.publicSections(document.sections),catalog_revision:document.revision},created_at:new Date().toISOString()};
       const reports=await service.db(url,key,'user_reports?on_conflict=user_id,client_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(row)});
       if(reports?.length!==1)throw new Error('Falha ao confirmar relatório.');
       return send(res,200,{report:reports[0]});
     }
     return send(res,400,{error:'Ação não reconhecida.'});
-  }catch(error){console.error('[MIV diagnoses]',error.status||'unavailable');return send(res,error.status||503,{error:error.status===400?error.message:'Não foi possível acessar suas análises agora. Suas respostas locais foram preservadas. Tente novamente.'});}
+  }catch(error){console.error('[MIV diagnoses]',error.status||'unavailable');return send(res,error.status||503,{error:[400,409,429].includes(error.status)?error.message:'Não foi possível acessar suas análises agora. Suas respostas locais foram preservadas. Tente novamente.'});}
 };

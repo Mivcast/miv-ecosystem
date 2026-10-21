@@ -22,6 +22,7 @@ const server=http.createServer(async(req,res)=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://**/*',route=>route.abort());await attach(page);
   await page.goto('http://127.0.0.1:'+server.address().port);await page.locator('.ev-card').first().waitFor();
+  await page.locator('#marketingTrack .card').first().waitFor();
   await authenticate(page);
   for(const width of [320,360,390,430,700,768]){
    await page.setViewportSize({width,height:900});

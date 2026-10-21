@@ -29,6 +29,7 @@ module.exports=async function handler(req,res){
     const memberships=await rows(su,sk,`company_users?user_id=eq.${user.id}&select=company_id,created_at&order=created_at.asc&limit=1`);
     const companyId=memberships[0]?.company_id;let company=null,profile=null;
     if(companyId){company=(await rows(su,sk,`companies?id=eq.${companyId}&select=id,name,niche,subniche,city,state&limit=1`))[0]||null;profile=(await rows(su,sk,`company_profiles?company_id=eq.${companyId}&select=*&limit=1`))[0]||null;}
+    company=await require('../private/niche-service.cjs').companyContext(su,sk,user.id,company);
     const knowledgeText=knowledge.map((k,i)=>`[${i+1}] ${k.kind.toUpperCase()} — ${k.title}\n${clean(k.content,10000)}`).join('\n\n').slice(0,60000);
     const statusLabel=v=>v==='correct'?'está certo':v==='improve'?'precisa melhorar':v==='na'?'não se aplica':'não respondido';
     const userData=[`ANÁLISE: ${analysisTitle||areaId}${sub?` | SUBANÁLISE: ${sub}`:''}`,`SCORE CALCULADO PELO SISTEMA: ${score}%`,'\nRESPOSTAS:',...answers.map((x,i)=>`${i+1}. ${clean(x.question,1000)}\nResposta: ${clean(x.answer,3000)||'não respondida'}`),'\nCHECKLIST:',...checklist.map((x,i)=>`${i+1}. ${clean(x.point,1000)} — ${statusLabel(x.status)}`)].join('\n');

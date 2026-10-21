@@ -1,0 +1,23 @@
+.ev-q-summary,.ev-q-assessment{font-size:13px;line-height:1.5;margin:8px 0;color:var(--muted,#526575)}
+.ev-q-assessment{font-weight:600;color:var(--text,#263c4c)}
+.ev-stage-intro{margin:0 0 14px;font-size:14px;line-height:1.6;max-width:1000px}
+.ev-stage-intro summary{cursor:pointer;color:var(--muted,#526575)}
+.ev-finder{border-top:1px solid #d9e3eb;margin-top:22px;padding:22px 0}
+.ev-finder h3{font-size:22px;margin:0 0 12px}.ev-finder label{display:block;font-size:14px;margin-bottom:6px}
+.ev-finder input{display:block;width:min(100%,620px);min-width:0;min-height:44px;font:inherit;font-size:16px;padding:10px 12px;border:1px solid #b8ccd9;border-radius:6px}
+.ev-finder-status{font-size:13px;min-height:20px}.ev-finder-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ev-finder-results button{display:flex;flex-direction:column;align-items:start;gap:7px;text-align:left;white-space:normal;min-width:0;overflow-wrap:anywhere}
+.ev-finder-results small{font-size:11px}.ev-finder-results strong{font-size:14px;line-height:1.5}
+.ev-search-match{outline:2px solid #13967e;outline-offset:3px;background:#eaf8f2}
+#catalogEditor,#nicheReviewList{display:grid;gap:14px;max-width:1100px}
+#catalogEditor fieldset,#nicheReviewList fieldset{min-width:0;border:1px solid #dce6e3;padding:16px;border-radius:6px}
+#catalogEditor label,#nicheReviewList label{display:flex;flex-direction:column;font-size:13px;gap:6px;margin:12px 0}
+#catalogEditor input,#nicheReviewList input,#nicheReviewList select{width:100%;min-width:0;font:inherit;padding:10px;border:1px solid #b8ccd9;border-radius:5px}
+#catalogEditor textarea{font-size:14px;min-height:80px;border-radius:5px}
+.catalog-question{border-bottom:1px solid #dce6e3;padding:14px 0}.catalog-question summary{font-weight:600;cursor:pointer;line-height:1.5}
+#catalogPreview{object-fit:cover;border-radius:6px;max-width:100%;background:#edf4f5}
+.canonical-niche-note{font-size:13px;line-height:1.5}.canonical-niche-note button{margin-left:8px}
+@media(max-width:700px){.ev-finder-results{grid-template-columns:1fr}.ev-finder{padding:18px 0}.ev-finder h3{font-size:20px}}
+@media print{.ev-finder{display:none}}
+.ev-choices button{white-space:normal;max-width:100%;min-height:36px;line-height:1.35;text-align:left}
+.ev-overall-health{font-size:13px;font-weight:650;line-height:1.5}

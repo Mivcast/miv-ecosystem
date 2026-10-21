@@ -53,6 +53,7 @@ async function marketContext(su,sk,userId){
     company=(await rows(su,sk,`companies?id=eq.${membership.company_id}&select=id,name,niche,subniche,city,state&limit=1`))[0]||null;
     profile=(await rows(su,sk,`company_profiles?company_id=eq.${membership.company_id}&select=*&limit=1`))[0]||null;
   }
+  company=await require('../private/niche-service.cjs').companyContext(su,sk,userId,company);
   return {settings,company,profile};
 }
 function marketCompanyText(company,profile,niche){return [
@@ -532,6 +533,7 @@ module.exports=async function handler(req,res){
       company=(await rows(su,sk,`companies?id=eq.${companyId}&select=id,name,niche,subniche,city,state&limit=1`))[0]||null;
       profile=(await rows(su,sk,`company_profiles?company_id=eq.${companyId}&select=*&limit=1`))[0]||null;
     }
+    company=await require('../private/niche-service.cjs').companyContext(su,sk,user.id,company);
     const webMode=resolveWebMode(settings.web_mode,area?.web_mode,cardRules?.web_mode);
     const knowledgeText=knowledge.map((k,i)=>`[${i+1}] ${k.kind.toUpperCase()} — ${k.title}\n${clean(k.content,12000)}`).join('\n\n').slice(0,70000);
     const system=[

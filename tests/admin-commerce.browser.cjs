@@ -40,7 +40,7 @@ function installSupabaseMock() {
     const target=path.resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));
     if(!target.startsWith(root+path.sep)){res.writeHead(403).end();return;}
     if(!fs.existsSync(target)||!fs.statSync(target).isFile()){res.writeHead(404).end();return;}
-    res.setHeader('Content-Type',target.endsWith('.html')?'text/html; charset=utf-8':target.endsWith('.js')?'text/javascript; charset=utf-8':'application/octet-stream');
+    res.setHeader('Content-Type',target.endsWith('.html')?'text/html; charset=utf-8':target.endsWith('.js')?'text/javascript; charset=utf-8':target.endsWith('.css')?'text/css; charset=utf-8':'application/octet-stream');
     res.end(fs.readFileSync(target));
   });
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
@@ -53,8 +53,18 @@ function installSupabaseMock() {
     await page.addInitScript(installSupabaseMock);
     await page.route('https://cdn.jsdelivr.net/**',route=>route.abort());
     await page.route('**/api/config',route=>route.fulfill({json:{supabaseUrl:'https://mock.invalid',supabasePublishableKey:'mock'}}));
+    let edition=require('../private/catalog-service.cjs').seed(),revision=1;
+    await page.route('**/api/diagnoses**',async route=>{const body=route.request().postDataJSON(),action=body?.action||new URL(route.request().url()).searchParams.get('action');if(action==='catalog-admin-get')return route.fulfill({json:{sections:edition,revision}});if(action==='catalog-admin-save'){edition=require('../private/catalog-service.cjs').validate(body.sections);revision++;return route.fulfill({json:{sections:edition,revision}});}return route.fulfill({status:400,json:{error:'Unexpected action'}});});
     await page.goto('http://127.0.0.1:'+server.address().port+'/admin.html');
     await page.waitForFunction(()=>document.getElementById('login').classList.contains('hidden'));
+    await page.locator('[data-v="diagnosis-editor"]').click();await page.locator('#editStageTitle').waitFor();
+    await page.locator('#editQ0text').fill('Como descobrir oportunidades melhores para minha empresa?');
+    await page.locator('#editQ0steps').fill('Mapeie a procura atual pelo seu serviço.\nCompare sinais reais de interesse dos clientes.\nValide uma oferta antes de investir mais.');
+    await page.locator('#catalogCard').selectOption('1');await page.locator('#catalogCard').selectOption('0');
+    assert.equal(await page.locator('#editQ0text').inputValue(),'Como descobrir oportunidades melhores para minha empresa?');
+    await page.locator('#catalogPublish').click();await page.waitForFunction(()=>document.getElementById('catalogStatus').textContent.includes('Versão 2 publicada'));
+    assert.equal(edition[0].cards[0].qs[0].steps[0],'Mapeie a procura atual pelo seu serviço.');assert.equal(edition[0].cards[0].qs[0].id,'base.mercado.demanda');
+    await page.screenshot({path:path.join(output,'editor-desktop.png')});
     await page.locator('[data-v="plans"]').click();
     await page.waitForFunction(()=>!document.getElementById('saveProPrice').disabled&&!document.getElementById('saveDiagnosisRules').disabled);
     assert.equal(await page.locator('#subProLimit').inputValue(),'120');
