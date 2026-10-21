@@ -1,7 +1,7 @@
 const service=require('../private/diagnosis-service.cjs');
 const rules={id:'global',free_period:'lifetime',purchase_unit:'card',free_solution_limit:2,card_price_cents:1990,pro_mark_enabled:false,premium_mark_enabled:true,revision:1};
 async function attach(page,initialPlan='premium',options={}){
-  if(!options.analytics)await page.addInitScript(()=>localStorage.setItem('mivAnalyticsConsent:v1',JSON.stringify({status:'declined',at:Date.now()})));
+  if(!options.analytics)await page.addInitScript(()=>localStorage.setItem('mivAnalyticsConsent:v2',JSON.stringify({status:'declined',at:Date.now()})));
   let plan=initialPlan,offline=false;
   const free=new Map(),paid=new Map(),workspaces=new Map(),reports=[];
   const rights=(user,id)=>{
