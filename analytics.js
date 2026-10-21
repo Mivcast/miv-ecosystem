@@ -1,12 +1,43 @@
-/* Optional navigation metrics. No form values, answers, chat text or URL query strings. */
+/* Own metrics require consent; GA4 uses denied-by-default advanced consent mode. */
 (() => {
   if(!['https:','http:'].includes(location.protocol))return;
-  const consentKey='mivAnalyticsConsent:v1',visitorKey='mivAnalyticsVisitor:v1',sessionKey='mivAnalyticsSession:v1';
+  const consentKey='mivAnalyticsConsent:v2',visitorKey='mivAnalyticsVisitor:v1',sessionKey='mivAnalyticsSession:v1';
+  const googleId='G-S6HK166JNZ',googleHost=location.hostname==='miv-ecosystem.vercel.app';
+  let googleConfigured=false;
+  window['ga-disable-'+googleId]=true;
   let queue=[],owner=null,generation=0,busy=false,request=null,flushTimer=null,lastPage='',epoch=0,scanPending=false,failures=0;
   const seen=new Set(),exposures=new Map();let observed=new WeakSet();
   const read=(storage,key)=>{try{return JSON.parse(storage.getItem(key)||'null');}catch{return null;}};
   const privacySignal=()=>navigator.globalPrivacyControl===true||navigator.doNotTrack==='1';
   const enabled=()=>!privacySignal()&&read(localStorage,consentKey)?.status==='accepted'&&['https:','http:'].includes(location.protocol);
+  function clearGoogleCookies(){
+    const domains=['',location.hostname,'.'+location.hostname];
+    for(const name of ['_ga','_ga_'+googleId.slice(2)])for(const domain of domains)document.cookie=name+'=; Max-Age=0; Path=/; SameSite=Lax'+(domain?'; Domain='+domain:'');
+  }
+  function stopGoogle(){
+    window['ga-disable-'+googleId]=true;
+    if(googleConfigured)window.gtag('consent','update',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
+    clearGoogleCookies();
+  }
+  function googlePage(){
+    if(!googleHost)return;
+    if(privacySignal()||!['home','detail'].includes(state.route)){stopGoogle();return;}
+    window['ga-disable-'+googleId]=false;
+    if(!googleConfigured){
+      window.dataLayer=window.dataLayer||[];
+      window.gtag=function(){window.dataLayer.push(arguments);};
+      window.gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
+      window.gtag('set','ads_data_redaction',true);
+      window.gtag('set','url_passthrough',false);
+      window.gtag('consent','update',{analytics_storage:enabled()?'granted':'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
+      window.gtag('js',new Date());
+      window.gtag('config',googleId,{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,cookie_expires:2592000,cookie_update:false,page_location:location.origin+location.pathname,page_referrer:'',page_title:'MIV Ecosystem'});
+      const script=document.createElement('script');script.id='mivGoogleAnalytics';script.async=true;script.src='https://www.googletagmanager.com/gtag/js?id='+googleId;script.referrerPolicy='no-referrer';document.head.append(script);
+      googleConfigured=true;
+    }else window.gtag('consent','update',{analytics_storage:enabled()?'granted':'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
+    if(!enabled())clearGoogleCookies();
+    window.gtag('event','page_view',{send_to:googleId,page_location:location.origin+location.pathname,page_referrer:'',page_title:'MIV Ecosystem',page_type:state.route});
+  }
   const clean=(value,max=100)=>String(value||'').toLowerCase().slice(0,max).replace(/[^a-z0-9:._-]/g,'');
   const safeCampaign=value=>/@|\d{6,}/.test(String(value||''))?'':clean(value);
   let attribution={source:'direct',campaign:''};
@@ -53,7 +84,7 @@
   }
   function pageView(){
     const key=state.route+':'+(state.current?.id||'')+':'+state.profile.niche;
-    if(key===lastPage)return;lastPage=key;epoch++;track('page_view',state.route==='detail'?state.current?.id||'':'');scan();
+    if(key===lastPage)return;lastPage=key;epoch++;googlePage();track('page_view',state.route==='detail'?state.current?.id||'':'');scan();
   }
   function idFor(article){
     const open=article.querySelector('[data-open]');if(open)return open.dataset.open;
@@ -86,12 +117,12 @@
     exposures.forEach(clearTimeout);exposures.clear();lastPage='';
     try{localStorage.setItem(consentKey,JSON.stringify({status,at:Date.now()}));if(status!=='accepted'){localStorage.removeItem(visitorKey);sessionStorage.removeItem(sessionKey);}}catch{}
     document.getElementById('analyticsConsent')?.remove();
-    if(enabled()){observed=new WeakSet();pageView();}
+    observed=new WeakSet();pageView();
   }
   function preferences(){
     document.getElementById('analyticsConsent')?.remove();
     const box=document.createElement('aside');box.id='analyticsConsent';box.className='analytics-consent';box.setAttribute('aria-label','Preferências de navegação');
-    box.innerHTML='<strong>Podemos melhorar sua experiência?</strong><p>Com sua permissão, medimos visitas e cliques para melhorar o MIV. Não coletamos textos das análises ou conversas. Você pode mudar sua escolha no rodapé.</p><div><button type="button" class="outline" data-analytics-reject>Não permitir</button><button type="button" class="primary" data-analytics-accept>Permitir métricas</button></div>';
+    box.innerHTML='<strong>Preferências de métricas</strong><p>O Google Analytics pode enviar sinais limitados sem cookies. Ao permitir, ativamos cookies de Analytics e métricas próprias. Nossos eventos não incluem textos de análises ou conversas. Você pode mudar sua escolha no rodapé. <a href="legal.html?doc=cookies">Cookies e métricas</a></p><div><button type="button" class="outline" data-analytics-reject>Recusar cookies</button><button type="button" class="primary" data-analytics-accept>Permitir métricas</button></div>';
     if(privacySignal())box.querySelector('p').textContent='Seu navegador pediu para não ser rastreado. Respeitamos essa preferência e a coleta de navegação permanece desativada.';
     box.querySelector('[data-analytics-reject]').onclick=()=>choose('declined');box.querySelector('[data-analytics-accept]').onclick=()=>choose('accepted');
     box.querySelector('[data-analytics-accept]').disabled=privacySignal();document.body.append(box);
@@ -115,10 +146,11 @@
   document.addEventListener('visibilitychange',()=>{if(document.hidden)flush();else scan();});
   window.addEventListener('storage',event=>{
     if(event.key!==consentKey)return;generation++;queue=[];request?.abort();observer?.disconnect();sessionStorage.removeItem(sessionKey);observed=new WeakSet();lastPage='';
-    if(enabled())pageView();
+    pageView();
   });
   const footer=document.querySelector('.footerBottom')||document.querySelector('.siteFooter');
   if(footer){const button=document.createElement('button');button.type='button';button.className='analytics-preferences';button.textContent='Preferências de métricas';button.onclick=preferences;footer.append(button);}
   window.MivAnalytics={track,context,flush,preferences};
-  if(!privacySignal()&&!read(localStorage,consentKey))preferences();else if(enabled())pageView();
+  pageView();
+  if(!privacySignal()&&!read(localStorage,consentKey)&&read(localStorage,'mivAnalyticsConsent:v1')?.status!=='declined')preferences();
 })();
