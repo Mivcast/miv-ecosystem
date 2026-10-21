@@ -4,7 +4,7 @@ async function get(path,status=200){const r=await fetch(base+path,{signal:AbortS
 (async()=>{
  const catalog=await (await get('/api/diagnoses?action=catalog')).json();assert.equal(catalog.sections.length,4);const qs=catalog.sections.flatMap(s=>s.cards.flatMap(c=>c.qs));assert.equal(qs.length,60);for(const q of qs){assert(q.assessment);for(const key of ['steps','standard','example'])assert.equal(q[key],undefined);}
  assert.equal(qs[0].text,'Seu mercado é bom para investir e crescer?');
- const code=await (await get('/evolution.js?v=12')).text();assert(code.includes('Já faço bem'));assert(code.includes('Faço, mas posso melhorar'));assert(code.includes('Ainda não faço'));
+ const code=await (await get('/evolution.js?v=13')).text();assert(code.includes("2:'Ok'"));assert(code.includes("1:'Mediano'"));assert(code.includes("0:'Ruim'"));assert(code.includes('Como seu negócio está nesse ponto?'));
  assert((await (await get('/index.html')).text()).includes('niche-profile.js'));
  assert((await (await get('/admin.html')).text()).includes('admin-catalog.js'));
  const niches=await (await get('/api/diagnoses?action=niches')).json();assert(niches.niches.some(n=>n.name==='Numismática'));

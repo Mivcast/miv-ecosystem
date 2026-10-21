@@ -5,7 +5,7 @@
   let reportMode = 'summary';
   let previousFocus = null;
   let currentDialog = null;
-  const labels = {2:'Já faço bem',1:'Faço, mas posso melhorar',0:'Ainda não faço',na:'Não se aplica'};
+  const labels = {2:'Ok',1:'Mediano',0:'Ruim',na:'Não se aplica'};
   const classes = {2:'yes',1:'maybe',0:'no',na:'na'};
   const scope = () => ['mivEvolution:v2', typeof mivUser !== 'undefined' ? mivUser?.id || 'visitor' : 'visitor', typeof mivActiveCompanyId !== 'undefined' ? mivActiveCompanyId || 'business' : 'business', state.profile.niche].join(':');
   function read() {
@@ -71,7 +71,7 @@
   function render() {
     const host = document.getElementById('analysisGrid'); if (!host) return;
     const all = rows(), overall = stats(all);
-    host.innerHTML = `<div class="ev-map-summary"><div class="ev-summary-title"><span class="eyebrow">MAPA DE EVOLUÇÃO EMPRESARIAL EM ETAPAS</span><h3>Veja o que já funciona, o que pode melhorar e o que precisa começar.</h3></div><div class="ev-summary-stats">${[['Pontos respondidos',overall.count],['Já faço bem',all.filter(row=>row.value===2).length],['Posso melhorar',all.filter(row=>row.value===1).length],['Ainda não faço',all.filter(row=>row.value===0).length]].map(([label,value])=>`<div><b>${value}</b><span>${label}</span></div>`).join('')}</div><div class="ev-progress"><label for="evProgress">Progresso geral <b>${overall.progress}%</b></label><progress id="evProgress" max="100" value="${overall.progress}"></progress><small>${overall.count} de ${overall.total} pontos respondidos</small></div><div class="ev-toolbar-actions"><button class="outline" data-ev-report>Meu relatório</button><button class="primary" data-ev-print>Imprimir</button></div></div>
+    host.innerHTML = `<div class="ev-map-summary"><div class="ev-summary-title"><span class="eyebrow">MAPA DE EVOLUÇÃO EMPRESARIAL EM ETAPAS</span><h3>Veja o que já funciona, o que pode melhorar e o que precisa começar.</h3></div><div class="ev-summary-stats">${[['Pontos respondidos',overall.count],['Ok',all.filter(row=>row.value===2).length],['Mediano',all.filter(row=>row.value===1).length],['Ruim',all.filter(row=>row.value===0).length]].map(([label,value])=>`<div><b>${value}</b><span>${label}</span></div>`).join('')}</div><div class="ev-progress"><label for="evProgress">Progresso geral <b>${overall.progress}%</b></label><progress id="evProgress" max="100" value="${overall.progress}"></progress><small>${overall.count} de ${overall.total} pontos respondidos</small></div><div class="ev-toolbar-actions"><button class="outline" data-ev-report>Meu relatório</button><button class="primary" data-ev-print>Imprimir</button></div></div>
       ${EVOLUTION_DATA.map(section => {
         const sectionRows = all.filter(row=>row.section.id===section.id), summary = stats(sectionRows);
         return `<section class="ev-stage"><div class="ev-stage-head"><div><span class="eyebrow">${esc(section.kicker)}</span><h3>${esc(section.title)}</h3><p>${esc(section.desc)}</p></div><div class="ev-stage-score"><b>${summary.score===null?'—':summary.score+'%'}</b><span>autoavaliação declarada</span></div></div><div class="ev-cards">${section.cards.map(card=>{
@@ -89,15 +89,20 @@
     host.querySelector('[data-ev-report]').onclick=()=>openReport();
     host.querySelector('[data-ev-print]').onclick=()=>{openReport();window.print()};
     const note=document.createElement('p');note.className='ev-assessment-note';
-    note.textContent='Já faço bem = 2 pontos; faço, mas posso melhorar = 1; ainda não faço = 0. A porcentagem considera apenas os itens respondidos e aplicáveis. Autoavaliação orientativa, não uma auditoria ou certificação. Perguntas reformuladas: revise suas respostas anteriores. ';
+    note.textContent='Ok = 2 pontos; mediano = 1; ruim = 0. A porcentagem considera apenas os itens respondidos e aplicáveis. Autoavaliação orientativa, não uma auditoria ou certificação. Perguntas reformuladas: revise suas respostas anteriores. ';
     const archive=document.createElement('button');archive.type='button';archive.textContent='Ver avaliação anterior';archive.onclick=openLegacy;note.append(archive);
     host.querySelector('.ev-map-summary').after(note);
     const health=document.createElement('p');health.className='ev-overall-health';health.textContent=`Resultado geral: ${overall.score===null?'aguardando respostas':overall.score+'% · '+status(overall.score)} · ${overall.count}/${overall.total} pontos avaliados`;host.querySelector('.ev-progress').after(health);
     const sync=document.createElement('p');sync.id='evCloudStatus';sync.className='ev-assessment-note';note.after(sync);
-    host.querySelectorAll('[data-ev-row]').forEach(el=>{const row=all.find(r=>r.id===el.dataset.evRow);if(!row?.q.assessment)return;const p=document.createElement('p');p.className='ev-q-assessment';p.textContent=row.q.assessment;el.querySelector('.ev-choices').before(p);if(row.q.summary){const small=document.createElement('p');small.className='ev-q-summary';small.textContent=row.q.summary;el.querySelector('.ev-question-heading').after(small);}});
+    host.querySelectorAll('[data-ev-row]').forEach(el=>compactQuestion(el,all.find(r=>r.id===el.dataset.evRow)));
     host.querySelectorAll('.ev-stage').forEach((el,i)=>{if(!EVOLUTION_DATA[i].intro)return;const details=document.createElement('details');details.className='ev-stage-intro';const summary=document.createElement('summary');summary.textContent='Sobre esta etapa';const text=document.createElement('p');text.textContent=EVOLUTION_DATA[i].intro;details.append(summary,text);el.querySelector('.ev-stage-head').after(details);});
     window.MivQuestionFinder?.mount(host,all,id=>openPoint(id,false));
     window.MivDiagnosis?.renderStatus();window.MivDiagnosis?.hydrate().catch(()=>{});
+  }
+  function compactQuestion(element,row) {
+    const choices=element.querySelector('.ev-choices');if(!choices||!row)return;
+    const prompt=document.createElement('span');prompt.className='ev-choice-prompt';prompt.textContent='Como seu negócio está nesse ponto?';choices.prepend(prompt);
+    if(row.q.summary){const summary=document.createElement('p');summary.className='ev-q-summary';summary.textContent=row.q.summary;choices.after(summary);}
   }
   function dialog(title,body,wide=false) {
     closeDialog(false); previousFocus=document.activeElement;
@@ -170,7 +175,7 @@
       const all=rows(),section=EVOLUTION_DATA[step],group=all.filter(row=>row.section.id===section.id),total=stats(all);
       element.querySelector('.ev-wizard-content').innerHTML=`<div class="ev-wizard-progress"><b>${esc(state.profile.niche)}</b><span>${total.count} de ${total.total} pontos respondidos · ${total.progress}%</span><progress max="60" value="${total.count}" aria-label="Progresso da análise completa"></progress></div><div class="ev-wizard-tabs" role="group" aria-label="Etapas da análise">${EVOLUTION_DATA.map((item,index)=>`<button type="button" data-ev-step="${index}" aria-pressed="${index===step}">${index+1}. ${esc(item.title)}</button>`).join('')}</div><h3>${esc(section.title)}</h3>${section.cards.map(card=>`<fieldset class="ev-wizard-card"><legend>${esc(card.title)}</legend>${group.filter(row=>row.card.id===card.id).map(row=>`<div class="ev-wizard-question"><p>${esc(row.q[0])}</p><div class="ev-choices" role="group" aria-label="${esc(row.q[0])}">${valuesFor(row.q).map(value=>`<button type="button" class="${classes[value]}" data-ev-wizard-answer="${row.id}" data-value="${value}" aria-pressed="${row.value===value}">${labels[value]}</button>`).join('')}</div>${pointActions(row)}</div>`).join('')}</fieldset>`).join('')}<div class="ev-wizard-footer"><button type="button" class="outline" data-ev-step="${step-1}" ${step===0?'disabled':''}>Etapa anterior</button>${step<3?`<button type="button" class="primary" data-ev-step="${step+1}">Próxima etapa</button>`:`<button type="button" class="primary" data-ev-finish ${total.count<total.total?'disabled':''}>Gerar relatório completo</button>`}</div><p class="ev-wizard-status" role="status">${total.count<total.total?`Faltam ${total.total-total.count} respostas para concluir a análise. Suas respostas são sincronizadas com sua Central.`:'Tudo respondido. O relatório reúne suas respostas e as soluções liberadas para sua conta.'}</p>`;
     };
-    const draw=()=>{drawBody();element.querySelectorAll('.ev-wizard-question').forEach(el=>{const button=el.querySelector('[data-ev-wizard-answer]'),row=rows().find(r=>r.id===button?.dataset.evWizardAnswer);if(row?.q.assessment){const label=document.createElement('p');label.className='ev-q-assessment';label.textContent=row.q.assessment;el.querySelector('.ev-choices').before(label);}});};
+    const draw=()=>{drawBody();element.querySelectorAll('.ev-wizard-question').forEach(el=>{const button=el.querySelector('[data-ev-wizard-answer]');compactQuestion(el,rows().find(r=>r.id===button?.dataset.evWizardAnswer));});};
     element.addEventListener('click',event=>{
       const button=event.target.closest('button');if(!button||button.disabled)return;
       if(button.hasAttribute('data-ev-solve')||button.hasAttribute('data-ev-info')){
