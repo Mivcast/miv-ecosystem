@@ -21,3 +21,7 @@
 @media print{.ev-finder{display:none}}
 .ev-choices button{white-space:normal;max-width:100%;min-height:36px;line-height:1.35;text-align:left}
 .ev-overall-health{font-size:13px;font-weight:650;line-height:1.5}
+.ev-question .ev-choices{margin-left:0}
+.ev-choice-prompt{flex:0 0 100%;font-size:12px;line-height:1.4;color:var(--muted,#526575);margin-bottom:2px}
+.ev-question .ev-q-summary,.ev-wizard-question .ev-q-summary{font-size:12px;line-height:1.5;margin:8px 0 0}
+.ev-question .ev-question-actions{margin-left:0}
