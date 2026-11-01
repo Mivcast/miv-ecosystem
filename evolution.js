@@ -190,6 +190,7 @@
         step=Number(button.dataset.evStep);draw();element.scrollTop=0;
       }else if(button.hasAttribute('data-ev-finish')){
         if(stats(rows()).count!==60)return;
+        window.MivAnalytics?.track('analysis_complete','complete');
         reportMode='detailed';openReport();
       }
     });
@@ -233,6 +234,7 @@
     return `<article class="market-card competitor-channel-card channel-${assetSlug(channel)} ev-movement ${visible?'ev-revealed':''}"><div class="market-card-top"><span class="market-stars">${marketStars(item.importance)}</span><button class="heart ${saved?'saved':''}" aria-label="Salvar ${esc(channel)}" data-fav="${esc(item.id)}">${saved?'♥':'♡'}</button></div><div class="market-card-body"><span class="meta-pill">MOVIMENTO</span><h3>${esc(channel)}</h3>${visible?`<div class="ev-movement-result"><p>${competitorDescriptionHtml(item.desc,item)}</p><strong>Nossa sugestão para você</strong><p>${esc(item.mark_strategy)}</p></div>`:''}</div><div class="market-card-actions"><button class="primary market-card-action compact" data-competitor-channel="${esc(channel)}">Atualizar movimentos 30 dias</button>${visible&&hasPremiumAccess()?`<button class="outline" data-market-mark="${esc(channel)}">Conversar com MARK</button>`:''}</div>${visible&&item.source_url?`<a class="source-link" href="${esc(item.source_url)}" target="_blank" rel="noopener">Fonte: ${esc(item.source||'Pesquisa do mercado')}</a>`:''}</article>`;
   }
   window.MivEvolution={render,renderNichePicker,marketCard,openComplete,localData:read,close:closeDialog,
+    saveQuickAnswers:changes=>{if(!mivUser)return false;const data=read(),valid=new Set(rows(data).map(row=>row.id));for(const [id,value] of Object.entries(changes)){if(!valid.has(id)||![0,1,2].includes(value))return false;}for(const [id,value] of Object.entries(changes))data[id]={...data[id],answer:value};if(!write(data))return false;render();return true;},
     restoreCloud:data=>{localStorage.setItem(scope(),JSON.stringify(data));render()},
     openSolution:id=>openPoint(id,true),openSavedReport:meta=>openReport(meta),
     openCard:id=>{const row=rows().find(row=>row.card.id===id);if(row)openPoint(row.id,true)},

@@ -60,6 +60,8 @@
   function track(name,itemId=''){
     if(!enabled())return;
     try{
+      const funnel={analysis_start:'diagnosis_start',analysis_complete:'diagnosis_complete',solution_view:'view_solution'};
+      if(googleHost&&googleConfigured&&['home','detail'].includes(state.route)&&funnel[name])window.gtag('event',funnel[name],{send_to:googleId,diagnosis_mode:itemId==='quick'?'quick':itemId==='complete'?'complete':'point',page_location:location.origin+location.pathname,page_referrer:'',page_title:'MIV Ecosystem'});
       const nextOwner=typeof mivUser!=='undefined'?mivUser?.id||null:null;
       if(owner!==nextOwner){queue=[];sessionStorage.removeItem(sessionKey);owner=nextOwner;}
       const ctx=context();if(!ctx.consent)return;
