@@ -84,7 +84,7 @@ const server=http.createServer(async(req,res)=>{
   assert.equal(await page.locator('.help-showcase .ecosystem-links>a').count(),4);
   assert.equal(await page.locator('.ev-movement-result').count(),0);
   assert.equal(researchRequests,0);
-  assert.deepEqual(await page.locator('#view-home>section').evaluateAll(sections=>sections.slice(0,4).map(section=>section.id)),['heroCommerce','nicho','como-ajuda','analises']);
+  assert.deepEqual(await page.locator('#view-home>section').evaluateAll(sections=>sections.slice(0,5).map(section=>section.id)),['heroCommerce','primeiro-resultado','nicho','como-ajuda','analises']);
   for(const width of [2048,1440]){
     await page.setViewportSize({width,height:1000});
     const margins=await page.evaluate(()=>{

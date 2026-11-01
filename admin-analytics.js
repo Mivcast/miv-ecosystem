@@ -5,10 +5,11 @@
   const money=value=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format((Number(value)||0)/100);
   const percent=(a,b)=>b?(a/b*100).toFixed(1).replace('.',',')+'%':'—';
   const date=value=>new Date(value).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'});
-  const labels={page_view:'Páginas vistas',card_view:'Exposições de cards',card_click:'Cliques em cards',card_open:'Conteúdos abertos',favorite_add:'Favoritos adicionados',analysis_start:'Análises completas iniciadas',solution_view:'Soluções consultadas',report_created:'Relatórios salvos',tool_open:'Ferramentas abertas',market_search:'Pesquisas de mercado iniciadas',mark_open:'Aberturas do MARK',mobile:'Celular',tablet:'Tablet',desktop:'Desktop',unknown:'Não identificado',direct:'Direto / sem referência',free:'Grátis',pro:'Pro',premium:'Premium'};
+  const labels={page_view:'Páginas vistas',card_view:'Exposições de cards',card_click:'Cliques em cards',card_open:'Conteúdos abertos',favorite_add:'Favoritos adicionados',analysis_start:'Diagnósticos iniciados',analysis_complete:'Diagnósticos concluídos',solution_view:'Soluções consultadas',report_created:'Relatórios salvos',tool_open:'Ferramentas abertas',market_search:'Pesquisas de mercado iniciadas',mark_open:'Aberturas do MARK',mobile:'Celular',tablet:'Tablet',desktop:'Desktop',unknown:'Não identificado',direct:'Direto / sem referência',free:'Grátis',pro:'Pro',premium:'Premium'};
   const localDay=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   let data=null,revision=0,applied=null;
   function title(id){
+    if(id==='quick')return 'Diagnóstico rápido (8 pontos)';
     if(id==='complete')return 'Análise empresarial completa';
     if(id.startsWith('plan:'))return 'Plano '+(labels[id.slice(5)]||id.slice(5));
     if(id.startsWith('diagnosis:'))return 'Análise · '+(EVOLUTION_DATA.flatMap(s=>s.cards).find(c=>c.id===id.slice(10))?.title||id.slice(10));

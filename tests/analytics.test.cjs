@@ -63,3 +63,5 @@ test('financial journal reports write failures for webhook retries',async()=>{
  const old=global.fetch;global.fetch=async()=>{throw new Error('offline')};
  try{assert.deepEqual(await service.payment('url','key',payment,{userId:uid,itemId:'whatsapp'}),{applicable:true,recorded:false});}finally{global.fetch=old;}
 });
+
+test('diagnosis completion is accepted with the same strict metadata validation',()=>{const [value]=service.validateEvents({consent:true,events:[{...event,name:'analysis_complete',item_id:'quick'}]});assert.equal(value.name,'analysis_complete');assert.equal(value.item_id,'quick');});

@@ -88,7 +88,7 @@ const themeCopy={clean:['Tudo para profissionalizar, divulgar, vender e fazer se
 let nicheHeroRows=[];
 function assetSlug(value){return String(value||'visao-geral').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'visao-geral'}
 function cssUrl(value){return String(value||'').replace(/\\/g,'/').replace(/'/g,'%27').replace(/\)/g,'%29')}
-function localNicheHeroPaths(niche){const slug=assetSlug(niche);return [`assets/nichos/${slug}.webp`,`assets/nichos/${slug}.jpg`,`assets/nichos/${slug}.jpeg`]}
+function localNicheHeroPaths(niche){const index=window.MIV_ASSET_INDEX?.niches||{},file=index[assetSlug(niche)]||index[assetSlug(niches[niche]?.group)]||'assets/nichos/servicos-profissionais.jpg';return [file]}
 function findNicheHero(niche){
  const group=niches[niche]?.group||'',theme=niches[niche]?.theme||state.profile.theme||'clean';
  return nicheHeroRows.find(x=>x.active!==false&&x.niche_name===niche)
@@ -106,19 +106,11 @@ function setCentralHeroBackground(url){
 }
 function applyLocalHeroIfExists(niche){
  if(!niche||niche==='Visão geral para negócios')return;
- const candidates=[niche,niches[niche]?.group].filter(Boolean).flatMap(localNicheHeroPaths);
- const tryImage=(index=0)=>{
-  if(index>=candidates.length)return;
-  const url=candidates[index],img=new Image();
-  img.onload=()=>{if(state.profile.niche===niche&&!findNicheHero(niche)?.image_url){setHeroBackground(url);if(state.route==='central')setCentralHeroBackground(url)}};
-  img.onerror=()=>tryImage(index+1);
-  img.src=url;
- };
- tryImage();
+ const url=localNicheHeroPaths(niche)[0];setHeroBackground(url);if(state.route==='central')setCentralHeroBackground(url);
 }
 function activeHeroContent(niche){
  const c=themeCopy[state.profile.theme]||themeCopy.clean,custom=findNicheHero(niche);
- return {title:'Descubra o que já está certo, o que precisa melhorar e o que fazer agora.',text:'Você não precisa dominar marketing para tomar boas decisões. Avalie sua empresa por áreas, compare com o jeito certo de fazer e descubra quais pontos realmente merecem sua atenção agora.',centralTitle:custom?.central_title||`Sua Central · ${niche}`,centralText:custom?.central_text||'Tudo que você favoritou, usou, comprou ou analisou fica organizado aqui.',image:custom?.image_url||''};
+ return {title:'Descubra o que está impedindo sua empresa de crescer.',text:'Avalie seu negócio gratuitamente, identifique onde precisa melhorar e encontre orientações para decidir seus próximos passos.',centralTitle:custom?.central_title||`Sua Central · ${niche}`,centralText:custom?.central_text||'Tudo que você favoritou, usou, comprou ou analisou fica organizado aqui.',image:custom?.image_url||''};
 }
 const imgs={marketing:'https://picsum.photos/seed/digitalmarketing/700/430',brand:'https://picsum.photos/seed/branddesign/700/430',sales:'https://picsum.photos/seed/businessmeeting/700/430',content:'https://picsum.photos/seed/contentcreator/700/430',google:'https://picsum.photos/seed/localbusiness/700/430',store:'https://picsum.photos/seed/retailstore/700/430',clinic:'https://picsum.photos/seed/doctorclinic/700/430',food:'https://picsum.photos/seed/foodbusiness/700/430',planning:'https://picsum.photos/seed/businessplanning/700/430',analytics:'https://picsum.photos/seed/analyticsdashboard/700/430',learning:'https://picsum.photos/seed/onlinelearning/700/430',team:'https://picsum.photos/seed/teamworkoffice/700/430'};
 const cardImageMap={
@@ -251,21 +243,20 @@ function applySubTone(niche){
   }
 }
 function applyTheme(niche,theme,scrollToCards=false){if(state.profile.niche!==niche){competitorInsightItems=[];localStorage.removeItem(MARKET_COMPETITORS_CACHE);window.MivEvolution?.resetMovements()}state.profile.niche=niche;state.profile.theme=theme||niches[niche]?.theme||'clean';document.body.dataset.theme=state.profile.theme;applySubTone(niche);const hero=activeHeroContent(niche);document.getElementById('heroTitle').textContent=hero.title;document.getElementById('heroText').textContent=hero.text;setHeroBackground(hero.image);if(!hero.image)applyLocalHeroIfExists(niche);document.getElementById('currentNiche').innerHTML=`<span>Experiência atual</span><strong>${niche}</strong><small>${(niches[niche]?.group||'Negócios')} · tema ${state.profile.theme}</small>`;save();renderTracks();window.MivEvolution?.render();maybeRenderCentral();updateMark();if(scrollToCards)setTimeout(()=>document.getElementById('analises')?.scrollIntoView({behavior:'smooth',block:'start'}),80);toast('Vitrine adaptada para '+niche)}
-function nicheThumb(name){return localNicheHeroPaths(name)[1]}
+function nicheThumb(name){return localNicheHeroPaths(name)[0]}
 function renderNiches(){window.MivEvolution?.renderNichePicker()}
 function imgFor(item){const img=item.img||'';return img&&!img.includes('picsum.photos')?img:(cardImageMap[item.id]||img)}
 function card(item){const saved=state.favorites.includes(item.id);const unlocked=hasItemAccess(item);const lock=item.access==='Grátis'?`<span class="lock-badge free-badge">GRÁTIS</span>`:unlocked?`<span class="lock-badge free-badge">✓ LIBERADO</span>`:`<span class="lock-badge">🔒 ${item.id==='monthly-strategy-plan'?'PREMIUM · ou '+markEsc(item.price):'PRO'} ${item.access==='Pago'?'· ou '+(item.price||'avulso'):''}</span>`;return `<article class="card"><div class="cardImg cardImgFallback"><div class="cardFallbackLabel"><span>${item.icon||'◆'}</span><small>${item.cat||'MIV ECOSYSTEM'}</small></div><img src="${imgFor(item)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">${lock}<button class="heart ${saved?'saved':''}" data-fav="${item.id}">${saved?'♥':'♡'}</button></div><div class="cardBody"><div class="meta"><span>${item.tag}</span><small>${item.format}</small></div><h3>${item.title}</h3><p>${item.desc}</p><button class="open" data-open="${item.id}">Abrir →</button></div></article>`}
 const serviceCutouts = {
-  'svc-logo':'branding', 'svc-vetor':'branding', 'svc-manual':'branding',
-  'svc-site':'website', 'svc-lp':'website', 'svc-link':'website',
-  'svc-loja':'commerce', 'svc-market':'commerce', 'svc-market40':'commerce',
-  'svc-google':'local', 'svc-whatsapp':'messaging',
-  'svc-instagram':'social', 'svc-facebook':'social', 'svc-linkedin':'social',
-  'svc-15artes':'social', 'svc-arte':'social',
-  'svc-midiakit':'branding', 'svc-impressos':'branding',
-  'svc-video':'video', 'svc-institucional':'video'
+ 'svc-logo':'logo-v2','svc-vetor':'vector-v2','svc-manual':'manual-v2',
+ 'svc-site':'website','svc-lp':'landing-v2','svc-link':'link-v2',
+ 'svc-loja':'commerce','svc-market':'market-v2','svc-market40':'market40-v2',
+ 'svc-google':'local','svc-whatsapp':'messaging','svc-instagram':'social',
+ 'svc-facebook':'facebook-v2','svc-linkedin':'linkedin-v2','svc-15artes':'artes15-v2',
+ 'svc-arte':'arte-v2','svc-midiakit':'midiakit-v2','svc-impressos':'impressos-v2',
+ 'svc-video':'video','svc-institucional':'institucional-v2'
 };
-function mivcastCard(item){const saved=state.favorites.includes(item.id),short=String(item.desc||'').split('.').slice(0,2).join('. ').trim()+'.';return `<article class="mivcastServiceCard"><button class="heart ${saved?'saved':''}" data-fav="${item.id}">${saved?'♥':'♡'}</button><div class="mivcastServicePhoto"><img src="${serviceCutouts[item.id]?`assets/services/${serviceCutouts[item.id]}.png`:imgFor(item)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><span>${item.icon||'◆'}</span></div><small>${markEsc(item.tag||'MIVCAST')}</small><h3>${markEsc(item.title)}</h3><p>${markEsc(short)}</p><button class="open" data-open="${item.id}">Saiba mais →</button></article>`}
+function mivcastCard(item){const saved=state.favorites.includes(item.id),short=String(item.desc||'').split('.').slice(0,2).join('. ').trim()+'.';return `<article class="mivcastServiceCard"><button class="heart ${saved?'saved':''}" data-fav="${item.id}">${saved?'♥':'♡'}</button><div class="mivcastServicePhoto"><img src="${serviceCutouts[item.id]?`assets/services/${serviceCutouts[item.id]}.${serviceCutouts[item.id].endsWith('-v2')?'webp':'png'}`:imgFor(item)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><span>${item.icon||'◆'}</span></div><small>${markEsc(item.tag||'MIVCAST')}</small><h3>${markEsc(item.title)}</h3><p>${markEsc(short)}</p><button class="open" data-open="${item.id}">Saiba mais →</button></article>`}
 const bases={marketing:['calendario','canais','local','equipe-marketing','clientes-marketing','parcerias','brindes'],brand:['identidade','branding-fisico','branding-digital','diferenciacao'],sales:['ticket','vendas-tecnicas','followup','whatsapp','oferta'],tools:['tool-calendario','markia-app','agendamentos','financeiro','orcamentos'],learn:['livro-admin-sabedoria','livro-branding-marketing','livro-digital-influencer','livro-youtuber','video-marketing-base','video-branding-base','video-vendas-base','video-conteudo-base'],consult:['consult-markia','mentoria-area','consult-setor','consult-completa','consult-acomp'],mivcast:['svc-logo','svc-vetor','svc-manual','svc-site','svc-loja','svc-lp','svc-market','svc-market40','svc-google','svc-instagram','svc-15artes','svc-facebook','svc-whatsapp','svc-link','svc-linkedin','svc-midiakit','svc-impressos','svc-arte','svc-video','svc-institucional']};
 function recommended(){
  const t=state.profile.theme;
@@ -1627,7 +1618,7 @@ const testimonialExamples=[
 function renderTestimonials(filter='Todos'){
  const grid=document.getElementById('testimonialGrid');if(!grid)return;
  const rows=testimonialExamples.filter(x=>filter==='Todos'||x.area===filter);
- grid.innerHTML=rows.map(t=>`<article><header><span class="testimonial-avatar"><img src="${t.photo}" alt="" loading="lazy" onerror="this.remove()"><b>${markEsc(t.name.split(' ').map(p=>p[0]).join('').slice(0,2))}</b></span><span><strong>${markEsc(t.name)}</strong><small>${markEsc(t.niche)}</small></span></header><div class="stars">★★★★★</div><blockquote>${markEsc(t.quote)}</blockquote><div><strong>${markEsc(t.card)}</strong><b>${markEsc(t.area)}</b></div></article>`).join('');
+ grid.innerHTML=rows.map(t=>`<article><header><span class="testimonial-avatar"><b>${markEsc(t.name.split(' ').map(p=>p[0]).join('').slice(0,2))}</b></span><span><strong>${markEsc(t.name)}</strong><small>${markEsc(t.niche)}</small></span></header><small>Exemplo ilustrativo · relato em revisão</small><blockquote>${markEsc(t.quote)}</blockquote><div><strong>${markEsc(t.card)}</strong><b>${markEsc(t.area)}</b></div></article>`).join('');
 }
 
 function renderLogos(){

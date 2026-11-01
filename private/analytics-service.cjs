@@ -1,6 +1,6 @@
 const {db,userPlan}=require('./diagnosis-service.cjs');
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const names=new Set(['page_view','card_view','card_click','card_open','favorite_add','analysis_start','solution_view','report_created','tool_open','market_search','mark_open']);
+const names=new Set(['page_view','card_view','card_click','card_open','favorite_add','analysis_start','analysis_complete','solution_view','report_created','tool_open','market_search','mark_open']);
 const bad=message=>Object.assign(new Error(message),{status:400});
 const slug=(value,max=140)=>typeof value==='string'&&value.length<=max&&/^[a-z0-9:._-]*$/i.test(value)?value:'';
 const text=(value,max)=>typeof value==='string'?value.replace(/[\u0000-\u001f<>]/g,'').slice(0,max):'';

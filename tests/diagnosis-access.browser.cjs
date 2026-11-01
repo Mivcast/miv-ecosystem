@@ -110,7 +110,8 @@ const server=http.createServer(async(req,res)=>{
     const context=canvas.getContext('2d');context.drawImage(img,0,0);results.push({src,alpha:context.getImageData(0,0,1,1).data[3]});
    }return results;
   });
-  assert.equal(alpha.length,7);assert(alpha.every(img=>img.alpha<=1),'All service families have real transparency');
+  assert(await images.evaluateAll(imgs=>imgs.every(img=>{const image=img.getBoundingClientRect(),frame=img.parentElement.getBoundingClientRect();return image.height<=frame.height+1&&image.bottom<=frame.bottom+1;})),'Service images stay inside their frames');
+  assert.equal(alpha.length,20);assert(alpha.every(img=>img.alpha<=1),'All service families have real transparency');
   await page.locator('#mivcastTrack').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'service-cutouts.png')});
   await authenticate(page,'account-b');assert.equal(await page.evaluate(()=>MivEvolution.localData()['base.mercado.demanda']),undefined);
   assert.equal(await page.locator('.ev-solution-viewed').count(),0);
