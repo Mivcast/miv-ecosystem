@@ -21,6 +21,7 @@ const report={started_at:'2026-10-20T10:00:00Z',generated_at:'2026-10-20T12:00:0
  cards:[{item_id:'diagnosis:mercado',views:20,clicks:8,opens:3,favorites:1,solutions:2,sales:2,revenue_cents:3480},{item_id:'<img src=x onerror=alert(1)>',views:1,clicks:1,opens:0,favorites:0,solutions:0,sales:0,revenue_cents:0}],
  behavior:[{name:'solution_view',events:2,sessions:2}],sources:[{source:'instagram',campaign:'outubro',sessions:12,clicks:15}],devices:[{device:'mobile',sessions:9},{device:'desktop',sessions:3}],niches:[{niche:'Médico',sessions:12}],plans:[{plan:'free',sessions:12}],checkout_origins:[{source:'instagram',checkouts:5,converted:2,abandoned:1}],
  business:{new_accounts_global:3,active_plans_global:4,cancellations_global:1,locations_global:[{city:'São Paulo',state:'SP',companies:4}]},options:{niches:['Médico'],sources:['instagram'],items:['diagnosis:mercado']}};
+report.commerce={scope:'Período e ambiente selecionados, sem filtros de navegação.',summary:{single_count:2,single_gross_cents:3980,subscription_gross_cents:0,gross_cents:3980,refunded_cents:500,repeat_buyers:1,upgraded_buyers:0,provider_fee_cents:null,estimated_contribution_cents:null},cards:[{item_id:'diagnosis:mercado',sales:2,revenue_cents:3480,checkouts:4,converted_checkouts:2}],held_conversions:2};
 (async()=>{
  await fs.mkdir(output,{recursive:true});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));let browser;
  try{

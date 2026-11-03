@@ -246,7 +246,7 @@ function applyTheme(niche,theme,scrollToCards=false){if(state.profile.niche!==ni
 function nicheThumb(name){return localNicheHeroPaths(name)[0]}
 function renderNiches(){window.MivEvolution?.renderNichePicker()}
 function imgFor(item){const img=item.img||'';return img&&!img.includes('picsum.photos')?img:(cardImageMap[item.id]||img)}
-function card(item){const saved=state.favorites.includes(item.id);const unlocked=hasItemAccess(item);const lock=item.access==='Grátis'?`<span class="lock-badge free-badge">GRÁTIS</span>`:unlocked?`<span class="lock-badge free-badge">✓ LIBERADO</span>`:`<span class="lock-badge">🔒 ${item.id==='monthly-strategy-plan'?'PREMIUM · ou '+markEsc(item.price):'PRO'} ${item.access==='Pago'?'· ou '+(item.price||'avulso'):''}</span>`;return `<article class="card"><div class="cardImg cardImgFallback"><div class="cardFallbackLabel"><span>${item.icon||'◆'}</span><small>${item.cat||'MIV ECOSYSTEM'}</small></div><img src="${imgFor(item)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">${lock}<button class="heart ${saved?'saved':''}" data-fav="${item.id}">${saved?'♥':'♡'}</button></div><div class="cardBody"><div class="meta"><span>${item.tag}</span><small>${item.format}</small></div><h3>${item.title}</h3><p>${item.desc}</p><button class="open" data-open="${item.id}">Abrir →</button></div></article>`}
+function card(item){const saved=state.favorites.includes(item.id);const unlocked=hasItemAccess(item);const lock=item.access==='Grátis'?`<span class="lock-badge free-badge">GRÁTIS</span>`:unlocked?`<span class="lock-badge free-badge">✓ LIBERADO</span>`:`<span class="lock-badge">🔒 ${item.id==='monthly-strategy-plan'?'PREMIUM · ou '+markEsc(item.price):'PRO'} ${item.access==='Pago'&&!window.MivCommerce?.isUnavailable(item.id)?'· ou '+(item.price||'avulso'):''}</span>`;return `<article class="card"><div class="cardImg cardImgFallback"><div class="cardFallbackLabel"><span>${item.icon||'◆'}</span><small>${item.cat||'MIV ECOSYSTEM'}</small></div><img src="${imgFor(item)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">${lock}<button class="heart ${saved?'saved':''}" data-fav="${item.id}">${saved?'♥':'♡'}</button></div><div class="cardBody"><div class="meta"><span>${item.tag}</span><small>${item.format}</small></div><h3>${item.title}</h3><p>${item.desc}</p><button class="open" data-open="${item.id}">Abrir →</button></div></article>`}
 const serviceCutouts = {
  'svc-logo':'logo-v2','svc-vetor':'vector-v2','svc-manual':'manual-v2',
  'svc-site':'website','svc-lp':'landing-v2','svc-link':'link-v2',
@@ -1357,7 +1357,8 @@ async function startMercadoPagoSinglePurchase(){
   const r=await fetch('/api/create-mercadopago-preference',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({item_id:normalizeAccessItemId(item.id),coupon_code:(document.getElementById('couponCode')?.value||'').trim(),analytics_context:window.MivAnalytics?.context()})});
   const data=await r.json().catch(()=>({}));
   if(!r.ok)throw new Error(data.error||'Não foi possível abrir o pagamento.');
-  if(data.free_unlock){closePaywall();toast('Cupom de 100% aplicado. Item liberado!');await loadAccessState();renderAll();return}if(!data.checkout_url)throw new Error('URL do checkout não recebida.');
+  if(data.free_unlock){closePaywall();toast('Cupom de 100% aplicado. Item liberado!');await loadAccessFromSupabase();renderTracks();maybeRenderCentral();return}if(!data.checkout_url)throw new Error('URL do checkout não recebida.');
+  if(Number.isInteger(item.price_cents)&&Math.round(data.amount*100)!==item.price_cents&&!confirm('O valor final confirmado pelo servidor é '+new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(data.amount)+'. Deseja continuar no Mercado Pago?')){if(btn){btn.disabled=false;btn.innerHTML=old;}return;}
   window.location.href=data.checkout_url;
  }catch(err){console.error('[MIV checkout]',err);toast(err.message||'Não foi possível abrir o Mercado Pago.');if(btn){btn.disabled=false;btn.innerHTML=old||'Comprar este item'}}
 }
@@ -2233,6 +2234,7 @@ function friendlyAuthError(err){const m=(err?.message||'').toLowerCase();if(m.in
 function maybeRenderCentral(){if(!mivHydratingAuth&&state.route==='central')renderCentral()}
 function runPendingAuthAction(){
  const action=pendingAuthAction;if(!action)return false;pendingAuthAction=null;
+ if(action.type==='commerce'){window.MivCommerce?.open(action.itemId);return true;}
  if(action.type==='refreshTrends'){route('home');setTimeout(()=>{document.getElementById('tendencias')?.scrollIntoView({behavior:'smooth',block:'start'});refreshMarketTrends()},180);return true}
  if(action.type==='refreshCompetitors'){route('home');setTimeout(()=>{document.getElementById('concorrentes')?.scrollIntoView({behavior:'smooth',block:'start'});refreshCompetitors(!!action.suggest,action.channel||'',action.link||'')},180);return true}
  if(action.type==='diagnosis'){route('home');setTimeout(()=>window.MivEvolution?.openSolution(action.pointId),180);return true}
@@ -2268,6 +2270,7 @@ async function loadDynamicCatalog(){
   rows.filter(r=>r.active!==false).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).forEach(r=>{if(bases[r.shelf_key]&&!bases[r.shelf_key].includes(r.item_id))bases[r.shelf_key].push(r.item_id)});
   dynamicCatalogReady=true;
   try{renderTracks();maybeRenderCentral()}catch(e){console.warn('[MIV catalog render]',e)}
+  if(window.MivCommerce)await window.MivCommerce.load();
   return true;
  }catch(e){console.warn('[MIV catalog]',e);return false}
 }

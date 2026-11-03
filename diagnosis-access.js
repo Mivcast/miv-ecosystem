@@ -109,8 +109,9 @@
   function saleItem(id){
     const cardId=String(id).replace(/^diagnosis:/,'');
     const card=EVOLUTION_DATA.flatMap(s=>s.cards).find(c=>c.id===cardId);if(!card)return null;
-    const cents=snapshot?.key===context().key?(snapshot.card_price_cents??snapshot.rules?.card_price_cents):null;
-    return {id:'diagnosis:'+cardId,title:'Análise · '+card.title,access:'Pago',special:'diagnosis',
+    const offer=window.MivCommerce?.product('diagnosis:'+cardId);
+    const cents=offer?.amount_cents??(snapshot?.key===context().key?(snapshot.card_price_cents??snapshot.rules?.card_price_cents):null);
+    return {id:'diagnosis:'+cardId,title:'Análise · '+card.title,access:'Pago',special:'diagnosis',price_cents:cents,unavailable:window.MivCommerce?.isUnavailable('diagnosis:'+cardId)===true,
       price:Number.isInteger(cents)?new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(cents/100):'Consultar valor'};
   }
   async function saveReport(){

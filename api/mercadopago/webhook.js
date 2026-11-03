@@ -1,14 +1,4 @@
 const crypto = require('crypto');
-const diagnosisCatalog = require('../../private/diagnosis-service.cjs').catalogItem;
-
-const FALLBACK_ITEM_CATALOG = {
-  whatsapp: {
-    title: 'Script inteligente de WhatsApp',
-    amount_cents: 1990,
-    item_type: 'card'
-  }
-};
-
 function send(res, status, body) {
   return res.status(status).json(body);
 }
@@ -168,27 +158,7 @@ async function getMercadoPagoPayment(paymentId, accessToken) {
   return { ok: response.ok, status: response.status, data };
 }
 
-async function getCatalogItem({ supabaseUrl, secretKey, itemId }) {
-  if (itemId.startsWith('diagnosis:')) return diagnosisCatalog(supabaseUrl,secretKey,itemId);
-  const response = await fetch(`${supabaseUrl}/rest/v1/ecosystem_cards?item_id=eq.${encodeURIComponent(itemId)}&active=eq.true&select=item_id,title,price_cents,access_level&limit=1`, {
-    headers: { apikey: secretKey }
-  });
-  const rows = await response.json().catch(() => []);
-  if (response.ok) {
-    const item = rows?.[0];
-    if (item && Number.isInteger(item.price_cents) && item.price_cents >= 0) {
-      return {
-        title: item.title,
-        amount_cents: item.price_cents,
-        item_type: 'card',
-        access_level: item.access_level || null
-      };
-    }
-  } else {
-    console.error('[MIV webhook] Falha ao consultar catálogo:', response.status, rows);
-  }
-  return FALLBACK_ITEM_CATALOG[itemId] || null;
-}
+async function getCatalogItem({supabaseUrl,secretKey,itemId}){return require('../../private/commerce-service.cjs').checkoutItem(supabaseUrl,secretKey,itemId,{fulfillment:true});}
 
 async function upsertPurchase({ supabaseUrl, secretKey, row }) {
   const endpoint = `${supabaseUrl}/rest/v1/user_purchases?on_conflict=user_id,item_type,item_id`;
@@ -375,13 +345,14 @@ module.exports = async function handler(req, res) {
 
     const paidCents = Math.round(Number(payment.transaction_amount || 0) * 100);
     const expectedCents = Number(metadata.miv_expected_amount_cents ?? catalogItem.amount_cents);
-    if (paidCents !== expectedCents) {
+    if (!Number.isSafeInteger(expectedCents)||expectedCents<=0||payment.currency_id&&payment.currency_id!=='BRL'||paidCents !== expectedCents) {
       console.error('[MIV webhook] Valor divergente.', { itemId, paidCents, expected: expectedCents });
       return send(res, 200, { received: true, verified: true, processed: false, reason: 'amount_mismatch' });
     }
 
     const providerPaymentId = String(payment.id || paymentId);
     const purchaseRow = {
+      commerce_revision: Number.isSafeInteger(Number(metadata.miv_commerce_revision))&&Number(metadata.miv_commerce_revision)>0?Number(metadata.miv_commerce_revision):null,
       user_id: userId,
       item_id: itemId,
       item_type: catalogItem.item_type,

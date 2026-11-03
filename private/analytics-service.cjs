@@ -1,6 +1,6 @@
 const {db,userPlan}=require('./diagnosis-service.cjs');
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const names=new Set(['page_view','card_view','card_click','card_open','favorite_add','analysis_start','analysis_complete','solution_view','report_created','tool_open','market_search','mark_open']);
+const names=new Set(['product_view','preview_open','page_view','card_view','card_click','card_open','favorite_add','analysis_start','analysis_complete','solution_view','report_created','tool_open','market_search','mark_open']);
 const bad=message=>Object.assign(new Error(message),{status:400});
 const slug=(value,max=140)=>typeof value==='string'&&value.length<=max&&/^[a-z0-9:._-]*$/i.test(value)?value:'';
 const text=(value,max)=>typeof value==='string'?value.replace(/[\u0000-\u001f<>]/g,'').slice(0,max):'';
@@ -39,7 +39,7 @@ async function ingest(req,url,key,pub){
 }
 async function report(url,key,user,query,token){
  if(!await require('./admin-security.cjs').allowed(url,key,user,token))throw Object.assign(new Error('Acesso exclusivo do administrador.'),{status:403});
- return db(url,key,'rpc/analytics_report',{method:'POST',body:JSON.stringify(reportInput(query))});
+ const input=reportInput(query),data=await db(url,key,'rpc/analytics_report',{method:'POST',body:JSON.stringify(input)});data.commerce=await bestEffort('métricas comerciais',()=>db(url,key,'rpc/commerce_metrics',{method:'POST',body:JSON.stringify({p_from:input.p_from,p_to:input.p_to,p_environment:input.p_filters.environment})}));return data;
 }
 async function bestEffort(label,fn){try{return await fn();}catch{console.warn('[MIV analytics] Registro indisponível: '+label);return null;}}
 async function order(url,key,{id,userId,providerRef,itemId,kind,amountCents,plan='free',test=false,attribution}){
@@ -53,7 +53,8 @@ function paymentRow(payment,{userId,itemId,kind='single',orderId=null,test=false
  if(!created||!updated)return null;
  const status=slug(payment.status,40);if(!status)return null;
  const fullRefund=['refunded','charged_back'].includes(status)?amount:refunded;
- return {provider_payment_id:String(payment.id),user_id:userId,order_id:uuid.test(orderId)?orderId:null,item_id:itemId,kind,status,amount_cents:amount,refunded_cents:fullRefund,approved_at:date(payment.date_approved),created_at:created,provider_updated_at:updated,environment:test||payment.live_mode===false?'test':'live'};
+ const fee=Array.isArray(payment.fee_details)&&payment.fee_details.length&&payment.fee_details.every(f=>Number.isFinite(Number(f.amount))&&Number(f.amount)>=0)?Math.round(payment.fee_details.reduce((sum,f)=>sum+Number(f.amount),0)*100):null;
+ return {...(fee===null?{}:{provider_fee_cents:fee}),provider_payment_id:String(payment.id),user_id:userId,order_id:uuid.test(orderId)?orderId:null,item_id:itemId,kind,status,amount_cents:amount,refunded_cents:fullRefund,approved_at:date(payment.date_approved),created_at:created,provider_updated_at:updated,environment:test||payment.live_mode===false?'test':'live'};
 }
 async function payment(url,key,p,identity){
  const row=paymentRow(p,identity);if(!row)return {applicable:false};
