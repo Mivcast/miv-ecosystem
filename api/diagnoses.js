@@ -4,6 +4,7 @@ const analytics=require('../private/analytics-service.cjs');
 const privacy=require('../private/privacy-service.cjs');
 const catalog=require('../private/catalog-service.cjs');
 const niches=require('../private/niche-service.cjs');
+const commerce=require('../private/commerce-service.cjs');
 const send=(res,status,data)=>{res.setHeader('Cache-Control','private, no-store');return res.status(status).json(data);};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -17,6 +18,7 @@ module.exports=async function(req,res){
   try{
     const url=process.env.SUPABASE_URL,key=process.env.SUPABASE_SECRET_KEY,pub=process.env.SUPABASE_PUBLISHABLE_KEY;
     if(!url||!key||!pub)return send(res,503,{error:'Conexão das análises indisponível.'});
+    if(req.method==='GET'&&req.query?.action==='commerce-catalog')return send(res,200,await commerce.listing(url,key));
     if(req.method==='GET'&&req.query?.action==='rules')return send(res,200,{rules:await service.rules(url,key)});
     if(req.method==='GET'&&req.query?.action==='catalog'){
       const document=await catalog.load(url,key);return send(res,200,{revision:document.revision,sections:catalog.publicSections(document.sections)});
@@ -29,6 +31,13 @@ module.exports=async function(req,res){
     if(!auth.ok)return send(res,401,{error:'Sua sessão expirou. Entre novamente.'});
     const user=await auth.json();if(!uuid.test(user.id))return send(res,401,{error:'Sessão inválida.'});
     const input=req.method==='GET'?req.query||{}:req.body||{};
+    if(/^commerce-admin-/.test(input.action||'')){
+      if((input.action==='commerce-admin-list')!==(req.method==='GET'))return send(res,405,{error:'Método não permitido.'});
+      if(!analytics.sameOrigin(req))return send(res,403,{error:'Origem não permitida.'});
+      return send(res,200,await commerce.admin(url,key,user,token,input));
+    }
+    if(req.method==='GET'&&input.action==='commerce-owned')return send(res,200,await commerce.owned(url,key,user));
+    if(req.method==='GET'&&input.action==='commerce-delivery')return send(res,200,await commerce.deliver(url,key,user,input.item_id));
     if(input.action==='catalog-admin-get'){
       if(req.method!=='GET')return send(res,405,{error:'Método não permitido.'});
       await privacy.requireAdmin(url,key,user,token);return send(res,200,await catalog.load(url,key));
@@ -96,5 +105,5 @@ module.exports=async function(req,res){
       return send(res,200,{report:reports[0]});
     }
     return send(res,400,{error:'Ação não reconhecida.'});
-  }catch(error){console.error('[MIV diagnoses]',error.status||'unavailable');return send(res,error.status||503,{error:[400,409,429].includes(error.status)?error.message:'Não foi possível acessar suas análises agora. Suas respostas locais foram preservadas. Tente novamente.'});}
+  }catch(error){console.error('[MIV diagnoses]',error.status||'unavailable');return send(res,error.status||503,{error:[400,402,404,409,429].includes(error.status)?error.message:'Não foi possível acessar suas análises agora. Suas respostas locais foram preservadas. Tente novamente.'});}
 };

@@ -60,8 +60,8 @@
   function track(name,itemId=''){
     if(!enabled())return;
     try{
-      const funnel={analysis_start:'diagnosis_start',analysis_complete:'diagnosis_complete',solution_view:'view_solution'};
-      if(googleHost&&googleConfigured&&['home','detail'].includes(state.route)&&funnel[name])window.gtag('event',funnel[name],{send_to:googleId,diagnosis_mode:itemId==='quick'?'quick':itemId==='complete'?'complete':'point',page_location:location.origin+location.pathname,page_referrer:'',page_title:'MIV Ecosystem'});
+      const funnel={analysis_start:'diagnosis_start',analysis_complete:'diagnosis_complete',solution_view:'view_solution',product_view:'view_item'};
+      if(googleHost&&googleConfigured&&['home','detail'].includes(state.route)&&funnel[name])window.gtag('event',funnel[name],{send_to:googleId,...(name==='product_view'?{items:[{item_id:clean(itemId,140),quantity:1}]}:{}),diagnosis_mode:itemId==='quick'?'quick':itemId==='complete'?'complete':'point',page_location:location.origin+location.pathname,page_referrer:'',page_title:'MIV Ecosystem'});
       const nextOwner=typeof mivUser!=='undefined'?mivUser?.id||null:null;
       if(owner!==nextOwner){queue=[];sessionStorage.removeItem(sessionKey);owner=nextOwner;}
       const ctx=context();if(!ctx.consent)return;
@@ -152,7 +152,7 @@
   });
   const footer=document.querySelector('.footerBottom')||document.querySelector('.siteFooter');
   if(footer){const button=document.createElement('button');button.type='button';button.className='analytics-preferences';button.textContent='Preferências de métricas';button.onclick=preferences;footer.append(button);}
-  window.MivAnalytics={track,context,flush,preferences};
+  window.MivAnalytics={track,context,flush,preferences,commerceCheckout:(itemId,cents)=>{if(!enabled()||!googleHost||!googleConfigured||!['home','detail'].includes(state.route)||!Number.isSafeInteger(cents)||cents<0)return;window.gtag('event','begin_checkout',{send_to:googleId,currency:'BRL',value:cents/100,items:[{item_id:clean(itemId,140),quantity:1}],page_location:location.origin+location.pathname,page_referrer:'',page_title:'MIV Ecosystem'});}};
   pageView();
   if(!privacySignal()&&!read(localStorage,consentKey)&&read(localStorage,'mivAnalyticsConsent:v1')?.status!=='declined')preferences();
 })();

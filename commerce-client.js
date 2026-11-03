@@ -1,0 +1,60 @@
+/* Public offers and authenticated delivery. Paid text is never cached in localStorage. */
+(() => {
+ const esc=markEsc,money=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v/100);
+ const needs={sales:'Vender mais',attraction:'Atrair clientes',brand:'Melhorar a marca',whatsapp:'Atendimento e WhatsApp',profit:'Preços e lucratividade',organization:'Organização empresarial'};
+ const kinds={quick:'Solução rápida',individual:'Análise individual',deep:'Análise aprofundada',free:'Gratuito'};
+ let unavailable=new Set(),products=new Map(),filter='',modal=null,owner=null,focus=null,generation=0;
+ const identity=()=>mivUser?.id||'visitor';
+ async function api(action,body,auth=false){
+  const headers={};if(auth){const {data}=await mivSupabase.auth.getSession();if(data.session?.user?.id!==mivUser?.id||!data.session?.access_token)throw Error('Entre novamente na sua conta.');headers.Authorization='Bearer '+data.session.access_token;}
+  if(body)headers['Content-Type']='application/json';
+  const response=await fetch('/api/diagnoses'+(body?'':'?action='+action),{method:body?'POST':'GET',cache:'no-store',headers,...(body?{body:JSON.stringify({action,...body})}:{})});
+  const value=await response.json();if(!response.ok)throw Object.assign(Error(value.error||'Não foi possível carregar este recurso.'),{status:response.status});return value;
+ }
+ function close(){modal?.close();modal?.remove();modal=null;owner=null;focus?.focus();}
+ function dialog(title,html){close();focus=document.activeElement;owner=identity();modal=document.createElement('dialog');modal.className='commerce-dialog';modal.innerHTML=`<button class="commerce-close" type="button" aria-label="Fechar">×</button><h2 tabindex="-1">${esc(title)}</h2>${html}`;document.body.append(modal);modal.querySelector('.commerce-close').onclick=close;modal.addEventListener('cancel',e=>{e.preventDefault();close();});modal.showModal();modal.querySelector('h2').focus();return modal;}
+ const access=p=>accessState.purchases.has(p.item_id)||p.active&&(p.price_cents===0||hasPremiumAccess()&&p.included_premium||hasProAccess()&&!hasPremiumAccess()&&p.included_pro);
+ function merge(rows){for(const p of rows){products.set(p.item_id,p);const old=items.find(x=>x.id===p.item_id);if(old){old.price=money(p.amount_cents);old.price_cents=p.amount_cents;old.commerce=p;}else items.push({id:p.item_id,title:p.title,desc:p.problem,cat:kinds[p.category],format:'Orientação estruturada',access:p.price_cents===0?'Grátis':'Pago',price:money(p.amount_cents),price_cents:p.amount_cents,commerce:p,icon:'◆',tag:needs[p.need],_commerce:true});}}
+ async function load(){const version=++generation,user=identity();try{const data=await api('commerce-catalog');if(version!==generation||identity()!==user)return;products=new Map();merge(data.products);unavailable=new Set(data.unavailable||[]);if(mivUser){const owned=await api('commerce-owned',null,true);if(version!==generation||identity()!==user)return;merge(owned.products);}render();maybeRenderCentral();}catch{/* Preserve the established storefront if the optional catalog is unavailable. */}}
+ const offer=p=>`<article class="commerce-offer"><small>${esc(kinds[p.category])}</small><h3>${esc(p.title)}</h3><p>${esc(p.problem)}</p><strong>O que você receberá</strong><ul>${p.delivery.slice(0,3).map(d=>`<li>${esc(d)}</li>`).join('')}</ul><p class="commerce-price">${p.price_cents===0?'Grátis':money(p.amount_cents)+' · compra única'}</p><button class="outline" type="button" data-commerce-open="${esc(p.item_id)}">${access(p)?'Consultar recurso':'Ver prévia e entrega'}</button></article>`;
+ function bind(host){host.querySelectorAll('[data-commerce-open]').forEach(b=>b.onclick=()=>open(b.dataset.commerceOpen));}
+ function render(){const host=document.getElementById('solucoes-acessiveis');if(!host)return;const rows=[...products.values()].filter(p=>p.active&&(p.available_for_sale||p.price_cents===0||access(p)));host.hidden=!rows.length;if(!rows.length)return;const filtered=rows.filter(p=>!filter||p.need===filter).sort((a,b)=>Number(b.featured)-Number(a.featured)||a.amount_cents-b.amount_cents);host.querySelector('.commerce-featured').innerHTML=filtered.slice(0,3).map(offer).join('')||'<p>Nenhum recurso publicado nesta necessidade.</p>';bind(host);}
+ function catalog(){const el=dialog('Catálogo de soluções',`<p>Compras únicas e recursos gratuitos. Cada entrega está descrita antes da compra.</p><div class="commerce-grid">${[...products.values()].filter(p=>p.active&&(p.available_for_sale||p.price_cents===0||access(p))).map(offer).join('')}</div>`);bind(el);}
+ async function open(itemId){
+  let p=products.get(itemId);if(!p){await load();p=products.get(itemId);}if(!p){toast('Recurso indisponível.');return;}
+  if(p.fulfillment_kind==='resource'&&access(p)){originalOpen(itemId);return;}
+  const el=dialog(p.title,`<small>${esc(kinds[p.category])} · ${esc(needs[p.need])}</small><p>${esc(p.problem)}</p><h3>Você receberá</h3><ul>${p.delivery.map(d=>`<li>${esc(d)}</li>`).join('')}</ul><details open><summary>Prévia gratuita</summary><p class="commerce-text">${esc(p.preview)}</p></details><p>Orientações estruturadas. Não inclui consultoria personalizada nem uso ilimitado de IA.</p><div data-commerce-content></div><div data-commerce-actions></div><p role="status" data-commerce-status></p>`);
+  window.MivAnalytics?.track('product_view',itemId);window.MivAnalytics?.track('preview_open',itemId);
+  const actions=el.querySelector('[data-commerce-actions]'),status=el.querySelector('[data-commerce-status]');
+  if(access(p)){
+   actions.innerHTML='<button class="primary" type="button" data-deliver>Acessar minha entrega</button>';actions.querySelector('button').onclick=()=>delivery(p,el);if(mivUser)await delivery(p,el);
+  }else if(p.available_for_sale){
+   actions.innerHTML=`<p><strong>${money(p.amount_cents)} · compra única</strong></p><label>Cupom opcional<input data-commerce-coupon maxlength="60" autocomplete="off"></label><button class="primary" type="button" data-buy>Quero resolver esse problema</button>`;
+   actions.querySelector('[data-buy]').onclick=async event=>{
+    if(!mivUser){pendingAuthAction={type:'commerce',itemId};close();openAuth('login');return;}
+    const who=identity(),button=event.currentTarget;button.disabled=true;status.textContent='Preparando o checkout com o preço confirmado pelo servidor…';
+    try{if(!window.MivPrivacy||!await window.MivPrivacy.ensureTerms()){status.textContent='Aceite os termos da oferta para continuar.';return;}if(identity()!==who||!el.isConnected)return;const {data}=await mivSupabase.auth.getSession();if(data.session?.user?.id!==mivUser.id)throw Error('Sessão alterada. Entre novamente.');const r=await fetch('/api/create-mercadopago-preference',{method:'POST',headers:{Authorization:'Bearer '+data.session.access_token,'Content-Type':'application/json'},body:JSON.stringify({item_id:itemId,coupon_code:actions.querySelector('input').value.trim(),analytics_context:window.MivAnalytics?.context()})});const result=await r.json();if(identity()!==who||!el.isConnected)return;if(!r.ok)throw Error(result.error||'Checkout indisponível.');if(result.free_unlock){await loadAccessFromSupabase();await delivery(p,el);return;}
+     const url=new URL(result.checkout_url);if(url.protocol!=='https:'||!/(^|\.)mercadopago\.com(\.br)?$/.test(url.hostname))throw Error('Endereço de pagamento inválido.');
+     actions.replaceChildren();const price=document.createElement('p');price.textContent='Valor final confirmado: '+money(Math.round(result.amount*100))+' · compra única';const link=document.createElement('a');link.className='primary';link.href=url.href;link.textContent='Continuar no Mercado Pago';actions.append(price,link);status.textContent='O acesso será liberado após a confirmação do pagamento e ficará vinculado à sua conta.';try{window.MivAnalytics?.commerceCheckout?.(itemId,Math.round(result.amount*100));}catch{}
+    }catch(error){if(el.isConnected)status.textContent=error.message;}finally{button.disabled=false;}
+   };
+  }else actions.textContent='Venda avulsa indisponível neste momento. Consulte os planos ou escolha outro recurso.';
+ }
+ async function delivery(p,el){
+  if(!mivUser){pendingAuthAction={type:'commerce',itemId:p.item_id};close();openAuth('login');return;}
+  const who=identity(),status=el.querySelector('[data-commerce-status]');status.textContent='Conferindo o acesso da sua conta…';
+  try{const data=await api('commerce-delivery&item_id='+encodeURIComponent(p.item_id),null,true);if(identity()!==who||!el.isConnected)return;
+   const point=q=>`<section><h3>${esc(q.text||q.title||'Orientação')}</h3><p>${esc(q.standard||'')}</p><ol>${(q.steps||[]).map(s=>`<li>${esc(s)}</li>`).join('')}</ol><p>${esc(q.example||'')}</p></section>`;
+   el.querySelector('[data-commerce-content]').innerHTML=data.content.points?data.content.points.map(point).join(''):`<div class="commerce-text">${esc(data.content.body)}</div>`;
+   el.querySelector('[data-commerce-actions]').innerHTML=`<p>Recurso liberado para sua conta. Você pode reabri-lo pela Minha Central.</p>${data.related.length?'<h3>Continue neste assunto</h3><div class="commerce-related">'+data.related.map(r=>`<button class="outline" data-commerce-open="${esc(r.item_id)}">${esc(r.title)}</button>`).join('')+'</div>':''}${data.plan==='free'?'<aside><h3>Gostou da sua primeira análise?</h3><p>Continue melhorando sua empresa com análises, estratégias e ferramentas do Pro.</p><button class="outline" data-commerce-plans>Conhecer o Pro</button></aside>':''}`;
+   bind(el);el.querySelector('[data-commerce-plans]')?.addEventListener('click',()=>{close();route('home');document.getElementById('planos').scrollIntoView({behavior:'smooth'});});status.textContent='Entrega disponível. As recomendações são orientativas, sem garantia de resultados financeiros.';
+  }catch(error){if(el.isConnected)status.textContent=error.message;}
+ }
+ const section=document.createElement('section');section.className='wrap commerce-shelf';section.id='solucoes-acessiveis';section.hidden=true;section.innerHTML=`<span class="eyebrow">COMPRE AVULSO, SEM ASSINATURA</span><h2>Resolva um problema do seu negócio por um pequeno investimento.</h2><p>Não precisa contratar uma assinatura para começar. Escolha o problema que deseja resolver, adquira uma solução individual e aplique as orientações no seu negócio.</p><label>Qual é a sua necessidade?<select>${['<option value="">Todas</option>',...Object.entries(needs).map(([id,name])=>`<option value="${id}">${name}</option>`)].join('')}</select></label><div class="commerce-grid commerce-featured"></div><button class="outline" data-commerce-catalog>Ver catálogo completo</button>`;document.getElementById('planos').before(section);section.querySelector('select').onchange=e=>{filter=e.target.value;render();};section.querySelector('[data-commerce-catalog]').onclick=catalog;document.getElementById('planAvulsoBtn').onclick=()=>document.getElementById(section.hidden?'analises':'solucoes-acessiveis').scrollIntoView({behavior:'smooth'});
+ const originalHasAccess=hasItemAccess;hasItemAccess=item=>item?._commerce?access(item.commerce):item?.commerce?.active&&item.commerce.price_cents===0?true:originalHasAccess(item);
+ const originalPaywall=openPaywall;openPaywall=item=>{originalPaywall(item);const button=document.getElementById('buySingle');if(button){button.hidden=window.MivCommerce?.isUnavailable(item.id)===true;button.disabled=button.hidden;}};
+ const originalOpen=openItem;openItem=function(itemId){if(products.has(itemId)&&products.get(itemId).fulfillment_kind!=='resource'){open(itemId);return;}return originalOpen(itemId);};
+ const originalAccess=loadAccessFromSupabase;loadAccessFromSupabase=async function(...args){await originalAccess(...args);if(!mivUser)close();await load();};
+ new MutationObserver(()=>{if(modal&&owner!==identity())close();}).observe(document.body,{childList:true,subtree:true});
+ window.MivCommerce={load,open,close,catalog,product:id=>products.get(id),isUnavailable:id=>unavailable.has(id)||(products.has(id)&&products.get(id).price_cents>0&&!products.get(id).available_for_sale)};load();
+})();

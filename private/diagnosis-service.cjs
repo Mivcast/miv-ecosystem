@@ -18,7 +18,7 @@ async function rules(url,key) {
   return validateRules(rows?.[0]);
 }
 function entitled(point, grant) {
-  return ['pro','premium'].includes(grant.plan) || grant.free_points.includes(point.id) || grant.paid_cards.includes(point.card_id);
+  return ['pro','premium'].includes(grant.plan) || grant.free_points.includes(point.id) || (grant.paid_points||[]).includes(point.id) || grant.paid_cards.includes(point.card_id);
 }
 function grantedSolutions(grant) {
   return Object.fromEntries([...points].filter(([,point])=>entitled(point,grant)).map(([id,point])=>[id,point]));

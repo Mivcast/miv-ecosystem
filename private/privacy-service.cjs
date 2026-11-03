@@ -1,5 +1,5 @@
 const {db}=require('./diagnosis-service.cjs');
-const VERSION='2026-10-20',uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const VERSION=require('../legal-config.js').version,uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const kinds=new Set(['access','correction','deletion','consent','refund','support']);
 const fail=(status,message)=>{throw Object.assign(new Error(message),{status});};
 async function requireAdmin(url,key,user,token){if(!await require('./admin-security.cjs').allowed(url,key,user,token))fail(403,'Acesso restrito ao administrador. Confirme o segundo fator quando ativado.');}

@@ -15,11 +15,14 @@ async function attach(page,initialPlan='premium',options={}){
   await page.route('**/api/diagnoses**',async route=>{
     const req=route.request(),url=new URL(req.url()),body=req.postDataJSON()||{},input=req.method()==='POST'?body:Object.fromEntries(url.searchParams);
     if(offline)return route.fulfill({status:503,json:{error:'Banco temporariamente indisponível'}});
+    if(input.action==='commerce-catalog')return route.fulfill({json:{products:[],unavailable:[],sales_enabled:false}});
+    if(input.action==='commerce-owned')return route.fulfill({json:{products:[]}});
     if(input.action==='rules')return route.fulfill({json:{rules}});
     if(input.action==='catalog')return route.fulfill({json:{revision:1,sections:catalog.publicSections(catalog.seed())}});
     if(input.action==='niches')return route.fulfill({json:{niches:[]}});
     const user=(req.headers().authorization||'').replace('Bearer fixture:','');
     if(!user||user.startsWith('Bearer'))return route.fulfill({status:401,json:{error:'Entre na conta'}});
+    if(input.action==='legal-status')return route.fulfill({json:{accepted:true,version:'2026-11-commerce-1'}});
     if(input.action==='niche-get')return route.fulfill({json:{niche:null,revision:0}});
     if(input.action==='niche-set')return route.fulfill({json:{niche:input.niche,revision:input.revision+1,status:'approved'}});
     const key=user+':'+(input.company_id||'personal')+':'+input.niche;

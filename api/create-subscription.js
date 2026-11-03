@@ -49,6 +49,7 @@ module.exports=async function(req,res){
   if(!su||!pk||!sk||!mp)return send(res,500,{error:'Servidor não configurado.'});
   const jwt=String(req.headers.authorization||'').replace(/^Bearer\s+/i,'');const user=await userFromJwt(su,pk,jwt);if(!user?.id||!user.email)return send(res,401,{error:'Entre na sua conta para assinar.'});
   await require('../private/privacy-service.cjs').requireAcceptance(su,sk,user);
+  if(req.body?.use_purchase_credit||req.body?.credit_id)return send(res,409,{error:'O crédito da compra avulsa está desativado até validar um desconto exclusivo da primeira mensalidade. Nenhuma cobrança foi criada.'});
   const planKey=String(req.body?.plan||'').toLowerCase();if(!['pro','premium'].includes(planKey))return send(res,400,{error:'Plano inválido.'});
   const plans=await sb(su,sk,`subscription_plans?plan_key=eq.${encodeURIComponent(planKey)}&select=*&limit=1`);
   if(plans?.[0]?.active===false)return send(res,409,{error:'Este plano está indisponível para novas assinaturas.'});

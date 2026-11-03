@@ -11,7 +11,7 @@ async function run(file,body={},options={}){
  global.fetch=async(input,opt={})=>{
   const url=String(input);calls.push({url,...opt});
   if(url.includes('/auth/v1/user'))return response(options.guest?{}:{id:uid,email:'owner@example.invalid'});
-  if(url.includes('/legal_acceptances?'))return response(options.terms===false?[]:[{version:'2026-10-20'}]);
+  if(url.includes('/legal_acceptances?'))return response(options.terms===false?[]:[{version:'2026-11-commerce-1'}]);
   if(url.includes('/rpc/admin_access'))return response(options.adminMfa===true);
   if(url.includes('/profiles?'))return response([{role:'admin'}]);
   if(url.includes('/subscription_plans?'))return response(options.inactive&&url.includes('active=eq.true')?[]:[{plan_key:body.plan||'pro',name:'Fixture',active:!options.inactive,price_cents:6500,currency_id:'BRL',frequency:1,frequency_type:'months'}]);
@@ -73,3 +73,5 @@ test('cancellation stops renewal but preserves paid period; persistence outage i
  const r=await run('cancel-subscription.js',{}, {rows:[row]});assert.equal(r.status,200);assert.equal(r.data.cancel_at_period_end,true);assert.equal(r.data.current_period_end,future);
  const outage=await run('cancel-subscription.js',{}, {rows:[row],saveFails:true});assert.equal(outage.status,503);
 });
+
+test('purchase credit is rejected before starting any recurring charge',async()=>{const r=await run('create-subscription.js',{plan:'pro',use_purchase_credit:true});assert.equal(r.status,409);assert.equal(r.calls.some(c=>c.url.includes('/preapproval')),false);});

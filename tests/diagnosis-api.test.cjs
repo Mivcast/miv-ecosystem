@@ -15,7 +15,8 @@ async function run(fn,request,options={}){
  global.fetch=async(url,opt={})=>{
   calls.push({url,opt});
   if(url.includes('/auth/v1/user'))return response({id:uid,email:'qa@example.invalid'});
-  if(url.includes('/legal_acceptances?'))return response(options.terms===false?[]:[{version:'2026-10-20'}]);
+  if(url.includes('/legal_acceptances?'))return response(options.terms===false?[]:[{version:'2026-11-commerce-1'}]);
+  if(url.includes('/commerce_products?'))return response([]);
   if(url.includes('/diagnosis_rules?'))return response([{...rule,...options.rule}]);
   if(url.includes('/diagnosis_catalog?'))return response([]);
   if(url.endsWith('/rpc/diagnosis_access'))return response({...grant,...options.grant});
