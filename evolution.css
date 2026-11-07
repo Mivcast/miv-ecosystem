@@ -52,20 +52,20 @@
   #view-home .titleRow{flex-wrap:wrap;gap:12px}
   #view-home .titleRow>div:first-child{flex:1 1 230px;min-width:0}
   #view-home .titleRow .arrows{flex:0 0 auto}
-  #view-home .shelf,#view-home .testimonial-track,#view-home .ev-cards,#view-central .centralCarousel{
+  #view-home .shelf,#view-home .testimonial-track,#view-analises .ev-cards,#view-central .centralCarousel{
     display:flex;max-width:100%;min-width:0;gap:12px;overflow-x:auto;overflow-y:hidden;
     scroll-snap-type:x proximity;scroll-padding-inline:2px;overscroll-behavior-x:contain;
     padding:4px 2px 14px;scrollbar-width:none
   }
-  #view-home .shelf>*,#view-home .testimonial-track>article,#view-home .ev-cards>.ev-card,
+  #view-home .shelf>*,#view-home .testimonial-track>article,#view-analises .ev-cards>.ev-card,
   #view-central .centralCarousel>.card,#view-central .centralCarousel>.centralMiniCard,#view-central .centralCarousel>.centralItem{
     flex:0 0 84%;min-width:0;max-width:100%;scroll-snap-align:start
   }
   #view-home .shelf>:only-child,#view-central .centralCarousel>:only-child{flex-basis:100%}
   #view-home .shelf>.card,#view-central .centralCarousel>.card{transition:transform .22s,box-shadow .22s}
-  #view-home .ev-cards{align-items:stretch}
-  #view-home .ev-card-content{height:calc(100% - 146px)}
-  #view-home .shelf h3,#view-home .ev-card h4,#view-home .titleRow h2,#view-home .fullAnalysis strong{
+  #view-analises .ev-cards{align-items:stretch}
+  #view-analises .ev-card-content{height:calc(100% - 146px)}
+  #view-home .shelf h3,#view-analises .ev-card h4,#view-home .titleRow h2,#view-analises .fullAnalysis strong{
     overflow-wrap:anywhere;letter-spacing:0
   }
   #view-home .shelf button,#view-central .centralCarousel button{max-width:100%;white-space:normal}

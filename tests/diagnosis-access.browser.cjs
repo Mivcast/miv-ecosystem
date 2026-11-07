@@ -20,7 +20,7 @@ const server=http.createServer(async(req,res)=>{
   browser=await chromium.launch({channel:'chrome',headless:true});const page=await browser.newPage({viewport:{width:1440,height:1000}});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.route('https://**/*',r=>r.abort());
   const fixture=await attach(page,'free');const url='http://127.0.0.1:'+server.address().port;
-  await page.goto(url);await page.locator('.ev-card').first().waitFor();
+  await page.goto(url+'/#analises');await page.locator('.ev-card').first().waitFor();
   assert.equal((await page.request.get(url+'/private/diagnosis-content.json')).status(),404);
   await page.locator('[data-ev-solve="base.mercado.demanda"]').click();
   assert.equal(await page.locator('#authModal.show').count(),1);assert.equal(await page.locator('.ev-practical-example').count(),0);
@@ -92,8 +92,9 @@ const server=http.createServer(async(req,res)=>{
   }
   await page.locator('[data-ev-close]').click();
   await page.setViewportSize({width:1440,height:1000});
+  await page.evaluate(()=>route('home',{instant:true}));
   await page.locator('#como-ajuda').scrollIntoViewIfNeeded();
-  assert.equal(await page.locator('.pillar-benefits li').count(),12);
+  assert.equal(await page.locator('.v14-path-list button').count(),4);
   await page.screenshot({path:path.join(output,'compact-benefits.png')});
   for(const width of [390,320]){
    await page.setViewportSize({width,height:900});await page.locator('#como-ajuda').scrollIntoViewIfNeeded();
@@ -116,7 +117,7 @@ const server=http.createServer(async(req,res)=>{
   await authenticate(page,'account-b');assert.equal(await page.evaluate(()=>MivEvolution.localData()['base.mercado.demanda']),undefined);
   assert.equal(await page.locator('.ev-solution-viewed').count(),0);
   assert.equal(await page.evaluate(()=>!!MivDiagnosis.solution('base.produto.necessidade')),false);
-  await page.reload();await authenticate(page,'account-a');
+  await page.goto(url+'/#analises');await authenticate(page,'account-a');
   assert(await page.locator('[data-ev-solve="base.mercado.demanda"]').evaluate(el=>el.classList.contains('ev-solution-viewed')));
   assert.deepEqual(errors,[]);
   console.log('PASS: guest, two lifetime free solutions, idempotent reopen, paywall, paid card, Pro/Premium, cloud report, offline retry, account isolation. Network fixture, no real charges.');

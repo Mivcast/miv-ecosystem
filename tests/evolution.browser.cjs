@@ -27,8 +27,9 @@ const server=http.createServer(async(req,res)=>{
   let researchRequests=0;
   await page.route('**/api/mark-ai',async route=>{researchRequests++;await route.fulfill({json:{cards:[{channel:'Instagram',title:'Instagram',description:'Movimento de teste: vídeos sobre dúvidas frequentes.',mark_strategy:'Teste uma série de respostas.',source:'Fonte de teste',source_url:'https://example.com/teste'}]}})});
   const url=`http://127.0.0.1:${server.address().port}`;
-  await page.goto(url);await page.locator('.ev-card').first().waitFor();
-  await page.locator('#marketingTrack .card').first().waitFor();
+  await page.goto(url);await page.locator('#marketingTrack .card').first().waitFor();
+  const show = name => page.evaluate(name=>route(name,{instant:true}),name);
+  await show('analises');await page.locator('.ev-card').first().waitFor();
   assert.equal(await page.locator('.ev-card').count(),20);
   assert.equal(await page.locator('.ev-question').count(),60);
   assert.equal(await page.locator('#marketingTrack .card').count(),10);
@@ -53,8 +54,10 @@ const server=http.createServer(async(req,res)=>{
   assert.equal(await page.locator('.ev-map-summary').count(),1);
   assert.equal(await page.locator('.ev-summary-stats>div').count(),4);
   assert.equal(await page.locator('.ev-intro,.ev-toolbar').count(),0);
+  await show('home');
   assert.equal(await page.locator('#view-home #plano-mensal').count(),0);
   assert.equal(await page.locator('#toolsTrack [data-open="monthly-strategy-plan"]').count(),1);
+  await show('home');
   await page.locator('#toolsTrack [data-open="monthly-strategy-plan"]').click();
   assert(await page.locator('#monthlyPlanDialog').isVisible());
   assert(await page.locator('#monthlyPlanMonth').isVisible());
@@ -63,6 +66,7 @@ const server=http.createServer(async(req,res)=>{
   // The catalog price must reach the badge, modal and paywall, not only checkout.
   await page.evaluate(()=>{getItem('monthly-strategy-plan').price='R$ 129,00';renderTools();});
   assert.match(await page.locator('#toolsTrack .card').filter({has:page.locator('[data-open="monthly-strategy-plan"]')}).innerText(),/129,00/);
+  await show('home');
   await page.locator('#toolsTrack [data-open="monthly-strategy-plan"]').click();
   assert.match(await page.locator('#buyMonthlyPlan').textContent(),/129,00/);
   assert.match(await page.locator('#monthlyPlanAccess').textContent(),/129,00/);
@@ -72,6 +76,7 @@ const server=http.createServer(async(req,res)=>{
   assert.equal(await page.locator('[data-mark-limit="pro"]').textContent(),'120');
   assert.equal(await page.locator('[data-mark-limit="premium"]').textContent(),'450');
   assert.equal(await page.locator('.faq-grid').evaluate(grid=>getComputedStyle(grid).gridTemplateColumns.split(' ').length),3);
+  await show('analises');
   await page.evaluate(()=>window.scrollTo(0,document.getElementById('analysisGrid').getBoundingClientRect().top+scrollY-110));
   await page.screenshot({path:path.join(output,'map-summary-desktop.png')});
   assert.equal(await page.locator('#recomendados').count(),0);
@@ -81,31 +86,23 @@ const server=http.createServer(async(req,res)=>{
     assert.equal(new Set(positions).size,1,'Five cards share one desktop row');
     assert.equal(positions.length,5);
   }
-  assert.equal(await page.locator('.help-showcase .ecosystem-links>a').count(),4);
+  assert.equal(await page.locator('.v14-path-list button').count(),4);
   assert.equal(await page.locator('.ev-movement-result').count(),0);
   assert.equal(researchRequests,0);
-  assert.deepEqual(await page.locator('#view-home>section').evaluateAll(sections=>sections.slice(0,6).map(section=>section.id)),['heroCommerce','primeiro-resultado','diagnostico-rapido','nicho','como-ajuda','analises']);
-  for(const width of [2048,1440]){
-    await page.setViewportSize({width,height:1000});
-    const margins=await page.evaluate(()=>{
-      const contentLeft=id=>{const element=document.getElementById(id);return element.getBoundingClientRect().left+parseFloat(getComputedStyle(element).paddingLeft)};
-      return {analysis:contentLeft('analises'),marketing:contentLeft('marketing')};
-    });
-    assert(Math.abs(margins.analysis-margins.marketing)<1,'Analysis margins match other sections');
-  }
+  assert.deepEqual(await page.locator('#view-home>section').evaluateAll(sections=>sections.slice(0,6).map(section=>section.id)),['heroCommerce','primeiro-resultado','analises','diagnostico-rapido','nicho','marketing']);
+  await show('home');
   await page.evaluate(()=>window.scrollTo(0,document.getElementById('nicho').getBoundingClientRect().top+scrollY-110));
   await page.screenshot({path:path.join(output,'niche-desktop.png')});
   assert.equal(await page.locator('.ev-niche-list img').first().evaluate(image=>image.getBoundingClientRect().width),84);
   assert.equal(await page.locator('.ev-niche-list').evaluate(list=>getComputedStyle(list).gap),'6px');
   await page.locator('#como-ajuda').scrollIntoViewIfNeeded();
-  await page.locator('.pillar-image').evaluateAll(images=>Promise.all(images.map(image=>image.decode())));
-  assert.equal(await page.locator('.pillar-image').count(),4);
-  assert(await page.locator('.pillar-image').evaluateAll(images=>images.every(image=>image.naturalWidth>0)));
+  assert.equal(await page.locator('.v14-path-list svg').count(),4);
   await page.screenshot({path:path.join(output,'pillars-desktop.png')});
   await page.evaluate(()=>window.scrollTo(0,document.getElementById('concorrentes').getBoundingClientRect().top+scrollY-110));
   await page.screenshot({path:path.join(output,'competitors-compact.png')});
   await page.evaluate(()=>window.scrollTo(0,document.querySelector('.faq').getBoundingClientRect().top+scrollY-110));
   await page.screenshot({path:path.join(output,'faq-three-columns.png')});
+  await show('analises');
   await page.locator('[data-ev-answer="base.mercado.demanda"][data-value="2"]').click();
   assert.equal(await page.locator('#evProgress').getAttribute('value'),'2');
   await page.reload();await page.locator('.ev-card').first().waitFor();
@@ -129,10 +126,12 @@ const server=http.createServer(async(req,res)=>{
   await page.pdf({path:path.join(output,'relatorio-detalhado.pdf'),preferCSSPageSize:true,printBackground:true});
   await page.emulateMedia({media:'screen'});
   await page.locator('[data-ev-close]').click();
+  await show('home');
   await page.locator('[data-ev-group="0"]').click();
   await page.locator('[data-ev-niche="Cardiologista"]').click();
   assert.equal(await page.locator('#evProgress').getAttribute('value'),'0');
   assert.match(await page.locator('#currentNiche').innerText(),/Cardiologista/);
+  await show('analises');
   await page.locator('[data-ev-answer="base.mercado.demanda"][data-value="0"]').click();
   await page.locator('[data-ev-solve="base.mercado.demanda"]').click();
   await page.locator('[data-ev-mark]').click();
@@ -140,11 +139,13 @@ const server=http.createServer(async(req,res)=>{
   await page.locator('#closeMark').click();
   // Simulate a paid account to verify the existing gated request and response rendering.
   await page.evaluate(()=>{mivUser={id:'test-only'};accessState.ready=true;accessState.plan='pro';getAuthToken=async()=>'test-token';});
+  await show('home');
   await page.locator('[data-competitor-channel="Instagram"]').click();
   await page.locator('.channel-instagram .ev-movement-result').waitFor();
   assert.equal(researchRequests,1);
   assert.equal(await page.locator('.ev-movement-result').count(),1);
   assert.match(await page.locator('.channel-instagram').innerText(),/Movimento de teste/);
+  await show('analises');
   await page.locator('[data-analysis="completa"]').click();
   assert.equal(await page.locator('[data-ev-wizard-answer]').count(),45);
   await page.locator('[data-ev-step="3"]').first().click();
@@ -164,6 +165,7 @@ const server=http.createServer(async(req,res)=>{
   assert.equal(await page.evaluate(()=>hasItemAccess(getItem('monthly-strategy-plan'))),false);
   assert.equal(await page.evaluate(()=>hasItemAccess({id:'premium-only-test',access:'Premium'})),false);
   await page.evaluate(()=>{accessState.plan='premium';});
+  await show('home');
   await page.locator('#toolsTrack [data-open="monthly-strategy-plan"]').click();
   await page.locator('#monthlyPlanMonth').selectOption('11');
   await page.locator('#generateMonthlyPlan').click();
@@ -171,6 +173,7 @@ const server=http.createServer(async(req,res)=>{
   assert.match(await page.locator('#monthlyPlanResult').innerText(),/Novembro/);
   await page.screenshot({path:path.join(output,'monthly-plan-modal.png')});
   await page.locator('#closeMonthlyPlan').click();
+  await show('analises');
   await page.setViewportSize({width:2048,height:1200});
   await page.evaluate(()=>window.scrollTo(0,document.querySelector('.ev-stage').getBoundingClientRect().top+scrollY-110));
   await page.locator('.ev-visual img').first().evaluate(image=>image.decode());
@@ -179,11 +182,13 @@ const server=http.createServer(async(req,res)=>{
   await authenticate(page);
   for(const width of [1440,1100,768,390,320]){
     await page.setViewportSize({width,height:900});
-    await page.evaluate(()=>window.scrollTo(0,document.getElementById('analysisGrid').getBoundingClientRect().top+scrollY-110));
+    await show('analises');
+  await page.evaluate(()=>window.scrollTo(0,document.getElementById('analysisGrid').getBoundingClientRect().top+scrollY-110));
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);
     assert.equal(overflow,false,`Page overflow at ${width}px`);
     if(width===390)await page.screenshot({path:path.join(output,'mobile.png')});
     if(width===390||width===320){
+      await show('home');
       await page.locator('#toolsTrack [data-open="monthly-strategy-plan"]').click();
       assert(await page.locator('#monthlyPlanDialog').evaluate(modal=>modal.scrollWidth<=modal.clientWidth+1),'Monthly modal fits mobile width');
       await page.locator('#closeMonthlyPlan').click();
@@ -194,6 +199,7 @@ const server=http.createServer(async(req,res)=>{
   }
   await page.evaluate(()=>applyTheme('Restaurante','food',false));
   assert.equal(await page.locator('.ev-movement-result').count(),0);
+  await show('home');
   await page.locator('#needInput').fill('Quero vender mais pelo WhatsApp');
   await page.locator('#needSuggest').click();
   assert(await page.locator('#needResults .card').count()>0);
@@ -211,10 +217,12 @@ const server=http.createServer(async(req,res)=>{
   assert.equal(legacy.migrated['base.modelo.responsabilidades'],undefined);
   assert.equal(legacy.migrated['vendas.atracao.diversificacao'].answer,0);
   assert.equal(await page.evaluate(key=>localStorage.getItem(key),legacy.key),legacy.raw);
+  await show('analises');
   await page.locator('.ev-assessment-note button').click();
   assert.match(await page.locator('.ev-dialog').innerText(),/Nota anterior preservada/);
   await page.locator('[data-ev-close]').click();
   await page.evaluate(()=>{state.profile.niche='Teste de não aplicação';MivEvolution.render()});
+  await show('analises');
   await page.locator('[data-ev-answer="base.mercado.demanda"][data-value="2"]').click();
   await page.locator('[data-ev-answer="cres.ticket.opcoes-valor"][data-value="na"]').click();
   await page.locator('[data-ev-na-save]').click();

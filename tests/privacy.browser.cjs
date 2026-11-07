@@ -22,7 +22,7 @@ function adminMock(){
    if(input.action==='privacy-export')return r.fulfill({json:{account:{id:'qa-user'},profile:[],reports:[]}});
    return r.fallback();
   });
-  await page.goto(base);await page.locator('.ev-card').first().waitFor();await authenticate(page);
+  await page.goto(base);await page.locator('.ev-card').first().waitFor({state:'attached'});await authenticate(page);
   await page.evaluate(()=>{window.__termsResult=null;MivPrivacy.ensureTerms().then(v=>window.__termsResult=v);});await page.locator('#acceptCheckoutTerms').click();assert.equal(acceptWrites,0);assert.match(await page.locator('#termsStatus').innerText(),/Marque/);
   await page.locator('#checkoutTerms').check();await page.locator('#acceptCheckoutTerms').click();await page.waitForFunction(()=>window.__termsResult===true);assert.equal(acceptWrites,1);assert.equal(await page.evaluate(()=>MivPrivacy.ensureTerms()),true);assert.equal(acceptWrites,1);
   await page.evaluate(()=>MivPrivacy.open());await page.locator('#privacyMessage').fill('Quero corrigir minhas informações de contato.');await page.locator('#privacyKind').selectOption('correction');await page.locator('#privacyRequestForm button').click();await page.locator('.privacy-request').waitFor();assert.match(await page.locator('#privacyStatus').innerText(),/Protocolo/);assert.equal(requests.length,1);

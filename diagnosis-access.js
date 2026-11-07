@@ -131,8 +131,8 @@
         return `<article class="centralMiniCard"><small>MAPA DE EVOLUÇÃO</small><h3>${markEsc(row.niche)}</h3><p>${count} de 60 pontos respondidos · ${new Date(row.updated_at).toLocaleDateString('pt-BR')}</p>${row.company_id===ctx.company_id?`<button class="outline" data-diagnosis-continue="${index}">Continuar análise</button>`:'<p>Vinculada a outro perfil da empresa.</p>'}</article>`;
       }).join(''):'<div class="empty">Ao responder às etapas com sua conta conectada, suas análises aparecerão aqui.</div>';
       host.querySelectorAll('[data-diagnosis-continue]').forEach(button=>button.onclick=()=>{
-        const row=result.workspaces[Number(button.dataset.diagnosisContinue)];route('home');applyTheme(row.niche,niches[row.niche]?.theme||state.profile.theme,false);
-        hydrate(true).catch(()=>{});document.getElementById('analises')?.scrollIntoView({behavior:'smooth'});
+        const row=result.workspaces[Number(button.dataset.diagnosisContinue)];route('analises');applyTheme(row.niche,niches[row.niche]?.theme||state.profile.theme,false);
+        hydrate(true).catch(()=>{});document.getElementById('analysis-workspace')?.scrollIntoView({behavior:'smooth'});
       });
     }catch(error){if(same(ctx))host.textContent=error.message;}
   }

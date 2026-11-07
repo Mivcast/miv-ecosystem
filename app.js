@@ -453,7 +453,7 @@ async function refreshCompetitors(suggest=false,channel='',link=''){
   if(refreshBtn){refreshBtn.disabled=false;refreshBtn.textContent='Pesquisar movimentos dos últimos 30 dias'}
  }
 }
-function renderTracks(){applyLibraryLabels();renderShelf('marketingTrack',[...libraryVisibleIds('marketing'),...libraryVisibleIds('sales')]);renderMarketTrends();renderCompetitorInsights();renderShelf('brandTrack',libraryVisibleIds('brand'));renderShelf('consultTrack',bases.consult);renderShelf('mivcastTrack',bases.mivcast);renderTools();renderLearn();try{renderMonthlyPlanControls()}catch(e){}}
+function renderTracks(){applyLibraryLabels();renderShelf('marketingTrack',[...libraryVisibleIds('marketing'),...libraryVisibleIds('sales')]);renderMarketTrends();renderCompetitorInsights();renderShelf('brandTrack',libraryVisibleIds('brand'));window.MivHomepage?.render();renderShelf('mivcastTrack',bases.mivcast);renderTools();renderLearn();try{renderMonthlyPlanControls()}catch(e){}}
 function renderTools(){let arr=[...new Set(['monthly-strategy-plan',...bases.tools])].map(getItem).filter(Boolean);if(state.toolFilter!=='Todos'){arr=arr.filter(i=>state.toolFilter==='Grátis'?i.access==='Grátis':state.toolFilter==='Pago'?i.access!=='Grátis':i.cat===state.toolFilter)}document.getElementById('toolsTrack').innerHTML=arr.map(card).join('');bindCards()}
 function renderLearn(){let arr=bases.learn.map(getItem).filter(Boolean);if(state.learnFilter!=='Todos'){arr=arr.filter(i=>state.learnFilter==='Grátis'?i.access==='Grátis':state.learnFilter==='Pago'?i.access!=='Grátis':i.format===state.learnFilter)}const q=(document.getElementById('learnSearch')?.value||'').trim().toLowerCase(),area=document.getElementById('learnArea')?.value||'Todos',level=document.getElementById('learnLevel')?.value||'Todos';if(q)arr=arr.filter(i=>[i.title,i.desc,i.cat,i.tag,i.format].join(' ').toLowerCase().includes(q));if(area!=='Todos')arr=arr.filter(i=>(i.learningArea||i.cat)===area);if(level!=='Todos')arr=arr.filter(i=>(i.learningLevel||'Todos')===level||!i._learning);document.getElementById('learnTrack').innerHTML=arr.map(card).join('');bindCards()}
 function bindCards(){document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openItem(b.dataset.open));document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=e=>{e.stopPropagation();toggleFav(b.dataset.fav)});document.querySelectorAll('[data-competitor-channel]').forEach(b=>b.onclick=e=>{e.stopPropagation();refreshCompetitors(false,b.dataset.competitorChannel)});document.querySelectorAll('[data-market-mark]').forEach(b=>b.onclick=e=>{e.stopPropagation();openMarketMarkSuggestion(b.dataset.marketMark)});document.querySelectorAll('[data-competitor-expand]').forEach(b=>b.onclick=e=>{e.stopPropagation();const card=b.closest('.competitor-channel-card');if(!card)return;card.classList.toggle('expanded');b.textContent=card.classList.contains('expanded')?'Recolher card':'Ver todo o card'})}
@@ -1332,7 +1332,7 @@ function showToolPreview(item){
  document.getElementById('related').innerHTML=`<div class="relatedItem"><strong>Salvar na Central</strong><span>Use o coração para guardar esta ferramenta e acompanhar depois.</span></div><div class="relatedItem"><strong>Contexto conectado</strong><span>Quando ficar pronta, poderá usar dados do Perfil da Empresa e relatórios.</span></div>`;addHistory(item);route('detail')
 }
 
-function openItem(id){if(String(id).startsWith('diagnosis:')){route('home');window.MivEvolution?.openCard(id.slice(10));return}id=librarySuccessor(id);if(id==='monthly-strategy-plan'){openMonthlyPlanModal();return}const sp=getItem(id);if(!sp)return;const commercial=['consult-sale','service-sale','notify'].includes(sp.special);if(!commercial&&!hasItemAccess(sp)){openPaywall(sp);return}if(sp?.special==='calendar'){openCalendar();return}if(sp?.special==='channels'){showChannelsDetail(sp);return}if(sp?.special==='marketing-checklist'){showMarketingChecklist(sp);return}if(sp?.special==='business-checklist'){showBusinessChecklist(sp);return}if(sp?.special==='consult-sale'){showCommercialDetail(sp,'consult');return}if(sp?.special==='service-sale'){showCommercialDetail(sp,'service');return}if(sp?.special==='notify'){showToolPreview(sp);return}const item=getItem(id);if(!item)return;state.current=item;showDetail(item)}
+function openItem(id){if(String(id).startsWith('diagnosis:')){route('analises');window.MivEvolution?.openCard(id.slice(10));return}id=librarySuccessor(id);if(id==='monthly-strategy-plan'){openMonthlyPlanModal();return}const sp=getItem(id);if(!sp)return;const commercial=['consult-sale','service-sale','notify'].includes(sp.special);if(!commercial&&!hasItemAccess(sp)){openPaywall(sp);return}if(sp?.special==='calendar'){openCalendar();return}if(sp?.special==='channels'){showChannelsDetail(sp);return}if(sp?.special==='marketing-checklist'){showMarketingChecklist(sp);return}if(sp?.special==='business-checklist'){showBusinessChecklist(sp);return}if(sp?.special==='consult-sale'){showCommercialDetail(sp,'consult');return}if(sp?.special==='service-sale'){showCommercialDetail(sp,'service');return}if(sp?.special==='notify'){showToolPreview(sp);return}const item=getItem(id);if(!item)return;state.current=item;showDetail(item)}
 function showDetail(item){state.current=item;if(item._learning){document.getElementById('useBtn').textContent=item.learningVideoId?'Assistir no sistema':item.learningExternal?'Abrir material':'Marcar como aplicado';document.getElementById('useBtn').onclick=()=>{if(item.learningVideoId)openLearningVideo(item);else if(item.learningExternal)window.open(item.learningExternal,'_blank','noopener');else toast('Conteúdo marcado como aplicado no seu histórico.');};document.getElementById('detailVisual').style.backgroundImage=`url('${item.img}')`;document.getElementById('detailCat').textContent=`APRENDA & APLIQUE · ${String(item.format||'CONTEÚDO').toUpperCase()}`;document.getElementById('detailTitle').textContent=item.title;document.getElementById('detailDesc').textContent=item.desc;document.getElementById('favBtn').textContent=state.favorites.includes(item.id)?'♥ Salvo':'♡ Salvar';document.getElementById('detailBody').innerHTML=`<span class="eyebrow">${item.learningArea||'APRENDIZADO'}</span><h2>Aplicação prática</h2><div class="learningBody">${String(item.learningBody||item.desc||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</div>${item.learningVideoId?`<button class="primary learningExternal" data-watch-learning>Assistir aula no sistema</button>`:item.learningExternal?`<a class="outline learningExternal" href="${item.learningExternal}" target="_blank" rel="noopener">Abrir material externo →</a>`:''}<h2>Use o MARK.IA</h2><p>Peça ao MARK para adaptar este conteúdo ao contexto da sua empresa e transformar o aprendizado em próximos passos.</p>`;document.querySelector('[data-watch-learning]')?.addEventListener('click',()=>openLearningVideo(item));document.getElementById('related').innerHTML=items.filter(x=>x._learning&&x.id!==item.id&&(x.learningArea===item.learningArea)).slice(0,5).map(x=>`<div class="relatedItem" data-related="${x.id}"><strong>${x.title}</strong><span>${x.format} · ${x.access}</span></div>`).join('');document.querySelectorAll('[data-related]').forEach(x=>x.onclick=()=>openItem(x.dataset.related));addHistory(item);route('detail');return;}document.getElementById('useBtn').textContent='Usar agora';document.getElementById('useBtn').onclick=()=>toast('Resultado salvo na sua Central.');document.getElementById('detailVisual').style.backgroundImage=`url('${item.img}')`;document.getElementById('detailCat').textContent=`${item.cat.toUpperCase()} · ${item.format.toUpperCase()}`;document.getElementById('detailTitle').textContent=item.title;document.getElementById('detailDesc').textContent=item.desc;document.getElementById('favBtn').textContent=state.favorites.includes(item.id)?'♥ Salvo':'♡ Salvar';document.getElementById('detailBody').innerHTML=`<span class="eyebrow">APLICAÇÃO DO CARD</span><h2>Conteúdo prático e conectado ao seu contexto</h2><p>Esta área combina orientação objetiva, exemplos específicos do nicho, checklist, ferramenta interativa ou resultado salvável conforme a finalidade do card.</p><h2>Aplicação sugerida</h2><ul><li>Entenda o objetivo desta solução.</li><li>Adapte ao contexto de <strong>${state.profile.niche}</strong>.</li><li>Escolha uma única ação prioritária.</li><li>Salve o resultado na sua Central.</li><li>Peça ao MARK para revisar ou transformar em plano.</li></ul><h2>MARK nesta página</h2><p>O MARK sabe que você está vendo <strong>${item.title}</strong> e pode responder considerando seu nicho atual.</p>`;const rel=items.filter(x=>x.id!==item.id&&(x.cat===item.cat||x.tag===item.tag)).slice(0,5);document.getElementById('related').innerHTML=rel.map(x=>`<div class="relatedItem" data-related="${x.id}"><strong>${x.title}</strong><span>${x.format} · ${x.access}</span></div>`).join('');document.querySelectorAll('[data-related]').forEach(x=>x.onclick=()=>openItem(x.dataset.related));addHistory(item);route('detail')}
 function addHistory(item){if(!item)return;const existing=state.history.find(x=>x.id===item.id),entry={id:item.id,title:item.title,ts:new Date().toISOString()};if(existing){Object.assign(existing,entry);state.history=state.history.filter(x=>x.id!==item.id);state.history.unshift(existing)}else state.history.unshift(entry);save();if(mivUser&&mivSupabase)persistHistory(entry).catch(err=>console.warn('[MIV history]',err))}
 function openPaywall(item){state.current=item;if(!mivUser&&item?.id)pendingAuthAction={type:'paywall',itemId:item.id};document.getElementById('payTitle').textContent=item.title;document.getElementById('singlePrice').textContent=item.price||'Plano Pro';const cc=document.getElementById('couponCode');if(cc)cc.value='';const cf=document.getElementById('couponFeedback');if(cf){cf.style.display='none';cf.textContent=''};const bs=document.getElementById('buySingle');if(bs)bs.childNodes[0].textContent='Comprar este item ';document.getElementById('paywall').classList.add('show');document.getElementById('overlay').classList.add('show')}
@@ -1559,7 +1559,7 @@ function openAnalysisDetail(id,sub=''){
  route('detail');
 }
 
-function startAnalysis(id,sub=''){if(id==='completa'){window.MivEvolution?.openComplete();return}openAnalysisDetail(id,sub)}
+function startAnalysis(id,sub=''){if(id==='completa'){if(state.route!=='analises')route('analises');window.MivEvolution?.openComplete();return}openAnalysisDetail(id,sub)}
 
 const testimonialExamples=[
  ['Clínica de estética','Marketing','O calendário deixou minhas campanhas menos improvisadas e me ajudou a planejar datas com objetivo, público e canal.','Calendário inteligente'],
@@ -1629,21 +1629,32 @@ function renderLogos(){
   const chip=name=>`<div class="logo-chip logo-image-chip"><img src="assets/clientes/${name}" alt="${name.replace(/\.[^.]+$/,'')}" loading="lazy" onerror="this.closest('.logo-chip').classList.add('logo-missing');this.remove()"><span>${name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ')}</span></div>`;
   track.innerHTML=[...logos,...logos].map(chip).join('');
 }
+const mivHomeMetadata={
+ title:document.title,
+ description:document.querySelector('meta[name="description"]').content
+};
 function route(name,options={}){
+ document.body.classList.remove('menu-open');
+ document.getElementById('mobileMenu')?.setAttribute('aria-expanded','false');
  if((name==='central'||name==='report') && !mivUser){
   openAuth('login');
   authStatus('loginStatus','Entre ou crie uma conta para acessar sua Central.','');
   return;
  }
- document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
  const target=document.getElementById('view-'+name);if(!target)return;
+ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
  const previous=state.route;
  target.classList.add('active');state.route=name;
+ document.title=name==='analises'?'Análises Empresariais — MIV Ecosystem':mivHomeMetadata.title;
+ document.querySelector('meta[name="description"]').content=name==='analises'
+  ? 'Avalie sua empresa em quatro etapas, acompanhe sua evolução e explore orientações avulsas ou incluídas no seu plano.'
+  : mivHomeMetadata.description;
+ if(name==='analises'&&previous!==name)document.getElementById('analises-title').focus({preventScroll:true});
  if(!options.fromPop && previous!==name){
   const url=name==='home'?location.pathname:(location.pathname+'#'+name);
   if(options.replace)history.replaceState({mivRoute:name},'',url);else history.pushState({mivRoute:name},'',url);
  }
- window.scrollTo({top:0,behavior:options.instant?'auto':'smooth'});
+ window.scrollTo({top:0,behavior:options.instant||matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
  if(name==='central'){renderCentral();setTimeout(async()=>{try{await syncMySubscription();await loadAccessFromSupabase();maybeRenderCentral()}catch(e){console.warn('[MIV central subscription refresh]',e)}},150)}updateMark();
 }
 function renderCentral(){
@@ -2237,8 +2248,8 @@ function runPendingAuthAction(){
  if(action.type==='commerce'){window.MivCommerce?.open(action.itemId);return true;}
  if(action.type==='refreshTrends'){route('home');setTimeout(()=>{document.getElementById('tendencias')?.scrollIntoView({behavior:'smooth',block:'start'});refreshMarketTrends()},180);return true}
  if(action.type==='refreshCompetitors'){route('home');setTimeout(()=>{document.getElementById('concorrentes')?.scrollIntoView({behavior:'smooth',block:'start'});refreshCompetitors(!!action.suggest,action.channel||'',action.link||'')},180);return true}
- if(action.type==='diagnosis'){route('home');setTimeout(()=>window.MivEvolution?.openSolution(action.pointId),180);return true}
- if(action.type==='diagnosisComplete'){route('home');setTimeout(()=>window.MivEvolution?.openComplete(action.step||0),180);return true}
+ if(action.type==='diagnosis'){route('analises');setTimeout(()=>window.MivEvolution?.openSolution(action.pointId),180);return true}
+ if(action.type==='diagnosisComplete'){route('analises');setTimeout(()=>window.MivEvolution?.openComplete(action.step||0),180);return true}
  if(action.type==='paywall'&&action.itemId){route('home');setTimeout(()=>{const item=getItem(action.itemId),escaped=window.CSS&&CSS.escape?CSS.escape(action.itemId):String(action.itemId).replace(/"/g,'\\"');if(item){document.querySelector(`[data-open="${escaped}"]`)?.scrollIntoView({behavior:'smooth',block:'center'});openPaywall(item)}},180);return true}
  if(action.type==='openItem'&&action.itemId){route('home');setTimeout(()=>openItem(action.itemId),180);return true}
  return false;
@@ -2514,9 +2525,11 @@ document.getElementById('doForgot')?.addEventListener('click',async()=>{const em
 window.mivLogout=async function(){if(mivSupabase)await mivSupabase.auth.signOut();mivActiveCompanyId=null;mirrorCompanyProfile({});toast('Você saiu da sua conta.');route('home')};
 document.getElementById('logoutBtn')?.addEventListener('click',()=>window.mivLogout());
 // Navegação real do navegador (Voltar/Avançar)
-history.replaceState({mivRoute:state.route||'home'},'',location.hash?location.href:location.pathname);
+if(location.hash==='#analises')route('analises',{fromPop:true,instant:true});
+history.replaceState({mivRoute:state.route||'home'},'',location.href);
 window.addEventListener('popstate',e=>{
- const name=e.state?.mivRoute || (location.hash?location.hash.slice(1):'home');
+ const fragment=location.hash.slice(1);
+ const name=e.state?.mivRoute||(document.getElementById('view-'+fragment)?fragment:'home');
  if(name==='report'&&state.currentReport)renderFullSavedReport(state.currentReport);route(name,{fromPop:true,instant:true});
 });
 document.getElementById('learnSearch')?.addEventListener('input',renderLearn);document.getElementById('learnArea')?.addEventListener('change',renderLearn);document.getElementById('learnLevel')?.addEventListener('change',renderLearn);document.getElementById('centralAskMark')?.addEventListener('click',()=>{document.querySelector('.markFab')?.click();setTimeout(()=>{const ta=document.querySelector('#markForm textarea');if(ta){ta.value='Analise meu contexto, meu progresso e os itens desta Central. Quais devem ser meus 3 próximos passos prioritários e por quê?';ta.focus()}},150)});
