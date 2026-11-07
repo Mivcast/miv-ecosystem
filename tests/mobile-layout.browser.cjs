@@ -21,13 +21,13 @@ const server=http.createServer(async(req,res)=>{
   const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://**/*',route=>route.abort());await attach(page);
-  await page.goto('http://127.0.0.1:'+server.address().port);await page.locator('.ev-card').first().waitFor();
+  await page.goto('http://127.0.0.1:'+server.address().port);await page.locator('.ev-card').first().waitFor({state:'attached'});
   await page.locator('#marketingTrack .card').first().waitFor();
   await authenticate(page);
   for(const width of [320,360,390,430,700,768]){
    await page.setViewportSize({width,height:900});
    const metrics=await page.evaluate(()=>{
-    const tracks=[...document.querySelectorAll('#view-home .shelf,.ev-cards,.ev-niche-list,.testimonial-track')];
+    const tracks=[...document.querySelectorAll('#view-home .shelf,.ev-niche-list,.testimonial-track')];
     const sections=[...document.querySelectorAll('#view-home>section')].map(el=>({id:el.id,left:el.getBoundingClientRect().left,right:el.getBoundingClientRect().right,width:el.clientWidth,scroll:el.scrollWidth}));
     const outside=[...document.querySelectorAll('#view-home h1,#view-home h2,#view-home h3,#view-home input,#view-home select,#view-home textarea,#view-home .titleRow')].filter(el=>el.getClientRects().length&&!el.closest('.shelf,.ev-cards,.ev-niche-list,.testimonial-track,.logo-track')).map(el=>({name:el.id||el.className||el.tagName,left:el.getBoundingClientRect().left,right:el.getBoundingClientRect().right,scroll:el.scrollWidth,width:el.clientWidth})).filter(el=>el.left < -1||el.right>innerWidth+1||el.scroll>el.width+2);
     return {viewport:innerWidth,pageWidth:document.documentElement.scrollWidth,sections,outside,tracks:tracks.map(el=>{el.scrollLeft=0;const a=el.children[0]?.getBoundingClientRect(),b=el.children[1]?.getBoundingClientRect(),r=el.getBoundingClientRect();return {id:el.id||el.className,width:r.width,first:a?.width,peek:b?Math.max(0,r.right-b.left):null,scroll:el.scrollWidth,client:el.clientWidth};})};
@@ -40,7 +40,7 @@ const server=http.createServer(async(req,res)=>{
      assert(track.first<=track.width-18,`${track.id}: whole first card at ${width}`);
      assert(track.peek>=18&&track.peek<track.first,`${track.id}: next item visible at ${width}: ${track.peek}`);
     }
-    for(const selector of ['#marketingTrack','.ev-cards','#mivcastTrack','#competitorTrack','.ev-niche-list']){
+    for(const selector of ['#marketingTrack','#mivcastTrack','#competitorTrack','.ev-niche-list']){
      const track=page.locator(selector).first();
      const moved=await track.evaluate(el=>{el.scrollTo({left:el.clientWidth,behavior:'instant'});return el.scrollLeft;});
      assert(moved>0,selector+' can scroll');

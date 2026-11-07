@@ -19,7 +19,7 @@ function boot(){
   modal.querySelector('.quick-close').onclick=close;
   modal.querySelector('.quick-back')?.addEventListener('click',()=>{run.index--;draw();});
   modal.querySelectorAll('[data-quick-answer]').forEach(button=>button.onclick=()=>{if(!valid())return;run.answers[index]=button.dataset.quickAnswer==='unknown'?null:Number(button.dataset.quickAnswer);run.index++;draw();});
-  modal.querySelector('[data-quick-complete]')?.addEventListener('click',()=>{if(!valid())return;close();MivEvolution.openComplete();});
+  modal.querySelector('[data-quick-complete]')?.addEventListener('click',()=>{if(!valid())return;close();route('analises');MivEvolution.openComplete();});
   modal.querySelector('[data-quick-save]')?.addEventListener('click',()=>{
    if(!valid()||!mivUser)return;
    const changes=Object.fromEntries(run.points.map((p,i)=>[p.id,run.answers[i]]).filter(([,v])=>v!==null));
@@ -41,5 +41,3 @@ function boot(){
 })(typeof globalThis!=='undefined'?globalThis:this,()=>({summarize(values){const known=values.filter(v=>[0,1,2].includes(v));return {known:known.length,unknown:values.length-known.length,score:known.length?Math.round(known.reduce((a,b)=>a+b,0)/(known.length*2)*100):null};}}));
 
 if(typeof window!=='undefined')window.addEventListener('scroll',()=>document.querySelector('.floating-header')?.classList.toggle('launch-scrolled',scrollY>100),{passive:true});
-
-if(typeof window!=='undefined')document.querySelectorAll('[data-miv-topic]').forEach(button=>button.addEventListener('click',()=>{const input=document.getElementById('evQuestionSearch');if(!input)return;input.value=({'Vendas':'vendas atendimento','Marca':'marca posicionamento','Gestão':'custos processos'})[button.dataset.mivTopic]||button.dataset.mivTopic;input.dispatchEvent(new Event('input',{bubbles:true}));input.scrollIntoView({behavior:'smooth',block:'center'});input.focus({preventScroll:true});document.querySelectorAll('[data-miv-topic]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));}));

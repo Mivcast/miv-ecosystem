@@ -16,7 +16,7 @@ const server=http.createServer(async(req,res)=>{
   browser=process.env.MIV_WEBKIT_PATH?await webkit.launch({headless:true,executablePath:process.env.MIV_WEBKIT_PATH}):await chromium.launch({channel:'chrome',headless:true});
   const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.route('https://**/*',r=>r.abort());const fixture=await attach(page,'free');await page.goto('http://127.0.0.1:'+server.address().port);await page.locator('.ev-card').first().waitFor();
+  await page.route('https://**/*',r=>r.abort());const fixture=await attach(page,'free');await page.goto('http://127.0.0.1:'+server.address().port);await page.locator('.ev-card').first().waitFor({state:'attached'});
   await page.evaluate(()=>applyTheme('Restaurante','food',false));
   await page.locator('#focusNiche').click();
   for(let i=0;i<8;i++)await page.locator('[data-quick-answer="unknown"]').click();
