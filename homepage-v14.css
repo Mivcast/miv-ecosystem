@@ -56,37 +56,66 @@
 .v14-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .v14-actions button, .v14-more, .v14-rec-card button { min-height: 44px; }
 .v14-analysis-showcase .v14-caption { font-size: .84rem; margin-bottom: 0; }
-.v14-phone-scene {
-  display: grid;
-  place-items: center;
-  gap: 16px;
-  padding: 30px 16px 17px;
+.v14-analysis-art {
+  min-width: 0;
   margin: 0;
-  background: var(--accent-soft);
+}
+.v14-analysis-art img {
+  display: block;
+  width: 100%;
+  height: auto;
   border-radius: 20px;
 }
-.v14-phone {
-  width: min(100%, 252px);
-  border: 7px solid #203334;
-  border-radius: 30px;
+.v14-goals-layout {
+  display: grid;
+  align-items: center;
+  gap: 20px;
+}
+.v14-goals-copy h2 {
+  font-size: clamp(28px, 3vw, 44px);
+  margin-block: 8px;
+  line-height: 1.1;
+}
+.v14-goals-copy p { margin-block: 0; font-size: .94rem; }
+.v14-recommendations .miv-problem-grid { gap: 12px; margin-top: 0; }
+.v14-recommendations .miv-problem-grid button {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  gap: 6px;
+  padding: 16px;
+  border-color: var(--line);
   background: var(--surface);
   color: var(--text);
-  box-shadow: 0 16px 32px #11272925;
-  padding: 15px 12px;
-  transform: rotate(-3deg);
+  transition: background-color .18s, border-color .18s, box-shadow .18s, transform .18s;
 }
-.v14-phone-top { font-size: .62rem; font-weight: 800; margin-bottom: 12px; letter-spacing: .06em; }
-.v14-phone-top b { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; margin-right: 4px; color: var(--text); background: var(--accent-soft); }
-.v14-phone-stages { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 9px 0; }
-.v14-phone-stages span { font-size: .64rem; padding: 5px; background: var(--surface2); border-radius: 5px; }
-.v14-phone-cards { display: grid; gap: 6px; }
-.v14-phone-cards div { display: grid; grid-template-columns: 42px 1fr; align-items: center; gap: 3px 6px; padding: 5px; border: 1px solid var(--line); border-radius: 8px; }
-.v14-phone-cards img { grid-row: span 2; width: 42px; height: 42px; object-fit: cover; border-radius: 5px; }
-.v14-phone-cards b { font-size: .72rem; }
-.v14-phone-cards small, .v14-phone-scene figcaption { font-size: .74rem; color: var(--muted); }
-.v14-recommendations .miv-problem-grid button { min-height: 86px; }
-.v14-recommendations .miv-problem-grid button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
-.v14-recommendations .miv-problem-grid button small { color: #4b5d72; }
+.v14-recommendations .miv-problem-grid svg {
+  box-sizing: content-box;
+  width: 21px;
+  height: 21px;
+  padding: 7px;
+  margin-bottom: 3px;
+  border-radius: 11px;
+  background: var(--accent-soft);
+  color: var(--text);
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+.v14-recommendations .miv-problem-grid button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent-soft) 58%, var(--surface));
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.v14-recommendations .miv-problem-grid button:hover { border-color: var(--accent); }
+.v14-recommendations .miv-problem-grid button small { color: var(--muted); line-height: 1.4; }
+@media (min-width: 1080px) {
+  .v14-goals-layout { grid-template-columns: minmax(0, .92fr) minmax(0, 2.15fr); gap: clamp(18px, 2.4vw, 36px); }
+}
+.v14-brand-anchor { display: block; scroll-margin-top: 105px; }
+#aprender { padding-bottom: clamp(36px, 5vw, 72px); }
 .v14-rec-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 22px; }
 .v14-rec-head h3 { margin: 0; font-size: 1.14rem; }
 .v14-rec-track {
@@ -105,8 +134,12 @@
   border-radius: 14px;
   background: var(--surface);
   color: var(--text);
-  padding: 16px;
+  padding: 18px;
+  box-shadow: inset 0 3px color-mix(in srgb, var(--accent) 35%, var(--line));
+  transition: border-color .18s, background-color .18s;
 }
+.v14-rec-card:hover, .v14-rec-card:focus-within { border-color: var(--accent); }
+.v14-rec-card > .eyebrow { align-self: flex-start; background: var(--accent-soft); color: var(--text); border-radius: 99px; padding: 5px 9px; letter-spacing: .07em; margin-bottom: 6px; }
 .v14-rec-card { display: flex; flex-direction: column; min-width: 0; scroll-snap-align: start; }
 .v14-rec-card h4 { margin: 5px 0; font-size: 1rem; }
 .v14-rec-card p { margin: 5px 0 10px; font-size: .88rem; line-height: 1.5; color: var(--muted); }
@@ -235,11 +268,17 @@
 @media (max-width: 700px) {
   .v14-split { grid-template-columns: 1fr; }
   .v14-rec-track { grid-auto-columns: min(84%, 340px); }
-  .v14-phone-scene { padding-top: 20px; }
-  .v14-phone { transform: none; }
+  .v14-recommendations .miv-problem-grid button {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 12px;
+    padding: 12px;
+  }
+  .v14-recommendations .miv-problem-grid svg { grid-row: span 2; margin: 0; }
   .v14-analysis-header { padding-top: 95px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .v14-recommendations button { transition: none; }
+  .v14-recommendations button, .v14-rec-card { transition: none; }
   .v14-recommendations button:hover { transform: none; }
 }

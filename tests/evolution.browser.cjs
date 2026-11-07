@@ -32,8 +32,9 @@ const server=http.createServer(async(req,res)=>{
   await show('analises');await page.locator('.ev-card').first().waitFor();
   assert.equal(await page.locator('.ev-card').count(),20);
   assert.equal(await page.locator('.ev-question').count(),60);
-  assert.equal(await page.locator('#marketingTrack .card').count(),10);
-  assert.equal(await page.locator('#brandTrack .card').count(),4);
+  assert.equal(await page.locator('#marketingTrack .card').count(),14);
+  assert.equal(await page.locator('#marketingTrack [data-open="diferenciacao"]').count(),1);
+  assert.equal(await page.locator('#brandTrack').count(),0);
   assert.equal(await page.locator('#marketingTrack [data-open="clientes-marketing"],#marketingTrack [data-open="brindes"]').count(),0);
   const questions=[...service.points.values()].map(q=>({...q}));
   assert.equal(await page.evaluate(()=>EVOLUTION_DATA[0].cards[0].qs[0].steps),undefined,'Paid steps must not ship in public metadata');

@@ -221,7 +221,7 @@ body[data-theme="clean"]{--bg:#f7fffc;--surface:#ffffff;--surface2:#eefbf7;--tex
 .niche-search-wrap,.niche-group,.current-niche{background:color-mix(in srgb,var(--surface) 72%,transparent);border-color:color-mix(in srgb,var(--accent) 24%,var(--line));backdrop-filter:blur(16px)}
 .niche-group{box-shadow:0 12px 35px color-mix(in srgb,var(--accent) 9%,transparent)}
 .subchips button{background:color-mix(in srgb,var(--accent-soft) 78%,var(--surface));border-color:color-mix(in srgb,var(--accent) 20%,var(--line))}
-body[data-theme="clean"] #recomendados,body[data-theme="clean"] #marca,body[data-theme="clean"] #ferramentas,body[data-theme="clean"] #mivcast,body[data-theme="clean"] #aprender,body[data-theme="clean"] .testimonials,body[data-theme="clean"] .faq{background:#fff;box-shadow:0 0 0 100vmax #fff;clip-path:inset(0 -100vmax)}
+body[data-theme="clean"] #recomendados,body[data-theme="clean"] #ferramentas,body[data-theme="clean"] #mivcast,body[data-theme="clean"] #aprender,body[data-theme="clean"] .testimonials,body[data-theme="clean"] .faq{background:#fff;box-shadow:0 0 0 100vmax #fff;clip-path:inset(0 -100vmax)}
 body[data-theme="clean"] #marketing,body[data-theme="clean"] #consultoria,body[data-theme="clean"] #analises,body[data-theme="clean"] .plans{background:linear-gradient(180deg,#effff9 0%,#f9fffd 100%);box-shadow:0 0 0 100vmax #f2fffa;clip-path:inset(0 -100vmax)}
 .shelfSec{padding-top:70px;padding-bottom:18px}
 .card,.analysisCard,.testimonial-track article,.faq details{border-color:color-mix(in srgb,var(--accent) 18%,var(--line));background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(10px);box-shadow:0 14px 38px color-mix(in srgb,var(--accent) 9%,transparent)}

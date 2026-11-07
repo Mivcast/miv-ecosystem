@@ -96,14 +96,6 @@
     }).join('');
   }
 
-  function renderPhone() {
-    const first = EVOLUTION_DATA[0];
-    document.querySelector('.v14-phone-stages').innerHTML = EVOLUTION_DATA.map((stage, index) =>
-      `<span>${index + 1}. ${markEsc(stage.title)}</span>`).join('');
-    document.querySelector('.v14-phone-cards').innerHTML = first.cards.slice(0, 2).map(item =>
-      `<div><img src="${markEsc(item.img)}" alt="" loading="lazy"><b>${markEsc(item.title)}</b><small>Sem respostas</small></div>`).join('');
-  }
-
   for (const button of goalButtons) button.addEventListener('click', () => {
     goal = button.dataset.v14Goal;
     expanded = false;
@@ -146,13 +138,11 @@
   window.MivHomepage = {
     refreshCatalog() {
       renderRecommendations();
-      renderPhone();
       bindCards();
     },
     render() {
       renderRecommendations();
       renderConsultations();
-      renderPhone();
     }
   };
   MivHomepage.render();
