@@ -26,8 +26,16 @@ async function main() {
     await analysisButton.waitFor();
     assert.equal(await view('home').locator('#analysisGrid').count(), 0);
     assert.equal(await page.locator('.v14-path-list button').count(), 4);
-    assert.equal(await page.locator('.v14-phone-stages span').count(), 4);
-    assert.equal(await page.locator('.v14-phone-cards img').count(), 2);
+    const analysisArt = page.locator('.v14-analysis-art img');
+    assert.equal(await analysisArt.getAttribute('src'), 'assets/evolution/mapa-evolucao-vitrine.png');
+    assert(await analysisArt.evaluate(image => image.decode().then(() => image.naturalWidth === 778)));
+    const goals = await page.locator('.v14-goals-layout').evaluate(row => {
+      const title = row.querySelector('.v14-goals-copy').getBoundingClientRect();
+      const cards = [...row.querySelectorAll('[data-v14-goal]')].map(card => card.getBoundingClientRect());
+      return cards.length === 3 && cards.every(card => card.left > title.right && card.top === cards[0].top);
+    });
+    assert(goals, 'The three goal cards are next to the title on desktop');
+    assert.equal(await page.locator('#view-home > section').last().getAttribute('id'), 'aprender');
     assert.equal((await recommendationIds()).length, 3);
 
     await page.locator('.hero-actions [data-scroll="marketing"]').click();

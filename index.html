@@ -7,14 +7,14 @@
 <link rel="stylesheet" href="legal.css?v=1">
 <title>MIV Ecosystem — Diagnóstico Empresarial</title>
 <meta name="description" content="Descubra onde sua empresa precisa melhorar. Comece um diagnóstico rápido gratuito e aprofunde sua análise com estratégias e ferramentas para seu nicho.">
-<link rel="stylesheet" href="styles.css?v=15.1">
+<link rel="stylesheet" href="styles.css?v=15.2">
 <link rel="stylesheet" href="evolution.css?v=10">
 <link rel="stylesheet" href="catalog.css?v=2">
 <link rel="stylesheet" href="analytics.css?v=1">
 <link rel="stylesheet" href="acquisition.css?v=2">
 <link rel="stylesheet" href="prototype-entry.css?v=1">
 <link rel="stylesheet" href="commerce.css?v=1">
-<link rel="stylesheet" href="homepage-v14.css?v=2">
+<link rel="stylesheet" href="homepage-v14.css?v=3">
 </head>
 <body data-theme="clean">
 <header class="floating-header">
@@ -88,25 +88,36 @@
       </div>
       <p class="v14-caption">Comece grátis. Aprofunde conforme sua necessidade.</p>
     </div>
-    <figure class="v14-phone-scene">
-      <div class="v14-phone" aria-hidden="true">
-        <div class="v14-phone-top"><b>M</b> MIV ECOSYSTEM</div>
-        <strong>Seu mapa de evolução</strong>
-        <div class="v14-phone-stages"></div>
-        <div class="v14-phone-cards"></div>
-      </div>
-      <figcaption>Prévia das etapas e dos cards de análise</figcaption>
+    <figure class="v14-analysis-art">
+      <img src="assets/evolution/mapa-evolucao-vitrine.png" width="778" height="766" loading="lazy" decoding="async"
+        alt="Descubra o que melhorar na sua empresa. Avalie seu negócio em quatro etapas: Base do Negócio, Posicionamento da Marca, Vendas e Clientes e Crescimento.">
     </figure>
   </section>
 
   <section class="wrap miv-quick-entry v14-recommendations" id="diagnostico-rapido" aria-labelledby="v14-goals-title">
-    <span class="eyebrow">COMECE PELO QUE IMPORTA</span>
-    <h2 id="v14-goals-title">O que você mais precisa melhorar agora?</h2>
-    <p>Escolha seu principal objetivo e encontre ferramentas, estratégias e análises para começar.</p>
-    <div class="miv-problem-grid" role="group" aria-label="Objetivo do negócio">
-      <button type="button" data-v14-goal="sales" aria-pressed="true"><b>Quero vender mais</b><small>Melhorar ofertas, atendimento, conversão e relacionamento.</small></button>
-      <button type="button" data-v14-goal="brand" aria-pressed="false"><b>Quero valorizar minha marca</b><small>Fortalecer posicionamento, diferenciação e confiança.</small></button>
-      <button type="button" data-v14-goal="organization" aria-pressed="false"><b>Quero organizar meu negócio</b><small>Melhorar processos, gestão, produtividade e prioridades.</small></button>
+    <div class="v14-goals-layout">
+      <div class="v14-goals-copy">
+        <span class="eyebrow">COMECE PELO QUE IMPORTA</span>
+        <h2 id="v14-goals-title">O que você mais precisa melhorar agora?</h2>
+        <p>Escolha um objetivo para encontrar ferramentas, estratégias e análises.</p>
+      </div>
+      <div class="miv-problem-grid" role="group" aria-label="Objetivo do negócio">
+        <button type="button" data-v14-goal="sales" aria-pressed="true">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 7-9m-5 0h5v5"/></svg>
+          <b>Quero vender mais</b>
+          <small>Melhorar ofertas, atendimento, conversão e relacionamento.</small>
+        </button>
+        <button type="button" data-v14-goal="brand" aria-pressed="false">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 8 5-8 13L4 8zM4 8h16M9 8l3 13 3-13"/></svg>
+          <b>Quero valorizar minha marca</b>
+          <small>Fortalecer posicionamento, diferenciação e confiança.</small>
+        </button>
+        <button type="button" data-v14-goal="organization" aria-pressed="false">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 5h14v14H5zM5 10h14m-9 0v9"/></svg>
+          <b>Quero organizar meu negócio</b>
+          <small>Melhorar processos, gestão, produtividade e prioridades.</small>
+        </button>
+      </div>
     </div>
     <div class="v14-rec-head"><h3 id="v14-rec-title" aria-live="polite">Recomendações para vender mais</h3><div class="v14-actions"><button class="outline" data-v14-slide="-1" aria-label="Recomendações anteriores" type="button">←</button><button class="outline" data-v14-slide="1" aria-label="Próximas recomendações" type="button">→</button></div></div>
     <div id="v14-rec-track" class="v14-rec-track" role="region" aria-labelledby="v14-rec-title" tabindex="0"></div>
@@ -139,14 +150,17 @@
 
 
 
-  <section class="wrap shelfSec" id="marketing">
-    <div class="titleRow"><div><span class="eyebrow">ESTRATÉGIAS DE MARKETING · VENDAS & CRESCIMENTO</span><h2>Divulgação, conversão, recompra e crescimento em uma só trilha.</h2><p>Campanhas, canais, relacionamento, oferta, WhatsApp, ticket médio, pós-venda e ações para transformar atenção em clientes.</p></div><div class="arrows"><button data-prev="marketingTrack">‹</button><button data-next="marketingTrack">›</button></div></div>
+  <section class="wrap shelfSec" id="marketing" aria-labelledby="marketing-title">
+    <span id="marca" class="v14-brand-anchor" aria-hidden="true"></span>
+    <div class="titleRow">
+      <div>
+        <span class="eyebrow">MARKETING · VENDAS · POSICIONAMENTO &amp; MARCA</span>
+        <h2 id="marketing-title">Fortaleça sua marca e transforme atenção em clientes.</h2>
+        <p>Explore estratégias de identidade, diferenciação, divulgação, vendas e relacionamento para fazer seu negócio crescer.</p>
+      </div>
+      <div class="arrows"><button type="button" data-prev="marketingTrack" aria-label="Estratégias anteriores">‹</button><button type="button" data-next="marketingTrack" aria-label="Próximas estratégias">›</button></div>
+    </div>
     <div class="shelf" id="marketingTrack"></div>
-  </section>
-
-  <section class="wrap shelfSec" id="marca">
-    <div class="titleRow"><div><span class="eyebrow">POSICIONAMENTO & MARCA</span><h2>Faça a empresa parecer tão profissional quanto ela merece ser.</h2><p>Branding físico e digital, identidade, diferenciação, autoridade e experiência.</p></div><div class="arrows"><button data-prev="brandTrack">‹</button><button data-next="brandTrack">›</button></div></div>
-    <div class="shelf" id="brandTrack"></div>
   </section>
 
   <section class="wrap shelfSec tools-section" id="ferramentas">
@@ -180,36 +194,27 @@
 
   <section class="wrap v14-consult" id="consultoria" aria-labelledby="v14-consult-title">
     <div>
-      <span class="eyebrow">CONSULTORIA &amp; MENTORIA</span>
-      <h2 id="v14-consult-title">Você não precisa resolver tudo sozinho.</h2>
-      <p>Conte com orientação automatizada, mentoria direcionada ou acompanhamento profissional para enfrentar os desafios do seu negócio.</p>
-      <p>Escolha o nível de apoio que combina com o momento da sua empresa.</p>
+      <h2 id="v14-consult-title">Consultoria &amp; Mentoria</h2>
+      <p>Conte com orientação automatizada, mentoria direcionada ou acompanhamento profissional para evoluir seu negócio.</p>
     </div>
     <p class="v14-consult-hint" id="v14-consult-hint">Deslize para ver as cinco modalidades.</p>
     <div id="consultTrack" class="v14-consult-list" role="region" aria-labelledby="v14-consult-title" tabindex="0"></div>
   </section>
 
   <section class="wrap shelfSec" id="mivcast">
-    <div class="titleRow"><div><span class="eyebrow">A MIVCAST EXECUTA PARA VOCÊ</span><h2>Prefere não fazer sozinho? Nossa agência pode executar.</h2><p>Criação, estrutura digital, presença online, materiais e conteúdo profissional em serviços avulsos.</p></div><div class="arrows"><button data-prev="mivcastTrack">‹</button><button data-next="mivcastTrack">›</button></div></div>
+    <div class="titleRow"><div><span class="eyebrow">A MIVCAST EXECUTA PARA VOCÊ</span><h2>Conte com nossos especialistas para profissionalizar sua marca.</h2></div><div class="arrows"><button data-prev="mivcastTrack">‹</button><button data-next="mivcastTrack">›</button></div></div>
     <div class="shelf" id="mivcastTrack"></div>
   </section>
 
 
-  <section class="wrap shelfSec learning" id="aprender">
-    <div class="titleRow"><div><span class="eyebrow">APRENDA & APLIQUE</span><h2>Conteúdo útil, organizado para virar aplicação.</h2><p>O carrossel mostra primeiro o que tende a ser mais relevante, mas você pode filtrar por formato e acesso.</p></div><div class="arrows"><button data-prev="learnTrack">‹</button><button data-next="learnTrack">›</button></div></div>
-    <div class="filterbar" id="learnFilters">
-      <button class="active" data-learn-filter="Todos">Todos</button><button data-learn-filter="Curso">Cursos</button><button data-learn-filter="Guia">Guias</button><button data-learn-filter="Livro">Livros</button><button data-learn-filter="Vídeo">Vídeos</button><i></i><button data-learn-filter="Grátis">Grátis</button><button data-learn-filter="Pago">Pagos</button>
-    </div>
-    <div class="learnDiscovery"><input id="learnSearch" placeholder="Buscar conteúdo, tema ou assunto"><select id="learnArea"><option value="Todos">Todas as áreas</option></select><select id="learnLevel"><option value="Todos">Todos os níveis</option><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select></div><div class="shelf" id="learnTrack"></div>
-  </section>
+
 
 
   <section class="wrap testimonials" id="depoimentos">
-    <span class="eyebrow center">EXEMPLOS DE USO POR NICHO</span>
     <div class="titleRow testimonial-head">
       <div>
-        <h2>Exemplos de como usar o ecossistema no seu nicho.</h2>
-        <p>Conteúdo ilustrativo de uso por nicho, mantido enquanto reunimos relatos verificáveis de usuários. Não representa resultados comprovados do produto.</p>
+        <h2>Cases de sucesso</h2>
+        <p>Exemplos de evolução para empresas, empreendedores e profissionais.</p>
       </div>
       <div class="arrows"><button data-prev="testimonialGrid">‹</button><button data-next="testimonialGrid">›</button></div>
     </div>
@@ -271,6 +276,14 @@
   <section class="wrap faq">
     <span class="eyebrow center">TIRE SUAS DÚVIDAS</span><h2 class="center">Você não precisa entender o ecossistema inteiro para começar.</h2>
     <div class="faq-grid"><details><summary>Preciso assinar para usar?</summary><p>Não. Você pode começar grátis, comprar itens avulsos ou assinar um plano quando quiser liberar mais análises, cards e uso do MARK.IA.</p></details><details><summary>O que muda quando escolho meu nicho?</summary><p>A vitrine reorganiza recomendações, categorias, linguagem, imagens, análises e contexto para ficar mais próxima da realidade do seu tipo de negócio.</p></details><details><summary>O MIV substitui uma consultoria humana?</summary><p>Ele ajuda a diagnosticar, priorizar e executar melhor. Quando o caso pede acompanhamento mais próximo, você também pode contratar consultoria, mentoria ou execução pela MivCast.</p></details><details><summary>Posso comprar só um card ou ferramenta?</summary><p>Sim. A compra avulsa libera o item específico sem mensalidade, e o resultado fica salvo na sua Central.</p></details><details><summary>O cupom altera o valor antes do Mercado Pago?</summary><p>Sim. Quando o cupom é aplicado no card ou no plano, o checkout abre com o valor final já calculado.</p></details><details><summary>O pagamento libera o acesso automaticamente?</summary><p>Sim. Após a confirmação do Mercado Pago, o sistema atualiza sua compra ou plano e mostra a liberação na sua conta.</p></details><details><summary>Consigo cancelar ou mudar meu plano?</summary><p>Sim. A Central mostra o plano ativo e opções de gestão, como upgrade, downgrade programado ou cancelamento de renovação.</p></details><details><summary>O MARK.IA usa informações da minha empresa?</summary><p>Sim, quando você preenche o Perfil da Empresa. Isso ajuda o MARK a responder com mais contexto e evita recomendações genéricas.</p></details><details><summary>Posso salvar análises e continuar depois?</summary><p>Sim. Favoritos, histórico, compras, relatórios e análises em andamento aparecem na Minha Central.</p></details><details><summary>Isso serve para negócio local e online?</summary><p>Serve para os dois. O sistema cruza presença física, digital, vendas, marca, marketing, clientes e gestão para sugerir próximos passos mais coerentes.</p></details></div>
+  </section>
+
+  <section class="wrap shelfSec learning" id="aprender">
+    <div class="titleRow"><div><span class="eyebrow">APRENDA & APLIQUE</span><h2>Conteúdo útil, organizado para virar aplicação.</h2><p>O carrossel mostra primeiro o que tende a ser mais relevante, mas você pode filtrar por formato e acesso.</p></div><div class="arrows"><button data-prev="learnTrack">‹</button><button data-next="learnTrack">›</button></div></div>
+    <div class="filterbar" id="learnFilters">
+      <button class="active" data-learn-filter="Todos">Todos</button><button data-learn-filter="Curso">Cursos</button><button data-learn-filter="Guia">Guias</button><button data-learn-filter="Livro">Livros</button><button data-learn-filter="Vídeo">Vídeos</button><i></i><button data-learn-filter="Grátis">Grátis</button><button data-learn-filter="Pago">Pagos</button>
+    </div>
+    <div class="learnDiscovery"><input id="learnSearch" placeholder="Buscar conteúdo, tema ou assunto"><select id="learnArea"><option value="Todos">Todas as áreas</option></select><select id="learnLevel"><option value="Todos">Todos os níveis</option><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select></div><div class="shelf" id="learnTrack"></div>
   </section>
 </section>
 
@@ -519,7 +532,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js" integrity="sha384-TcHRA3zBbn+Lexh5n+Oil4guNPOS3rjNDpGRAN46u/s/mB2IZ50ceC6TYDU2yvgK" crossorigin="anonymous"></script>
 <script src="niche-catalog.js?v=1"></script>
 <script src="asset-index.js?v=1"></script>
-<script src="app.js?v=17"></script>
+<script src="app.js?v=18"></script>
 <script src="niche-profile.js?v=1"></script>
 <script src="legal-config.js?v=2"></script>
 <script src="privacy.js?v=1"></script>
@@ -535,5 +548,5 @@
 <script src="analytics.js?v=3"></script>
 <script src="quick-diagnosis.js?v=2"></script>
 <script src="commerce-client.js?v=1"></script>
-<script src="homepage-v14.js?v=2"></script>
+<script src="homepage-v14.js?v=3"></script>
 </body></html>
