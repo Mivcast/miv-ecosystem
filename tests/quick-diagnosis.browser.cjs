@@ -18,14 +18,14 @@ const server=http.createServer(async(req,res)=>{
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
   await page.route('https://**/*',r=>r.abort());const fixture=await attach(page,'free');await page.goto('http://127.0.0.1:'+server.address().port);await page.locator('.ev-card').first().waitFor({state:'attached'});
   await page.evaluate(()=>applyTheme('Restaurante','food',false));
-  await page.locator('#focusNiche').click();
+  await page.evaluate(()=>route('analises',{instant:true}));await page.locator('#view-analises [data-quick-start]').click();
   for(let i=0;i<8;i++)await page.locator('[data-quick-answer="unknown"]').click();
   assert.match(await page.locator('.quick-dialog').innerText(),/8 resposta\(s\).*fora da nota/);
   assert.match(await page.locator('.quick-dialog').innerText(),/Sem pontuação/);
   assert.equal(await page.locator('[data-quick-save]').count(),0);
   await page.locator('.quick-close').click();await authenticate(page);
   const initial=await page.evaluate(()=>MivEvolution.localData());
-  await page.locator('#focusNiche').click();
+  await page.evaluate(()=>route('analises',{instant:true}));await page.locator('#view-analises [data-quick-start]').click();
   for(let i=0;i<8;i++)await page.locator('[data-quick-answer="1"]').click();
   assert.match(await page.locator('.quick-dialog').innerText(),/50%/);
   assert.deepEqual(await page.evaluate(()=>MivEvolution.localData()),initial,'No implicit writes from quick diagnosis');

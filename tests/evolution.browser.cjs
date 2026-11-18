@@ -27,12 +27,12 @@ const server=http.createServer(async(req,res)=>{
   let researchRequests=0;
   await page.route('**/api/mark-ai',async route=>{researchRequests++;await route.fulfill({json:{cards:[{channel:'Instagram',title:'Instagram',description:'Movimento de teste: vídeos sobre dúvidas frequentes.',mark_strategy:'Teste uma série de respostas.',source:'Fonte de teste',source_url:'https://example.com/teste'}]}})});
   const url=`http://127.0.0.1:${server.address().port}`;
-  await page.goto(url);await page.locator('#marketingTrack .card').first().waitFor();
+  await page.addInitScript(()=>sessionStorage.setItem('mivGeneralExperience','1'));await page.goto(url);await page.locator('#marketingTrack .card').first().waitFor();
   const show = name => page.evaluate(name=>route(name,{instant:true}),name);
   await show('analises');await page.locator('.ev-card').first().waitFor();
   assert.equal(await page.locator('.ev-card').count(),20);
   assert.equal(await page.locator('.ev-question').count(),60);
-  assert.equal(await page.locator('#marketingTrack .card').count(),14);
+  assert.equal(await page.locator('#marketingTrack .card').count(),13);
   assert.equal(await page.locator('#marketingTrack [data-open="diferenciacao"]').count(),1);
   assert.equal(await page.locator('#brandTrack').count(),0);
   assert.equal(await page.locator('#marketingTrack [data-open="clientes-marketing"],#marketingTrack [data-open="brindes"]').count(),0);
@@ -87,17 +87,17 @@ const server=http.createServer(async(req,res)=>{
     assert.equal(new Set(positions).size,1,'Five cards share one desktop row');
     assert.equal(positions.length,5);
   }
-  assert.equal(await page.locator('.v14-path-list button').count(),4);
+  assert.equal(await page.locator('.hero-paths button').count(),4);
   assert.equal(await page.locator('.ev-movement-result').count(),0);
   assert.equal(researchRequests,0);
-  assert.deepEqual(await page.locator('#view-home>section').evaluateAll(sections=>sections.slice(0,6).map(section=>section.id)),['heroCommerce','primeiro-resultado','analises','diagnostico-rapido','nicho','marketing']);
+  assert.deepEqual(await page.locator('#view-home>section').evaluateAll(sections=>sections.slice(0,6).map(section=>section.id)),['heroCommerce','analises','nicho','marketing','calendario-marketing','ferramentas']);
   await show('home');
   await page.evaluate(()=>window.scrollTo(0,document.getElementById('nicho').getBoundingClientRect().top+scrollY-110));
   await page.screenshot({path:path.join(output,'niche-desktop.png')});
   assert.equal(await page.locator('.ev-niche-list img').first().evaluate(image=>image.getBoundingClientRect().width),84);
   assert.equal(await page.locator('.ev-niche-list').evaluate(list=>getComputedStyle(list).gap),'6px');
-  await page.locator('#como-ajuda').scrollIntoViewIfNeeded();
-  assert.equal(await page.locator('.v14-path-list svg').count(),4);
+  await page.locator('#heroCommerce').scrollIntoViewIfNeeded();
+  assert.equal(await page.locator('.hero-paths .glass-icon').count(),4);
   await page.screenshot({path:path.join(output,'pillars-desktop.png')});
   await page.evaluate(()=>window.scrollTo(0,document.getElementById('concorrentes').getBoundingClientRect().top+scrollY-110));
   await page.screenshot({path:path.join(output,'competitors-compact.png')});
