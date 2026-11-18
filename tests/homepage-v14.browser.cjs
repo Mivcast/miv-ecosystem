@@ -32,7 +32,7 @@ async function main() {
     await page.locator('#welcomeGeneral').click();
     assert.equal(await page.locator('.niche-welcome[open]').count(), 0);
     const analysisArt = page.locator('.phone-preview img');
-    assert.equal(await analysisArt.getAttribute('src'), 'assets/evolution/smartphone-v15.png');
+    assert.equal(await analysisArt.getAttribute('src'), 'assets/evolution/smartphone-map-v17.webp');
     assert(await analysisArt.evaluate(image => image.decode().then(() => image.naturalWidth > 0)));
     const goals = await page.locator('.v14-goals-layout').evaluate(row => {
       const title = row.querySelector('.v14-goals-copy').getBoundingClientRect();
