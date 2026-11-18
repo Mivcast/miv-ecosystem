@@ -3,7 +3,7 @@ body[data-theme] #view-home .ecosystem-panel {
   isolation: isolate;
   color: #fff;
   background: #202137;
-  background-image: var(--hero-overlay), var(--hero-image, var(--theme-hero-image));
+  background-image: var(--hero-overlay), var(--section-image);
   background-size: cover;
   background-position: center;
   margin: 0;
@@ -13,6 +13,12 @@ body[data-theme] #view-home .ecosystem-panel {
   box-shadow: none;
   clip-path: none;
 }
+#analises { --section-image: url('assets/sections/analysis-v16.webp'); }
+#calendario-marketing { --section-image: url('assets/sections/calendar-v16.webp'); }
+#meu-mercado { --section-image: url('assets/sections/market-v16.webp'); }
+#apoio-especializado { --section-image: url('assets/sections/consulting-v16.webp'); }
+#aprender { --section-image: url('assets/sections/learning-v16.webp'); }
+#diagnostico-rapido { --section-image: url('assets/sections/priorities-v16.webp'); }
 .ecosystem-inner { padding-block: clamp(40px, 6vw, 88px); }
 .ecosystem-heading { max-width: 880px; margin-bottom: 32px; }
 .ecosystem-panel h2 { font-size: clamp(30px, 3.6vw, 53px); line-height: 1.12; letter-spacing: -.035em; margin: 12px 0 20px; color: #fff; }
@@ -61,6 +67,9 @@ body[data-theme] #apoio-especializado #consultoria { background: transparent; bo
 #apoio-especializado #mivcastTrack { grid-auto-columns: minmax(220px, calc((100% - 60px) / 5)); }
 .service-compact .cardImg { height: 140px; }
 .service-compact .cardImg img { width: 100%; height: 100%; object-fit: cover; }
+#view-home .service-cutout .cardImg { height: 170px; padding: 10px; background: transparent; }
+#view-home .service-cutout .cardImg::after { display: none; }
+#view-home .service-cutout .cardImg img { object-fit: contain; filter: drop-shadow(0 10px 12px #10202818); }
 .service-compact .cardBody { padding: 15px; }
 .service-compact .cardBody h3 { font-size: 1rem; }
 .service-compact .cardBody p { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: .82rem; }
@@ -77,10 +86,12 @@ body[data-theme] #apoio-especializado #consultoria { background: transparent; bo
 #diagnostico-rapido .miv-problem-grid button { color: #fff; background: #ffffff15; border-color: #ffffff45; }
 #diagnostico-rapido .miv-problem-grid button[aria-pressed=true] { background: #ffffff30; border-color: #acecdf; box-shadow: inset 0 0 0 1px #acecdf; }
 #diagnostico-rapido .miv-problem-grid button small { color: #e2e5f0; }
-#diagnostico-rapido #preciso-de-ajuda { width: 100%; padding: 26px 0 0; }
-#diagnostico-rapido .need-box { color: var(--text); }
-#diagnostico-rapido .need-box .eyebrow { color: var(--accent); }
-#diagnostico-rapido .need-box h3 { background: none; color: var(--text); -webkit-text-fill-color: currentColor; }
+#diagnostico-rapido #preciso-de-ajuda { width: 100%; padding: 26px 0 0; background: transparent; box-shadow: none; clip-path: none; }
+#diagnostico-rapido .need-box { color: #fff; background: transparent; box-shadow: none; border: 0; padding-inline: 0; }
+#diagnostico-rapido .need-box::after { content: none; }
+#diagnostico-rapido .need-box .eyebrow { color: #acede9; }
+#diagnostico-rapido .need-box h3 { background: none; color: #fff; -webkit-text-fill-color: currentColor; }
+#diagnostico-rapido .need-copy p, #diagnostico-rapido .need-action small { color: #e1e5ef; }
 #aprender .titleRow p { color: #e1e5ef; }
 .calendar-inline { display: block; }
 .calendar-inline .calendarBox { width: 100%; max-width: none; margin: 0; padding: clamp(18px,3vw,35px); border-radius: 24px; color: var(--text); background: var(--surface); max-height: none; overflow: visible; }

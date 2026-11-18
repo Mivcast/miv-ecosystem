@@ -247,7 +247,19 @@ function nicheThumb(name){return localNicheHeroPaths(name)[0]}
 function renderNiches(){window.MivEvolution?.renderNichePicker()}
 function imgFor(item){const img=item.img||'';return img&&!img.includes('picsum.photos')?img:(cardImageMap[item.id]||img)}
 function card(item){const saved=state.favorites.includes(item.id);const unlocked=hasItemAccess(item);const lock=item.access==='Grátis'?`<span class="lock-badge free-badge">GRÁTIS</span>`:unlocked?`<span class="lock-badge free-badge">✓ LIBERADO</span>`:`<span class="lock-badge">🔒 ${item.id==='monthly-strategy-plan'?'PREMIUM · ou '+markEsc(item.price):'PRO'} ${item.access==='Pago'&&!window.MivCommerce?.isUnavailable(item.id)?'· ou '+(item.price||'avulso'):''}</span>`;return `<article class="card"><div class="cardImg cardImgFallback"><div class="cardFallbackLabel"><span>${item.icon||'◆'}</span><small>${item.cat||'MIV ECOSYSTEM'}</small></div><img src="${imgFor(item)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">${lock}<button class="heart ${saved?'saved':''}" data-fav="${item.id}">${saved?'♥':'♡'}</button></div><div class="cardBody"><div class="meta"><span>${item.tag}</span><small>${item.format}</small></div><h3>${item.title}</h3><p>${item.desc}</p><button class="open" data-open="${item.id}">Abrir →</button></div></article>`}
-function mivcastCard(item){return `<article class="card service-compact"><div class="cardImg"><button class="heart ${state.favorites.includes(item.id)?'saved':''}" data-fav="${markEsc(item.id)}" aria-label="Salvar ${markEsc(item.title)}">${state.favorites.includes(item.id)?'♥':'♡'}</button><img src="${markEsc(imgFor(item))}" alt="" loading="lazy"></div><div class="cardBody"><small>${markEsc(item.tag||'MIVCAST')}</small><h3>${markEsc(item.title)}</h3><p>${markEsc(item.desc)}</p><button class="open" data-open="${markEsc(item.id)}">Saiba mais →</button></div></article>`;}
+const serviceCutouts = {
+ 'svc-logo':'logo-v2','svc-vetor':'vector-v2','svc-manual':'manual-v2',
+ 'svc-site':'website','svc-lp':'landing-v2','svc-link':'link-v2',
+ 'svc-loja':'commerce','svc-market':'market-v2','svc-market40':'market40-v2',
+ 'svc-google':'local','svc-whatsapp':'messaging','svc-instagram':'social',
+ 'svc-facebook':'facebook-v2','svc-linkedin':'linkedin-v2','svc-15artes':'artes15-v2',
+ 'svc-arte':'arte-v2','svc-midiakit':'midiakit-v2','svc-impressos':'impressos-v2',
+ 'svc-video':'video','svc-institucional':'institucional-v2'
+};
+function mivcastCard(item){
+ const cutout=serviceCutouts[item.id];
+ const image=cutout?`assets/services/${cutout}.${cutout.endsWith('-v2')?'webp':'png'}`:imgFor(item);
+ return `<article class="card service-compact service-cutout"><div class="cardImg"><button class="heart ${state.favorites.includes(item.id)?'saved':''}" data-fav="${markEsc(item.id)}" aria-label="Salvar ${markEsc(item.title)}">${state.favorites.includes(item.id)?'♥':'♡'}</button><img src="${markEsc(image)}" alt="" loading="lazy"></div><div class="cardBody"><small>${markEsc(item.tag||'MIVCAST')}</small><h3>${markEsc(item.title)}</h3><p>${markEsc(item.desc)}</p><button class="open" data-open="${markEsc(item.id)}">Saiba mais →</button></div></article>`;}
 const bases={marketing:['calendario','canais','local','equipe-marketing','clientes-marketing','parcerias','brindes'],brand:['identidade','branding-fisico','branding-digital','diferenciacao'],sales:['ticket','vendas-tecnicas','followup','whatsapp','oferta'],tools:['tool-calendario','markia-app','agendamentos','financeiro','orcamentos'],learn:['livro-admin-sabedoria','livro-branding-marketing','livro-digital-influencer','livro-youtuber','video-marketing-base','video-branding-base','video-vendas-base','video-conteudo-base'],consult:['consult-markia','mentoria-area','consult-setor','consult-completa','consult-acomp'],mivcast:['svc-logo','svc-vetor','svc-manual','svc-site','svc-loja','svc-lp','svc-market','svc-market40','svc-google','svc-instagram','svc-15artes','svc-facebook','svc-whatsapp','svc-link','svc-linkedin','svc-midiakit','svc-impressos','svc-arte','svc-video','svc-institucional']};
 function recommended(){
  const t=state.profile.theme;
