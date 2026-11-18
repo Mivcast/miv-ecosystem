@@ -5,7 +5,7 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new 
 (async()=>{let browser;await new Promise(r=>server.listen(0,'127.0.0.1',r));try{
  browser=process.env.MIV_WEBKIT_PATH?await webkit.launch({executablePath:process.env.MIV_WEBKIT_PATH,headless:true}):await chromium.launch({channel:'chrome',headless:true});
  const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());await page.route('https://**/*',r=>r.abort());await attach(page);
- await page.goto('http://127.0.0.1:'+server.address().port);await page.locator('header nav [data-route=analises]').click();await page.locator('.ev-card').first().waitFor();
+ await page.addInitScript(()=>sessionStorage.setItem('mivGeneralExperience','1'));await page.goto('http://127.0.0.1:'+server.address().port);await page.locator('header nav [data-route=analises]').click();await page.locator('.ev-card').first().waitFor();
  assert.equal(await page.locator('.ev-question').count(),60);
  assert.equal(await page.locator('.ev-q-assessment').count(),0);assert.equal(await page.locator('.ev-choice-prompt').first().innerText(),'Como seu negócio está nesse ponto?');
  const first=page.locator('[data-ev-row="base.mercado.demanda"]');
@@ -23,7 +23,7 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new 
  await authenticate(page);
  await page.evaluate(()=>{mivSupabase.from=()=>({select(){return this;},eq(){return this;},maybeSingle:async()=>({data:{niche:'Dentista',dynamic_events:[{name:'Evento de outro nicho'}],dynamic_sources:[]}})});localStorage.setItem('mivCalendarPrefs',JSON.stringify({niche:'Dentista',dynamicEvents:[{name:'Evento antigo'}]}));});
  await page.evaluate(()=>openCalendar());assert.equal(await page.locator('#calNiche').inputValue(),'Numismática');assert(await page.locator('#calNiche').isDisabled());assert.deepEqual(await page.evaluate(()=>calDynamicEvents),[]);
- await page.locator('#calClose').click();await page.setViewportSize({width:390,height:844});await page.evaluate(()=>MivEvolution.openComplete());assert.match(await page.locator('.ev-dialog').innerText(),/Mediano/);await page.locator('[data-ev-close]').click();
+ await page.setViewportSize({width:390,height:844});await page.evaluate(()=>MivEvolution.openComplete());assert.match(await page.locator('.ev-dialog').innerText(),/Mediano/);await page.locator('[data-ev-close]').click();
  await page.evaluate(()=>route('analises',{instant:true}));await search.fill('');await page.evaluate(()=>window.scrollTo(0,0));
  for(const width of [375,390,440,768,1440]){await page.setViewportSize({width,height:900});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Page overflow at '+width);const bad=await page.locator('.ev-choices button').evaluateAll(buttons=>buttons.filter(b=>b.scrollWidth>b.clientWidth+1).length);assert.equal(bad,0,'Answer text clipping at '+width);}
  assert.deepEqual(errors,[]);console.log('PASS: new answer levels 2/1/0, point/card/stage/overall scoring, topic search, canonical Numismatica, stale calendar ignored, complete analysis, mobile text and layout.');

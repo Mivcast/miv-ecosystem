@@ -5,48 +5,43 @@
     organization: { title: 'organizar seu negócio', ids: ['tool-calendario', 'equipe-marketing', 'canais', 'monthly-strategy-plan'], analyses: ['gargalos', 'modelo'] }
   };
   const track = document.getElementById('v14-rec-track');
-  const more = document.getElementById('v14-rec-more');
   const goalButtons = [...document.querySelectorAll('[data-v14-goal]')];
   let goal = 'sales';
-  let expanded = false;
 
   function resourceCard(item) {
-    const access = hasItemAccess(item) && item.access !== 'Grátis' ? 'Liberado na sua conta' : item.access;
-    return `<article class="v14-rec-card">
-      <span class="eyebrow">${markEsc(item.cat)}</span>
-      <h4>${markEsc(item.title)}</h4>
-      <p>${markEsc(item.desc)}</p>
-      <div><small>${markEsc(access)}</small><button class="outline" type="button" data-open="${markEsc(item.id)}">Abrir →</button></div>
-    </article>`;
+    if (bases.mivcast.includes(item.id)) return mivcastCard(item);
+    const html = card(item);
+    return bases.consult.includes(item.id) ? html.replace('data-open=', 'data-v14-consult=') : html;
   }
 
   function analysisCard(id) {
     const stage = EVOLUTION_DATA.find(stage => stage.cards.some(card => card.id === id));
-    const card = stage?.cards.find(card => card.id === id);
-    if (!card) return '';
-    return `<article class="v14-rec-card v14-rec-analysis">
-      <span class="eyebrow">CONSULTORIA EM 4 ETAPAS</span>
-      <h4>${markEsc(card.title)}</h4>
-      <p>${markEsc(card.desc)}</p>
-      <div><small>${markEsc(stage.title)}</small><button class="outline" type="button" data-v14-analysis="${markEsc(id)}">Ir para análise →</button></div>
-    </article>`;
+    const item = stage?.cards.find(card => card.id === id);
+    if (!item) return '';
+    return `<article class="card"><div class="cardImg"><img src="${markEsc(item.img)}" alt="" loading="lazy"></div>
+      <div class="cardBody"><div class="meta"><span>${markEsc(stage.title)}</span><small>Análise empresarial</small></div>
+      <h3>${markEsc(item.title)}</h3><p>${markEsc(item.desc)}</p>
+      <button class="open" type="button" data-v14-analysis="${markEsc(id)}">Ir para análise →</button></div></article>`;
   }
 
   function renderRecommendations() {
     const { title, ids, analyses } = goals[goal];
-    const relevant = recommended().map(librarySuccessor).filter(id => ids.includes(id));
-    const resources = [...new Set([...relevant, ...ids])].map(getItem)
-      .filter(item => item && item._dbActive !== false).map(resourceCard);
-    const guidance = analyses.map(analysisCard).filter(Boolean);
-    const [first, ...rest] = resources;
-    const cards = [first, guidance[0], ...rest.slice(0, 1), guidance[1], ...rest.slice(1)].filter(Boolean);
+    const categories = goal === 'sales' ? ['marketing', 'sales'] : goal === 'brand' ? ['brand'] : [];
+    const keywords = {
+      sales: ['venda','cliente','whatsapp','marketing','campanha','marketplace','recompra','loja virtual'],
+      brand: ['marca','identidade','branding','logo','visual','design','posicionamento','diferencia','institucional','portfólio'],
+      organization: ['organiz','process','gestão','finance','orçamento','planejamento','calend','equipe','automat','agendamento','prioridade','administra']
+    }[goal].map(MivNiche.normalize);
+    const catalogIds = [...new Set(['marketing','sales','brand','tools','learn','mivcast','consult'].flatMap(key => ['marketing','sales','brand'].includes(key) ? libraryVisibleIds(key) : bases[key]))];
+    const matched = catalogIds.map(getItem).filter(item => item && keywords.some(word => MivNiche.normalize(item.title + ' ' + item.desc).includes(word))).map(item => item.id);
+    const allIds = [...new Set([...ids, ...categories.flatMap(libraryVisibleIds), ...matched])];
+    const resources = allIds.map(getItem).filter(item => item && item._dbActive !== false).map(resourceCard);
+    const stageIndexes = goal === 'sales' ? [2] : goal === 'brand' ? [1] : [0,3];
+    const analysisIds = [...new Set([...analyses, ...stageIndexes.flatMap(index => EVOLUTION_DATA[index].cards.map(card => card.id))])];
     document.getElementById('v14-rec-title').textContent = 'Recomendações para ' + title;
     for (const button of goalButtons) button.setAttribute('aria-pressed', String(button.dataset.v14Goal === goal));
-    more.hidden = cards.length <= 3;
-    more.setAttribute('aria-expanded', String(expanded));
-    more.textContent = expanded ? 'Mostrar três recomendações' : 'Explorar mais recomendações';
     const position = track.scrollLeft;
-    track.innerHTML = (expanded ? cards : cards.slice(0, 3)).join('') || '<p>Nenhuma recomendação disponível para este objetivo.</p>';
+    track.innerHTML = [...resources, ...analysisIds.map(analysisCard)].join('') || '<p>Nenhuma recomendação disponível para este objetivo.</p>';
     track.scrollLeft = position;
     updateArrows();
   }
@@ -98,24 +93,23 @@
 
   for (const button of goalButtons) button.addEventListener('click', () => {
     goal = button.dataset.v14Goal;
-    expanded = false;
     track.scrollLeft = 0;
     renderRecommendations();
     bindCards();
-  });
-  more.addEventListener('click', () => {
-    expanded = !expanded;
-    if (!expanded) track.scrollLeft = 0;
-    renderRecommendations();
-    bindCards();
-    if (expanded) track.children[3]?.scrollIntoView({ block: 'nearest', inline: 'start' });
   });
   for (const arrow of arrows) arrow.addEventListener('click', () => {
     const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
     const step = track.children[1]?.offsetLeft - track.children[0]?.offsetLeft || track.clientWidth;
     track.scrollBy({ left: Number(arrow.dataset.v14Slide) * step, behavior });
   });
-  track.addEventListener('click', event => {
+  document.addEventListener('click', event => {
+    const stageButton = event.target.closest('[data-home-stage]');
+    if (stageButton) {
+      route('analises', { instant: true });
+      const heading = document.querySelectorAll('#analysisGrid .ev-stage h3')[Number(stageButton.dataset.homeStage)];
+      if (heading) { heading.tabIndex = -1; heading.focus({preventScroll:true}); heading.scrollIntoView({block:'start',behavior:'smooth'}); }
+      return;
+    }
     const button = event.target.closest('[data-v14-analysis]');
     if (!button) return;
     route('analises', { instant: true });
@@ -128,13 +122,30 @@
   });
   track.addEventListener('scroll', updateArrows, { passive: true });
   new ResizeObserver(updateArrows).observe(track);
-  consultTrack.addEventListener('click', event => {
+  document.addEventListener('click', event => {
     const button = event.target.closest('[data-v14-consult]');
     if (!button) return;
     const item = getItem(button.dataset.v14Consult);
     if (item) showConsultation(item);
   });
 
+  suggestByNeed = function() {
+    const query = MivNiche.normalize(document.getElementById('needInput').value);
+    if (query.length < 3) { toast('Descreva o que deseja melhorar em uma frase.'); return; }
+    const stop = new Set(['como','para','quero','minha','meu','empresa','preciso','melhorar','mais','com','uma','que','estou','nao']);
+    const words = query.split(/[^a-z0-9]+/).filter(word => word.length > 2 && !stop.has(word));
+    const related = text => words.some(word => MivNiche.normalize(text).includes(word));
+    const ids = [...new Set(['marketing','sales','brand','tools','learn'].flatMap(key => key === 'tools' || key === 'learn' ? bases[key] || [] : libraryVisibleIds(key)))];
+    const resources = ids.map(getItem).filter(item => item && item._dbActive !== false && related([item.title,item.desc,item.cat,item.tag].join(' '))).map(resourceCard);
+    const analyses = EVOLUTION_DATA.flatMap(stage => stage.cards).filter(item => related([item.title,item.desc,...item.qs.map(q => q[0])].join(' '))).map(item => analysisCard(item.id));
+    const results = document.getElementById('needResults');
+    results.hidden = false;
+    results.innerHTML = [...resources,...analyses].join('');
+    bindCards();
+    document.getElementById('needStatus').textContent = resources.length + analyses.length ? `${resources.length + analyses.length} recursos relacionados. Explore as opções abaixo.` : 'Nenhum recurso encontrado com essas palavras. Experimente um tema como vendas, redes sociais, preço ou atendimento.';
+    results.scrollIntoView({block:'nearest',behavior:'smooth'});
+  };
+  document.getElementById('needSuggest').onclick = suggestByNeed;
   window.MivHomepage = {
     refreshCatalog() {
       renderRecommendations();
@@ -146,5 +157,6 @@
     }
   };
   MivHomepage.render();
+  openCalendar(true);
   bindCards();
 })();

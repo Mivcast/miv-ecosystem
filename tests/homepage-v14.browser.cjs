@@ -25,20 +25,25 @@ async function main() {
     const analysisButton = page.locator('#analises [data-route="analises"]');
     await analysisButton.waitFor();
     assert.equal(await view('home').locator('#analysisGrid').count(), 0);
-    assert.equal(await page.locator('.v14-path-list button').count(), 4);
-    const analysisArt = page.locator('.v14-analysis-art img');
-    assert.equal(await analysisArt.getAttribute('src'), 'assets/evolution/mapa-evolucao-vitrine.png');
-    assert(await analysisArt.evaluate(image => image.decode().then(() => image.naturalWidth === 778)));
+    assert.equal(await page.locator('.hero-paths button').count(), 4);
+    assert.equal(await page.locator('#primeiro-resultado').count(), 0);
+    await page.locator('#focusNiche').click();
+    await page.locator('.niche-welcome[open]').waitFor();
+    await page.locator('#welcomeGeneral').click();
+    assert.equal(await page.locator('.niche-welcome[open]').count(), 0);
+    const analysisArt = page.locator('.phone-preview img');
+    assert.equal(await analysisArt.getAttribute('src'), 'assets/evolution/smartphone-v15.png');
+    assert(await analysisArt.evaluate(image => image.decode().then(() => image.naturalWidth > 0)));
     const goals = await page.locator('.v14-goals-layout').evaluate(row => {
       const title = row.querySelector('.v14-goals-copy').getBoundingClientRect();
       const cards = [...row.querySelectorAll('[data-v14-goal]')].map(card => card.getBoundingClientRect());
       return cards.length === 3 && cards.every(card => card.left > title.right && card.top === cards[0].top);
     });
     assert(goals, 'The three goal cards are next to the title on desktop');
-    assert.equal(await page.locator('#view-home > section').last().getAttribute('id'), 'aprender');
-    assert.equal((await recommendationIds()).length, 3);
+    assert.equal(await page.locator('#view-home > section').last().getAttribute('id'), 'diagnostico-rapido');
+    assert((await recommendationIds()).length > 3);
 
-    await page.locator('.hero-actions [data-scroll="marketing"]').click();
+    await page.locator('.hero-paths [data-scroll="marketing"]').first().click();
     await page.waitForFunction(() => document.getElementById('marketing').getBoundingClientRect().top < innerHeight);
     await page.locator('#nicheSearch').fill('Restaurante');
     await page.locator('#applyNiche').click();
@@ -49,20 +54,17 @@ async function main() {
       const option = page.locator('[data-v14-goal="' + goal + '"]');
       await option.click();
       assert.equal(await option.getAttribute('aria-pressed'), 'true');
-      assert.equal((await recommendationIds()).length, 3);
+      assert((await recommendationIds()).length > 3);
       if (goal !== 'sales') assert.notDeepEqual(await recommendationIds(), sales);
       await page.locator('[data-v14-analysis="' + card + '"]').click();
       await view('analises').waitFor();
       assert.equal(await page.locator('[data-ev-card="' + card + '"] h4').evaluate(node => node === document.activeElement), true);
       await go('home');
     }
-    await page.locator('#v14-rec-more').click();
     assert((await recommendationIds()).length > 3);
     assert.equal(await page.locator('[data-v14-analysis="modelo"]').count(), 1);
-    await page.locator('#v14-rec-more').click();
     await page.locator('[data-v14-goal="sales"]').click();
     const whatsapp = page.locator('#v14-rec-track [data-open="whatsapp"]');
-    if (!await whatsapp.count()) await page.locator('#v14-rec-more').click();
     await whatsapp.click();
     await page.locator('#paywall.show, #authModal.show, #view-detail.active').first().waitFor();
     if (await page.locator('#paywall.show').count()) await page.locator('#closePaywall').click();
@@ -78,7 +80,7 @@ async function main() {
         return { top: bounds.top, ratio: bounds.width / bounds.height, copyFits: copy.top >= bounds.top && copy.bottom <= bounds.bottom };
       }));
       assert.equal(new Set(layout.map(banner => banner.top)).size, 1);
-      assert(layout.every(banner => Math.abs(banner.ratio - .8) < .01 && banner.copyFits));
+      assert(layout.every(banner => banner.copyFits));
       if (width >= 1024) {
         assert(await page.locator('#consultTrack').evaluate(node => node.scrollWidth <= node.clientWidth + 1));
       }
@@ -108,7 +110,8 @@ async function main() {
     }
     assert.equal(await page.locator('[data-v14-consult]').count(), 5);
 
-    await page.locator('#focusNiche').click();
+    await page.evaluate(() => route('analises'));
+    await page.locator('[data-quick-start]').first().click();
     for (let i = 0; i < 8; i++) await page.locator('[data-quick-answer="1"]').click();
     assert.match(await page.locator('.quick-dialog').innerText(), /50%/);
     await page.locator('[data-quick-complete]').click();
@@ -170,7 +173,7 @@ async function main() {
       if (width === 390 || width === 1440) {
         await page.locator('#analysis-workspace').screenshot({ path: path.join(output, 'workspace-' + width + '.png') });
         await go('home');
-        for (const id of ['primeiro-resultado', 'analises', 'diagnostico-rapido', 'consultoria']) {
+        for (const id of ['heroCommerce', 'analises', 'diagnostico-rapido', 'apoio-especializado']) {
           await page.locator('#' + id).screenshot({ path: path.join(output, id + '-' + width + '.png') });
         }
       }
@@ -188,7 +191,7 @@ async function main() {
     const ids = await page.locator('[id]').evaluateAll(nodes => nodes.map(node => node.id));
     assert.equal(ids.length, new Set(ids).size);
     assert.deepEqual(errors, []);
-    console.log('PASS V14: hero, niche, goals, direct links to analysis cards, carousel, portrait banners and consult modals, quick and full diagnosis, individual access, public commerce, history, Central, MARK panel, plan links, menus and five viewport widths.');
+    console.log('PASS V15: hero, niche, goals, direct links to analysis cards, carousel, compact banners and consult modals, quick and full diagnosis, individual access, public commerce, history, Central, MARK panel, plan links, menus and five viewport widths.');
   } finally {
     await browser.close();
   }

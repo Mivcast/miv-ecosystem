@@ -5,6 +5,7 @@ const privacy=require('../private/privacy-service.cjs');
 const catalog=require('../private/catalog-service.cjs');
 const niches=require('../private/niche-service.cjs');
 const commerce=require('../private/commerce-service.cjs');
+const leads=require('../private/lead-service.cjs');
 const send=(res,status,data)=>{res.setHeader('Cache-Control','private, no-store');return res.status(status).json(data);};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -25,12 +26,18 @@ module.exports=async function(req,res){
     }
     if(req.method==='GET'&&req.query?.action==='niches')return send(res,200,{niches:await niches.approved(url,key)});
     if(req.method==='POST'&&req.body?.action==='analytics-events')return send(res,200,{accepted:await analytics.ingest(req,url,key,pub)});
+    if(req.method==='POST'&&req.body?.action==='lead-opt-in')return send(res,200,await leads.capture(req,url,key));
     const token=String(req.headers.authorization||'').match(/^Bearer (.+)$/)?.[1];
     if(!token)return send(res,401,{error:'Entre na sua conta para salvar análises e liberar soluções.'});
     const auth=await fetch(`${url}/auth/v1/user`,{signal:AbortSignal.timeout(10000),headers:{apikey:pub,Authorization:`Bearer ${token}`}});
     if(!auth.ok)return send(res,401,{error:'Sua sessão expirou. Entre novamente.'});
     const user=await auth.json();if(!uuid.test(user.id))return send(res,401,{error:'Sessão inválida.'});
     const input=req.method==='GET'?req.query||{}:req.body||{};
+    if(input.action==='leads-admin-list'||input.action==='leads-admin-update'){
+      if((input.action==='leads-admin-list')!==(req.method==='GET'))return send(res,405,{error:'Método não permitido.'});
+      if(!analytics.sameOrigin(req))return send(res,403,{error:'Origem não permitida.'});
+      return send(res,200,await leads.admin(url,key,user,token,input));
+    }
     if(/^commerce-admin-/.test(input.action||'')){
       if((input.action==='commerce-admin-list')!==(req.method==='GET'))return send(res,405,{error:'Método não permitido.'});
       if(!analytics.sameOrigin(req))return send(res,403,{error:'Origem não permitida.'});
